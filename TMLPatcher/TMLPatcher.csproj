@@ -14,10 +14,4 @@
     <ProjectReference Include="..\Consolation\Consolation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="MonoGame.Framework">
-      <HintPath>Common\Libraries\MonoGame.Framework.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

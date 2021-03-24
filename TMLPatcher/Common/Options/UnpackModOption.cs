@@ -1,15 +1,33 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
-using Microsoft.Xna.Framework.Graphics;
 using TMLPatcher.Common.Framework;
 using TMLPatcher.Common.TML;
 
-// https://github.com/tModLoader/tModLoader/blob/master/patches/tModLoader/Terraria.ModLoader.UI/UIExtractMod.cs
+// Modified tModViewer code
+// Thanks, Trivaxy!
 namespace TMLPatcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
+        public readonly struct ImagePixelColor
+        {
+            public readonly int r;
+            public readonly int g;
+            public readonly int b;
+            public readonly int a;
+
+            public ImagePixelColor(int r, int g, int b, int a)
+            {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+                this.a = a;
+            }
+        }
+
         public override string Text => "Unpack a mod.";
 
         public override void Execute()
@@ -62,21 +80,25 @@ namespace TMLPatcher.Common.Options
 
                     if (Path.GetExtension(properPath) == ".rawimg")
                     {
-                        MemoryStream memoryStream = new();
+                        using MemoryStream input = new(data);
+                        using BinaryReader reader = new(input);
+                        reader.ReadInt32();
+                        int width = reader.ReadInt32();
+                        int height = reader.ReadInt32();
+                        ImagePixelColor[] colors = new ImagePixelColor[width * height];
 
-                        using (MemoryStream input = new(data))
-                        {
-                            using (BinaryReader reader = new(input))
-                            {
-                                reader.ReadInt32();
-                                int width = reader.ReadInt32();
-                                int height = reader.ReadInt32();
-                                byte[] texData = reader.ReadBytes(width * height * 4);
-                                Texture2D tex = new(new GraphicsDevice(null, GraphicsProfile.HiDef, new PresentationParameters()), width, height);
-                                // TODO: images
-                            }
+                        for (int i = 0; i < colors.Length; i++)
+                            colors[i] = new ImagePixelColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
+
+                        Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
+                        for (int x = 0; x < width; x++)
+                        for (int y = 0; y < height; y++)
+                        { 
+                            ImagePixelColor pixelColor = colors[y * width + x];
+                            imageMap.SetPixel(x, y, Color.FromArgb(pixelColor.a, pixelColor.r, pixelColor.g, pixelColor.b));
                         }
-                        File.WriteAllBytes(Path.ChangeExtension(properPath, ".png"), memoryStream.ToArray());
+
+                        imageMap.Save(Path.ChangeExtension(properPath, ".png"));
                     }
                     else
                         File.WriteAllBytes(properPath, data);
