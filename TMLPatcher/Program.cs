@@ -11,6 +11,7 @@ namespace TMLPatcher
     public static class Program
     {
         public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ExtractPath => EXEPath + Path.DirectorySeparatorChar + "Extracted";
         public const string Line = "-----------------------------------------------------------------";
 
         public static ConfigurationFile Configuration;
@@ -92,7 +93,7 @@ namespace TMLPatcher
 
         public static void InitializeConsoleOptions()
         {
-            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption());
+            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new UnpackModOption());
 
             SelectedOptions = DefaultOptions;
         }
