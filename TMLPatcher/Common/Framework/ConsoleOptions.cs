@@ -22,10 +22,10 @@ namespace TMLPatcher.Common.Framework
 
         private readonly ConsoleOptions _prevOptionsState;
 
-        public ConsoleOptions(string optionText, ConsoleOptions prevOptionsState, params ConsoleOption[] options)
+        public ConsoleOptions(string optionText, params ConsoleOption[] options)
         {
             OptionText = optionText;
-            _prevOptionsState = prevOptionsState;
+            _prevOptionsState = Program.SelectedOptions;
 
             // Assign index values to the ConsoleOption types
             for (int i = 0; i < options.Length; i++)
@@ -51,7 +51,7 @@ namespace TMLPatcher.Common.Framework
                     case "/":
                         Program.WriteAndClear("Returned to the start!", ConsoleColor.Green);
                         Program.SelectedOptions.ListForOption();
-                        continue;
+                        return;
 
                     case ".":
                         if (_prevOptionsState == null) 
@@ -62,7 +62,7 @@ namespace TMLPatcher.Common.Framework
                             _prevOptionsState.ListForOption();
                         }
 
-                        continue;
+                        return;
                 }
 
                 if (!int.TryParse(key, out int option))

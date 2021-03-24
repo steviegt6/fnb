@@ -14,11 +14,13 @@ namespace TMLPatcher
         public const string Line = "-----------------------------------------------------------------";
 
         public static ConfigurationFile Configuration;
-        public static ConsoleOptions StartOptions;
+        public static ConsoleOptions DefaultOptions;
         public static ConsoleOptions SelectedOptions;
 
         public static void Main(string[] args)
         {
+            Console.Title = "TMLPatcher - by convicted tomatophile";
+
             ConsoleAPI.Initialize();
             ConsoleAPI.ParseParameters(args);
 
@@ -26,7 +28,7 @@ namespace TMLPatcher
             InitializeProgramOptions();
 
             WriteStaticText(false);
-            //CheckForUndefinedPath();
+            CheckForUndefinedPath();
             SelectedOptions.ListForOption();
         }
 
@@ -69,12 +71,14 @@ namespace TMLPatcher
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($" {nameof(Configuration.ModsPath)} is undefined!");
                 Console.WriteLine(" Please enter the directory of your tModLoader Mods folder:");
+                
                 string modsPath = Console.ReadLine();
 
                 if (Directory.Exists(modsPath))
                 {
                     Configuration.ModsPath = modsPath;
                     ConfigurationFile.Save();
+                    WriteAndClear("New specified path accepted!", ConsoleColor.Green);
                 }
                 else
                 {
@@ -88,8 +92,8 @@ namespace TMLPatcher
 
         public static void InitializeConsoleOptions()
         {
-            StartOptions = new ConsoleOptions("TEST", null, new TestOption());
-            SelectedOptions = StartOptions;
+            DefaultOptions = new ConsoleOptions("TEST", new TestOption());
+            SelectedOptions = DefaultOptions;
         }
 
         public static void InitializeProgramOptions() => Configuration = ConfigurationFile.Load(EXEPath + Path.DirectorySeparatorChar + "configuration.json");

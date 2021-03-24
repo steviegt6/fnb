@@ -11,7 +11,7 @@ namespace TMLPatcher.Common.Options
         public override void Execute()
         {
             Program.Clear(false);
-            new ConsoleOptions("Sub-menu!", Program.SelectedOptions, new TestOption2()).ListForOption();
+            new ConsoleOptions("Sub-menu!", new TestOption2()).ListForOption();
         }
     }
 }
