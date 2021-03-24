@@ -92,7 +92,8 @@ namespace TMLPatcher
 
         public static void InitializeConsoleOptions()
         {
-            DefaultOptions = new ConsoleOptions("TEST", new TestOption());
+            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption());
+
             SelectedOptions = DefaultOptions;
         }
 
@@ -110,6 +111,12 @@ namespace TMLPatcher
             Console.ForegroundColor = color;
             Console.WriteLine(message);
             Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public static void WriteOptionsList(ConsoleOptions options)
+        {
+            SelectedOptions = options;
+            SelectedOptions.ListForOption();
         }
     }
 }

@@ -2,8 +2,6 @@
 {
     public abstract class ConsoleOption
     {
-        public abstract string Name { get; }
-
         public int Index { get; set; }
 
         public abstract string Text { get; }
