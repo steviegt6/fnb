@@ -185,7 +185,7 @@ namespace TMLPatcher.Common.Options
             imageMap.Save(Path.ChangeExtension(properPath, ".png"));
         }
 
-        private static BuildProperties SaveInfoAsBuild(DirectoryInfo directory)
+        private static BuildProperties SaveInfoAsBuild(FileSystemInfo directory)
         {
             string modPath = directory.FullName;
             string buildPath = Path.Combine(modPath, "Info");
