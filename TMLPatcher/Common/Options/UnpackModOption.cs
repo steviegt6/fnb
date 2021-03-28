@@ -121,11 +121,11 @@ namespace TMLPatcher.Common.Options
                     modFile = new TModFile(reader);
                 }
 
-                foreach (TModFileEntry file in modFile.files)
+                foreach (FileEntryData file in modFile.files)
                 {
                     byte[] data = file.fileData;
 
-                    if (file.fileLength.length != file.fileLength.lengthCompressed)
+                    if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
                         data = Decompress(file.fileData);
 
                     string[] pathParts = file.fileName.Split(Path.DirectorySeparatorChar);

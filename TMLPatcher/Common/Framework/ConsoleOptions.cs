@@ -50,6 +50,7 @@ namespace TMLPatcher.Common.Framework
 
                     case "/":
                         Program.WriteAndClear("Returned to the start!", ConsoleColor.Green);
+                        Program.SelectedOptions = Program.DefaultOptions;
                         Program.SelectedOptions.ListForOption();
                         return;
 
