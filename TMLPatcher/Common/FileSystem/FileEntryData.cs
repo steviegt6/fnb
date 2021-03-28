@@ -1,4 +1,4 @@
-﻿namespace TMLPatcher.Common.TML
+﻿namespace TMLPatcher.Common.FileSystem
 {
     // Code taken and modified from Trivaxy's tModViewer
     // https://gyazo.com/a366fcf56c1ed29da86a2ab89a58245c.png

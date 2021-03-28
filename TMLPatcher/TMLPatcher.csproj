@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Consolation\Consolation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\FileSystem\" />
-  </ItemGroup>
-
 </Project>

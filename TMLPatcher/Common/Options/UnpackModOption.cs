@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using TMLPatcher.Common.FileSystem;
 using TMLPatcher.Common.Framework;
 using TMLPatcher.Common.TML;
 
