@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TML.Files.Specific
+namespace TML.Files.Specific.Files
 {
     public readonly struct ModData
     {

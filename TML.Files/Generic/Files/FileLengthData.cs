@@ -1,4 +1,4 @@
-﻿namespace TML.Files.Generic
+﻿namespace TML.Files.Generic.Files
 {
     public readonly struct FileLengthData
     {

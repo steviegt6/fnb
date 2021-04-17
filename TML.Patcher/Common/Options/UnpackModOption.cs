@@ -6,8 +6,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using TML.Files.Generic;
-using TML.Files.Specific;
+using TML.Files.Generic.Data;
+using TML.Files.Generic.Files;
+using TML.Files.Specific.Data;
+using TML.Files.Specific.Files;
 using TML.Patcher.Common.Framework;
 
 // Modified tModViewer code
@@ -16,80 +18,6 @@ namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
-        public readonly struct ImagePixelColor
-        {
-            public readonly int r;
-            public readonly int g;
-            public readonly int b;
-            public readonly int a;
-
-            public ImagePixelColor(int r, int g, int b, int a)
-            {
-                this.r = r;
-                this.g = g;
-                this.b = b;
-                this.a = a;
-            }
-        }
-
-        public struct BuildProperties
-        {
-            public string[] dllReferences;
-            public string[] modReferences;
-            public string[] weakReferences;
-            public string[] sortAfter;
-            public string[] sortBefore;
-            public string[] buildIgnores;
-            public string author;
-            public Version version;
-            public string displayName;
-            public string homepage;
-            public string description;
-            public bool noCompile;
-            public bool hideCode;
-            public bool hideResources;
-            public bool includeSource;
-            public bool includePDB;
-            public ModSide side;
-
-            // hidden
-            public string eacPath;
-            public bool beta;
-            public Version buildVersion;
-
-            public BuildProperties(bool beta)
-            {
-                this.beta = beta;
-                side = ModSide.Client;
-                dllReferences = Array.Empty<string>();
-                modReferences = Array.Empty<string>();
-                weakReferences = Array.Empty<string>();
-                sortAfter = Array.Empty<string>();
-                sortBefore = Array.Empty<string>();
-                buildIgnores = Array.Empty<string>();
-                author = "noauthor";
-                version = new Version(0, 0, 0, 1);
-                displayName = "nodisplayname";
-                homepage = "nohomepage";
-                description = "nodesc";
-                noCompile = false;
-                hideCode = false;
-                hideResources = false;
-                includeSource = false;
-                includePDB = false;
-                eacPath = "noeacpath";
-                buildVersion = new Version(0, 0, 0, 1);
-            }
-        }
-
-        public enum ModSide
-        {
-            Both,
-            Client,
-            Server,
-            NoSync
-        }
-
         public override string Text => "Unpack a mod.";
 
         public override void Execute()
@@ -101,7 +29,7 @@ namespace TML.Patcher.Common.Options
 
                 if (modName == null)
                 {
-                    Program.WriteAndClear("Specified mod name somehow returned null.");
+                    Program.WriteAndClear("Specified mod name some-how returned null.");
                     continue;
                 }
 
@@ -114,6 +42,10 @@ namespace TML.Patcher.Common.Options
                     continue;
                 }
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine( $" Extracting mod: {modName}...");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+
                 DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(Path.Combine(Program.EXEPath, "Extracted"), modName));
                 TModFile modFile;
                 using (FileStream stream = File.Open(Path.Combine(Program.Configuration.ModsPath, modName), FileMode.Open))
@@ -124,6 +56,8 @@ namespace TML.Patcher.Common.Options
 
                 foreach (FileEntryData file in modFile.files)
                 {
+                    Console.WriteLine($" Extracting file: {file.fileName}");
+
                     byte[] data = file.fileData;
 
                     if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
@@ -140,15 +74,22 @@ namespace TML.Patcher.Common.Options
                     Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
 
                     if (Path.GetExtension(properPath) == ".rawimg")
+                    {
+                        Console.WriteLine($" Converting {file.fileName} to .png");
                         SaveRawToPNG(data, properPath);
+                    }
                     else
                         File.WriteAllBytes(properPath, data);
                 }
 
-                WriteBuildFile(SaveInfoAsBuild(directory), directory);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($" Finished extracting mod: {modName}");
 
+                // WriteBuildFile(SaveInfoAsBuild(directory), directory);
                 break;
             }
+
+            Program.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
         private static byte[] Decompress(byte[] data)
