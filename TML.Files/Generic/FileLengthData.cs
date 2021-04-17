@@ -1,4 +1,4 @@
-﻿namespace TMLPatcher.Common.FileSystem
+﻿namespace TML.Files.Generic
 {
     public readonly struct FileLengthData
     {

@@ -2,11 +2,11 @@
 using System.IO;
 using System.Reflection;
 using Consolation;
-using TMLPatcher.Common;
-using TMLPatcher.Common.Framework;
-using TMLPatcher.Common.Options;
+using TML.Patcher.Common;
+using TML.Patcher.Common.Framework;
+using TML.Patcher.Common.Options;
 
-namespace TMLPatcher
+namespace TML.Patcher
 {
     public static class Program
     {
@@ -14,9 +14,11 @@ namespace TMLPatcher
         public static string ExtractPath => EXEPath + Path.DirectorySeparatorChar + "Extracted";
         public const string Line = "-----------------------------------------------------------------";
 
-        public static ConfigurationFile Configuration;
-        public static ConsoleOptions DefaultOptions;
-        public static ConsoleOptions SelectedOptions;
+        public static ConfigurationFile Configuration { get; set; }
+
+        public static ConsoleOptions DefaultOptions { get; set; }
+
+        public static ConsoleOptions SelectedOptions { get; set; }
 
         public static void Main(string[] args)
         {
@@ -49,11 +51,25 @@ namespace TMLPatcher
                 "Patch and recompile assemblies"
             };
 
+            string[] contributors =
+            {
+                "convicted tomatophile (Stevie) - Main developer",
+                "Trivaxy - Unpack code"
+            };
+
+            Console.WriteLine();
             Console.WriteLine(" Welcome to TMLPatcher!");
             Console.WriteLine(" This is a program that allows you to:");
 
             for (int i = 0; i < whatCanThisDoLol.Length; i++)
                 Console.WriteLine($"  [{i + 1}] {whatCanThisDoLol[i]}");
+
+            Console.WriteLine();
+
+            Console.WriteLine(" Credits:");
+            foreach (string contributor in contributors)
+                Console.WriteLine($"  {contributor}");
+
             Console.WriteLine(Line);
             Console.WriteLine(" Loaded with configuration options:");
             Console.WriteLine($"  {nameof(Configuration.ModsPath)}: {Configuration.ModsPath}");
@@ -93,7 +109,11 @@ namespace TMLPatcher
 
         public static void InitializeConsoleOptions()
         {
-            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new UnpackModOption());
+            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new UnpackModOption())
+            {
+                DisplayReturn = false,
+                DisplayGoBack = false
+            };
 
             SelectedOptions = DefaultOptions;
         }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TMLPatcher.Common.Framework
+namespace TML.Patcher.Common.Framework
 {
     public class ConsoleOptions : ICloneable, IList<ConsoleOption>
     {
@@ -17,6 +17,10 @@ namespace TMLPatcher.Common.Framework
         }
 
         public string OptionText { get; }
+
+        public bool DisplayReturn { get; set; } = true;
+
+        public bool DisplayGoBack { get; set; } = true;
 
         private readonly List<ConsoleOption> _options;
 
@@ -36,7 +40,7 @@ namespace TMLPatcher.Common.Framework
 
         public virtual void ListForOption()
         {
-            for (;;) // The cooler while (true) :)
+            while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(ToString());
@@ -48,13 +52,13 @@ namespace TMLPatcher.Common.Framework
                         Program.WriteAndClear("Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
                         continue;
 
-                    case "/":
+                    case "/" when DisplayReturn:
                         Program.WriteAndClear("Returned to the start!", ConsoleColor.Green);
                         Program.SelectedOptions = Program.DefaultOptions;
                         Program.SelectedOptions.ListForOption();
                         return;
 
-                    case ".":
+                    case "." when DisplayGoBack:
                         if (_prevOptionsState == null) 
                             Program.WriteAndClear("No previous state was found, falling back to the beginning...");
                         else
@@ -62,7 +66,6 @@ namespace TMLPatcher.Common.Framework
                             Program.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
                             _prevOptionsState.ListForOption();
                         }
-
                         return;
                 }
 
@@ -87,10 +90,13 @@ namespace TMLPatcher.Common.Framework
         {
             string text = this.Aggregate($" {OptionText}", (current, option) => current + $"\n{option}");
 
-            if (_prevOptionsState != null)
+            if (_prevOptionsState != null && DisplayGoBack)
                 text += "\n  [.] Return to the previous set of options.";
 
-            return text + "\n  [/] Return to the start.";
+            if (DisplayReturn)
+                return text + "\n  [/] Return to the start.";
+
+            return text;
         }
 
         #endregion

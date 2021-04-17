@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TMLPatcher.Common.TML
+namespace TML.Files.Specific
 {
     public readonly struct ModData
     {

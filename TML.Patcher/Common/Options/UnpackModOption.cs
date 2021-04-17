@@ -6,13 +6,13 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using TMLPatcher.Common.FileSystem;
-using TMLPatcher.Common.Framework;
-using TMLPatcher.Common.TML;
+using TML.Files.Generic;
+using TML.Files.Specific;
+using TML.Patcher.Common.Framework;
 
 // Modified tModViewer code
 // Thanks, Trivaxy!
-namespace TMLPatcher.Common.Options
+namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {

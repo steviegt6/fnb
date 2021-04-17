@@ -1,4 +1,4 @@
-﻿namespace TMLPatcher.Common.Framework
+﻿namespace TML.Patcher.Common.Framework
 {
     public abstract class ConsoleOption
     {

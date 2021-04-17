@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
-using TMLPatcher.Common.Framework;
+using TML.Patcher.Common.Framework;
 
-namespace TMLPatcher.Common.Options
+namespace TML.Patcher.Common.Options
 {
+    // TODO: pages
     public class ListModsOption : ConsoleOption
     {
         public override string Text => "List all located .tmod files.";

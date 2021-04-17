@@ -1,7 +1,5 @@
-﻿namespace TMLPatcher.Common.FileSystem
+﻿namespace TML.Files.Generic
 {
-    // Code taken and modified from Trivaxy's tModViewer
-    // https://gyazo.com/a366fcf56c1ed29da86a2ab89a58245c.png
     public readonly struct FileEntryData
     {
         public readonly string fileName;

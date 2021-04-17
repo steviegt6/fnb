@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using TMLPatcher.Common.FileSystem;
+using TML.Files.Generic;
 
-namespace TMLPatcher.Common.TML
+namespace TML.Files.Specific
 {
-    // Code taken and modified from Trivaxy's tModViewer
-    // https://gyazo.com/a366fcf56c1ed29da86a2ab89a58245c.png
     public class TModFile
     {
         public List<FileEntryData> files = new();
@@ -39,6 +37,7 @@ namespace TMLPatcher.Common.TML
         {
             for (int i = 0; i < fileCount; i++)
                 files.Add(new FileEntryData(reader.ReadString(), new FileLengthData(reader.ReadInt32(), reader.ReadInt32()), null));
+
             for (int i = 0; i < fileCount; i++)
             {
                 FileEntryData file = files[i];
