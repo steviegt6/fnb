@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Consolation;
 using TML.Patcher.Common;
 using TML.Patcher.Common.Framework;
@@ -23,6 +24,7 @@ namespace TML.Patcher
         public static void Main(string[] args)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
+            Thread.CurrentThread.Name = "Main";
 
             ConsoleAPI.Initialize();
             ConsoleAPI.ParseParameters(args);

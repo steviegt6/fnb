@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -12,8 +13,6 @@ using TML.Files.Specific.Data;
 using TML.Files.Specific.Files;
 using TML.Patcher.Common.Framework;
 
-// Modified tModViewer code
-// Thanks, Trivaxy!
 namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
@@ -41,6 +40,9 @@ namespace TML.Patcher.Common.Options
                     Program.WriteAndClear("Specified mod could not be located!");
                     continue;
                 }
+
+                Stopwatch timeTook = new();
+                timeTook.Start();
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine( $" Extracting mod: {modName}...");
@@ -82,9 +84,11 @@ namespace TML.Patcher.Common.Options
                         File.WriteAllBytes(properPath, data);
                 }
 
+                timeTook.Stop();
+
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($" Finished extracting mod: {modName}");
-
+                Console.WriteLine($" Extraction finished in: {timeTook.Elapsed}");
                 // WriteBuildFile(SaveInfoAsBuild(directory), directory);
                 break;
             }
