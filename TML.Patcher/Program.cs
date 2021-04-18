@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -31,10 +32,28 @@ namespace TML.Patcher
 
             Patcher.InitializeConsoleOptions();
             Patcher.InitializeProgramOptions();
+            InstallILSpyCMD();
 
             Instance.WriteStaticText(false);
             Instance.CheckForUndefinedPath();
             ConsoleAPI.SelectedOptionSet.ListForOption();
+        }
+
+        private static void InstallILSpyCMD()
+        {
+            Process process = new()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    // TODO: verify this works on other platforms (doubt it)
+                    FileName = "cmd.exe",
+                    Arguments = "/C dotnet tool install ilspycmd -g",
+                    UseShellExecute = false
+                }
+            };
+            Console.WriteLine("Attempting to install ilspycmd...");
+            process.Start();
+            process.WaitForExit();
         }
     }
 }
