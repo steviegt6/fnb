@@ -2,12 +2,12 @@
 {
     public readonly struct ImagePixelColor
     {
-        public readonly int r;
-        public readonly int g;
-        public readonly int b;
-        public readonly int a;
+        public readonly byte r;
+        public readonly byte g;
+        public readonly byte b;
+        public readonly byte a;
 
-        public ImagePixelColor(int r, int g, int b, int a)
+        public ImagePixelColor(byte r, byte g, byte b, byte a)
         {
             this.r = r;
             this.g = g;
