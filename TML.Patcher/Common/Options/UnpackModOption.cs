@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Data;
@@ -70,26 +71,25 @@ namespace TML.Patcher.Common.Options
 
         private static void ExtractAllFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
         {
-            List<Task> tasks = new();
             List<List<FileEntryData>> chunks = new();
 
-            // TODO: Add an option for the number of tasks to use
-            double numThreads = Math.Min(files.Count, 4); // Use either '4' threads, or the number of files, whatever is lower
+            if (Program.Configuration.Threads <= 0)
+                Program.Configuration.Threads = 1;
+
+            double numThreads = Math.Min(files.Count, Program.Configuration.Threads); // Use either '4' threads, or the number of files, whatever is lower
             int chunkSize = (int) Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
 
             // Split the files into chunks
             for (int i = 0; i < files.Count; i += chunkSize)
                 chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
 
-            // Run a task for each chunk
-            foreach (List<FileEntryData> chunk in chunks)
-                tasks.Add(Task.Run(() => ExtractChunkFiles(chunk, extractDirectory)));
 
+            // Run a task for each chunk
             // Wait for all tasks to finish
-            Task.WaitAll(tasks.ToArray());
+            Task.WaitAll(chunks.Select(chunk => Task.Run(() => ExtractChunkFiles(chunk, extractDirectory))).ToArray());
         }
 
-        private static void ExtractChunkFiles(IEnumerable<FileEntryData> files, DirectoryInfo extractDirectory)
+        private static void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             foreach (FileEntryData file in files)
             {
