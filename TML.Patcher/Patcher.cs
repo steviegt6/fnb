@@ -46,7 +46,8 @@ namespace TML.Patcher
             string[] contributors =
             {
                 "convicted tomatophile (Stevie) - Main developer",
-                "Trivaxy - Unpack code"
+                "Trivaxy - Unpack code",
+                "Chik3r - Improved multithreading/task code"
             };
 
             Console.WriteLine();
