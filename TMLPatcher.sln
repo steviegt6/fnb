@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consolation", "Consolation\Consolation.csproj", "{515968D6-4103-47D0-BC5A-EAA81DCC6E01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TML.Files", "TML.Files\TML.Files.csproj", "{16A80AA9-7D0A-448E-A9BA-F46D0C526CF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Files", "TML.Files\TML.Files.csproj", "{16A80AA9-7D0A-448E-A9BA-F46D0C526CF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Patcher", "TML.Patcher\TML.Patcher.csproj", "{8745E3FB-BA8B-44F3-8843-FF98E87D0BCB}"
 EndProject

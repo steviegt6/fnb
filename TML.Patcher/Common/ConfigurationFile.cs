@@ -15,6 +15,10 @@ namespace TML.Patcher.Common
 
         public string ExtractPath { get; set; }
 
+        public string DecompilePath { get; set; }
+
+        public string ReferencesPath { get; set; }
+
         internal ConfigurationFile() { }
 
         public static ConfigurationFile Load(string filePath)
@@ -29,7 +33,9 @@ namespace TML.Patcher.Common
             ConfigurationFile config = new()
             {
                 ModsPath = UndefinedPath,
-                ExtractPath = Path.Combine(Program.EXEPath, "Extracted")
+                ExtractPath = Path.Combine(Program.EXEPath, "Extracted"),
+                DecompilePath = Path.Combine(Program.EXEPath, "Decompiled"),
+                ReferencesPath = Path.Combine(Program.EXEPath, "References")
             };
             JsonSerializer serializer = new()
             {
@@ -50,7 +56,10 @@ namespace TML.Patcher.Common
             ConfigurationFile config = new()
             {
                 ModsPath = Program.Configuration.ModsPath,
-                ExtractPath = Program.Configuration.ExtractPath
+                ExtractPath = Program.Configuration.ExtractPath,
+                DecompilePath = Program.Configuration.DecompilePath,
+                ReferencesPath = Program.Configuration.ReferencesPath
+                // TODO: give extract, decompile, & references default values that don't save to the config for portability
             }; 
             JsonSerializer serializer = new()
             {

@@ -35,7 +35,7 @@ namespace TML.Patcher.Common.Options
             int selectedPage = 0;
             while (true)
             {
-                if (selectedPage > pages.Count)
+                if (selectedPage >= pages.Count)
                     break;
 
                 Program.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
