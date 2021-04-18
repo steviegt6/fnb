@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -8,7 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using TML.Files.Generic.Data;
 using TML.Files.Generic.Files;
 using TML.Files.Specific.Data;
@@ -19,19 +18,40 @@ namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
-        private bool _extractionInProcess;
-        private bool _threadCompletedTask;
-        private readonly ConcurrentBag<(FileEntryData, byte[], string)> _filesToConvert = new();
-
         public override string Text => "Unpack a mod.";
 
         public override void Execute()
         {
+            string modName = GetModName();
+            
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine( $" Extracting mod: {modName}...");
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            
+            DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName));
+            TModFile modFile;
+            using (FileStream stream = File.Open(Path.Combine(Program.Configuration.ModsPath, modName), FileMode.Open))
+            using (BinaryReader reader = new(stream))
+            {
+                modFile = new TModFile(reader);
+            }
+            
+            var sw = Stopwatch.StartNew();
+            ExtractAllFiles(modFile.files, directory);
+            sw.Stop();
+            var elapsed = sw.ElapsedMilliseconds;
+            
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($" Finished extracting mod: {modName}");
+            Console.WriteLine($"Took {elapsed} ms");
+            
+            Program.WriteOptionsList(new ConsoleOptions("Return:"));
+        }
+
+        private string GetModName()
+        {
             while (true)
             {
-                _extractionInProcess = true;
-                _threadCompletedTask = false;
-
                 Console.WriteLine("Please enter the name of the mod you want to extract:");
                 string? modName = Console.ReadLine();
 
@@ -44,75 +64,60 @@ namespace TML.Patcher.Common.Options
                 if (!modName.EndsWith(".tmod"))
                     modName += ".tmod";
 
-                if (!File.Exists(Path.Combine(Program.Configuration.ModsPath, modName)))
-                {
-                    Program.WriteAndClear("Specified mod could not be located!");
-                    continue;
-                }
-
-                Stopwatch timeTook = new();
-                timeTook.Start();
-
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("Starting image conversion thread...");
-                new Thread(ConvertAllRawsToPNGs).Start();
-                Console.WriteLine("Started image conversion thread...");
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine( $" Extracting mod: {modName}...");
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-
-                DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName));
-                TModFile modFile;
-                using (FileStream stream = File.Open(Path.Combine(Program.Configuration.ModsPath, modName), FileMode.Open))
-                using (BinaryReader reader = new(stream))
-                {
-                    modFile = new TModFile(reader);
-                }
-
-
-
-                foreach (FileEntryData file in modFile.files)
-                {
-                    Console.WriteLine($" Extracting file: {file.fileName}");
-
-                    byte[] data = file.fileData;
-
-                    if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
-                        data = Decompress(file.fileData);
-
-                    string[] pathParts = file.fileName.Split(Path.DirectorySeparatorChar);
-                    string[] mendedPath = new string[pathParts.Length + 1];
-                    mendedPath[0] = directory.FullName;
-
-                    for (int i = 0; i < pathParts.Length; i++)
-                        mendedPath[i + 1] = pathParts[i];
-
-                    string properPath = Path.Combine(mendedPath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
-
-                    if (Path.GetExtension(properPath) == ".rawimg")
-                        _filesToConvert.Add((file, data, properPath));
-                    else
-                        File.WriteAllBytes(properPath, data);
-                }
-
-                timeTook.Stop();
-
-                while (!_threadCompletedTask) 
-                    Thread.Sleep(100);
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($" Finished extracting mod: {modName}");
-                Console.WriteLine($" Extraction finished in: {timeTook.Elapsed}");
-                // WriteBuildFile(SaveInfoAsBuild(directory), directory);
-                break;
+                if (File.Exists(Path.Combine(Program.Configuration.ModsPath, modName))) 
+                    return modName;
+                
+                Program.WriteAndClear("Specified mod could not be located!");
             }
+        }
 
-            _extractionInProcess = false;
-            _threadCompletedTask = false;
-            _filesToConvert.Clear();
-            Program.WriteOptionsList(new ConsoleOptions("Return:"));
+        private void ExtractAllFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
+        {
+            List<Task> tasks = new();
+            List<List<FileEntryData>> chunks = new();
+
+            // TODO: Add an option for the number of tasks to use
+            double numThreads = Math.Min(files.Count, 4); // Use either '4' threads, or the number of files, whatever is lower
+            int chunkSize = (int) Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
+
+            // Split the files into chunks
+            for (int i = 0; i < files.Count; i += chunkSize)
+                chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
+
+            // Run a task for each chunk
+            foreach (List<FileEntryData> chunk in chunks)
+                tasks.Add(Task.Run(() => ExtractChunkFiles(chunk, extractDirectory)));
+
+            // Wait for all tasks to finish
+            Task.WaitAll(tasks.ToArray());
+        }
+
+        private void ExtractChunkFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
+        {
+            foreach (FileEntryData file in files)
+            {
+                Console.WriteLine($" Extracting file: {file.fileName}");
+
+                byte[] data = file.fileData;
+
+                if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
+                    data = Decompress(file.fileData);
+
+                string[] pathParts = file.fileName.Split(Path.DirectorySeparatorChar);
+                string[] mendedPath = new string[pathParts.Length + 1];
+                mendedPath[0] = extractDirectory.FullName;
+
+                for (int i = 0; i < pathParts.Length; i++)
+                    mendedPath[i + 1] = pathParts[i];
+
+                string properPath = Path.Combine(mendedPath);
+                Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
+
+                if (Path.GetExtension(properPath) == ".rawimg")
+                    ConvertRawToPng(file, data, properPath);
+                else
+                    File.WriteAllBytes(properPath, data);
+            }
         }
 
         private static byte[] Decompress(byte[] data)
@@ -123,35 +128,11 @@ namespace TML.Patcher.Common.Options
             {
                 deflatedStream.CopyTo(emptyStream);
             }
-
+            
             return emptyStream.ToArray();
         }
-
-        private void ConvertAllRawsToPNGs()
-        {
-            List<string> pathsConverted = new();
-
-            while (_extractionInProcess)
-            {
-                if (pathsConverted.Count == _filesToConvert.Count && _filesToConvert.Count > 0)
-                {
-                    _threadCompletedTask = true;
-                    break;
-                }
-
-                foreach ((FileEntryData file, byte[] data, string path) in _filesToConvert)
-                {
-                    if (pathsConverted.Contains(path))
-                        continue;
-
-                    Console.WriteLine($" Converting {file.fileName} to .png");
-                    SaveRawToPNG(data, path);
-                    pathsConverted.Add(path);
-                }
-            }
-        }
-
-        private static void SaveRawToPNG(byte[] data, string properPath)
+        
+        private void ConvertRawToPng(FileEntryData file, byte[] data, string properPath)
         {
             using MemoryStream input = new(data);
             using BinaryReader reader = new(input);
