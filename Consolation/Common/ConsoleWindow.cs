@@ -17,7 +17,10 @@ namespace Consolation.Common
 
         public virtual void WriteAndClear(string message, ConsoleColor color = ConsoleColor.Red)
         {
-
+            Clear(true);
+            Console.ForegroundColor = color;
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public virtual void WriteOptionsList(ConsoleOptions options)

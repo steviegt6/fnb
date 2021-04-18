@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
@@ -17,7 +18,11 @@ namespace TML.Patcher.Common.Options
                 return;
             }
 
-            string[] mods = JsonConvert.DeserializeObject<string[]>(File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
+            string[]? mods = JsonConvert.DeserializeObject<string[]>(File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
+
+            if (mods == null)
+                goto SkipIfNull;
+
             int modCount = 0;
             foreach (string modName in mods)
             {
@@ -28,6 +33,7 @@ namespace TML.Patcher.Common.Options
                 Console.WriteLine($" - {modName}");
             }
 
+            SkipIfNull:
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }

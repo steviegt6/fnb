@@ -23,8 +23,18 @@ namespace TML.Patcher
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            Instance = new Patcher(args);
+            Instance = new Patcher();
             ConsoleAPI.Window = Instance;
+
+            ConsoleAPI.Initialize();
+            ConsoleAPI.ParseParameters(args);
+
+            Patcher.InitializeConsoleOptions();
+            Patcher.InitializeProgramOptions();
+
+            Instance.WriteStaticText(false);
+            Instance.CheckForUndefinedPath();
+            ConsoleAPI.SelectedOptionSet.ListForOption();
         }
     }
 }

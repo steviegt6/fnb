@@ -37,11 +37,10 @@ namespace TML.Patcher.Common.Options
             Stopwatch sw = Stopwatch.StartNew();
             ExtractAllFiles(modFile.files, directory);
             sw.Stop();
-            long elapsed = sw.ElapsedMilliseconds;
-            
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($" Finished extracting mod: {modName}");
-            Console.WriteLine($"Took {elapsed} ms");
+            Console.WriteLine($"Took {sw.Elapsed} ms");
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }

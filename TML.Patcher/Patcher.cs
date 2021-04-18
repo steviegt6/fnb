@@ -14,19 +14,6 @@ namespace TML.Patcher
 
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
-        public Patcher(string[] args)
-        {
-            ConsoleAPI.Initialize();
-            ConsoleAPI.ParseParameters(args);
-
-            InitializeConsoleOptions();
-            InitializeProgramOptions();
-
-            WriteStaticText(false);
-            CheckForUndefinedPath();
-            ConsoleAPI.SelectedOptionSet.ListForOption();
-        }
-
         /// <summary>
         /// Writes text that will always show at the beginning, and should persist after clears.
         /// </summary>
