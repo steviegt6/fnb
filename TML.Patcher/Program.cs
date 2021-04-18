@@ -12,7 +12,7 @@ namespace TML.Patcher
     public static class Program
     {
         public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static string ExtractPath => EXEPath + Path.DirectorySeparatorChar + "Extracted";
+
         public const string Line = "-----------------------------------------------------------------";
 
         public static ConfigurationFile Configuration { get; set; }
@@ -75,6 +75,7 @@ namespace TML.Patcher
             Console.WriteLine(Line);
             Console.WriteLine(" Loaded with configuration options:");
             Console.WriteLine($"  {nameof(Configuration.ModsPath)}: {Configuration.ModsPath}");
+            Console.WriteLine($"  {nameof(Configuration.ExtractPath)}: {Configuration.ExtractPath}");
 
             if (!withMessage)
                 Console.WriteLine();
@@ -111,7 +112,7 @@ namespace TML.Patcher
 
         public static void InitializeConsoleOptions()
         {
-            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new UnpackModOption())
+            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption())
             {
                 DisplayReturn = false,
                 DisplayGoBack = false

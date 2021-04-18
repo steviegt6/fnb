@@ -13,6 +13,8 @@ namespace TML.Patcher.Common
 
         public string ModsPath { get; set; }
 
+        public string ExtractPath { get; set; }
+
         internal ConfigurationFile() { }
 
         public static ConfigurationFile Load(string filePath)
@@ -26,7 +28,8 @@ namespace TML.Patcher.Common
 
             ConfigurationFile config = new()
             {
-                ModsPath = UndefinedPath
+                ModsPath = UndefinedPath,
+                ExtractPath = Path.Combine(Program.EXEPath, "Extracted")
             };
             JsonSerializer serializer = new()
             {
@@ -46,7 +49,8 @@ namespace TML.Patcher.Common
         {
             ConfigurationFile config = new()
             {
-                ModsPath = Program.Configuration.ModsPath
+                ModsPath = Program.Configuration.ModsPath,
+                ExtractPath = Program.Configuration.ExtractPath
             }; 
             JsonSerializer serializer = new()
             {

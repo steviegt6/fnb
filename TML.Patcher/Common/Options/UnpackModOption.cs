@@ -48,7 +48,7 @@ namespace TML.Patcher.Common.Options
                 Console.WriteLine( $" Extracting mod: {modName}...");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
-                DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(Path.Combine(Program.EXEPath, "Extracted"), modName));
+                DirectoryInfo directory = Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName));
                 TModFile modFile;
                 using (FileStream stream = File.Open(Path.Combine(Program.Configuration.ModsPath, modName), FileMode.Open))
                 using (BinaryReader reader = new(stream))

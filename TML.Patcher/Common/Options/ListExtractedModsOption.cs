@@ -5,24 +5,26 @@ using TML.Patcher.Common.Framework;
 
 namespace TML.Patcher.Common.Options
 {
-    public class ListModsOption : ConsoleOption
+    public class ListExtractedModsOption : ConsoleOption
     {
-        public override string Text => "List all located .tmod files.";
+        public override string Text => "List all folders from extracted mods.";
 
         public override void Execute()
         {
+            Directory.CreateDirectory(Program.Configuration.ExtractPath);
+
             int modCount = 0;
             int localCount = 0;
             List<(string, int)> localPage = new();
             List<List<(string, int)>> pages = new();
-            string[] files = Directory.GetFiles(Program.Configuration.ModsPath, "*.tmod");
-            for (int i = 0; i < files.Length; i++)
+            string[] directories = Directory.GetDirectories(Program.Configuration.ExtractPath);
+            for (int i = 0; i < directories.Length; i++)
             {
                 modCount++;
                 localCount++;
-                localPage.Add((files[i], modCount));
+                localPage.Add((directories[i], modCount));
 
-                if (localCount != 10 && i != files.Length - 1)
+                if (localCount != 10 && i != directories.Length - 1)
                     continue;
 
                 pages.Add(localPage);
@@ -33,7 +35,7 @@ namespace TML.Patcher.Common.Options
             int selectedPage = 0;
             while (true)
             {
-                if (selectedPage >= pages.Count)
+                if (selectedPage > pages.Count)
                     break;
 
                 Program.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
