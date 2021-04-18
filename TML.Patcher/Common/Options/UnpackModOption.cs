@@ -48,7 +48,7 @@ namespace TML.Patcher.Common.Options
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
-        private string GetModName()
+        private static string GetModName()
         {
             while (true)
             {
@@ -71,7 +71,7 @@ namespace TML.Patcher.Common.Options
             }
         }
 
-        private void ExtractAllFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
+        private static void ExtractAllFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
         {
             List<Task> tasks = new();
             List<List<FileEntryData>> chunks = new();
@@ -92,7 +92,7 @@ namespace TML.Patcher.Common.Options
             Task.WaitAll(tasks.ToArray());
         }
 
-        private void ExtractChunkFiles(List<FileEntryData> files, DirectoryInfo extractDirectory)
+        private static void ExtractChunkFiles(IEnumerable<FileEntryData> files, DirectoryInfo extractDirectory)
         {
             foreach (FileEntryData file in files)
             {
@@ -114,7 +114,7 @@ namespace TML.Patcher.Common.Options
                 Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
 
                 if (Path.GetExtension(properPath) == ".rawimg")
-                    ConvertRawToPng(file, data, properPath);
+                    ConvertRawToPng(data, properPath);
                 else
                     File.WriteAllBytes(properPath, data);
             }
@@ -132,7 +132,7 @@ namespace TML.Patcher.Common.Options
             return emptyStream.ToArray();
         }
         
-        private void ConvertRawToPng(FileEntryData file, byte[] data, string properPath)
+        private static void ConvertRawToPng(byte[] data, string properPath)
         {
             using MemoryStream input = new(data);
             using BinaryReader reader = new(input);
