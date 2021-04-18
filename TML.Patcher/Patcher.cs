@@ -56,6 +56,7 @@ namespace TML.Patcher
             Console.WriteLine($"  {nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
             Console.WriteLine($"  {nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
             Console.WriteLine($"  {nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
+            Console.WriteLine($"  {nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
 
             Console.WriteLine(Line);
             Console.ForegroundColor = ConsoleColor.Yellow;
