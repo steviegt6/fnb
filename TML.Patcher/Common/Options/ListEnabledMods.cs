@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
-using TML.Patcher.Common.Framework;
 
 namespace TML.Patcher.Common.Options
 {
@@ -14,7 +14,7 @@ namespace TML.Patcher.Common.Options
         {
             if (!File.Exists(Path.Combine(Program.Configuration.ModsPath, "enabled.json")))
             {
-                Program.WriteAndClear("No \"enabled.json\" file found in your Mods folder!");
+                Program.Instance.WriteAndClear("No \"enabled.json\" file found in your Mods folder!");
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace TML.Patcher.Common.Options
                 Console.WriteLine($" - {modName}");
             }
 
-            Program.WriteOptionsList(new ConsoleOptions("Return:"));
+            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }
 }

@@ -8,11 +8,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Data;
 using TML.Files.Generic.Files;
 using TML.Files.Specific.Data;
 using TML.Files.Specific.Files;
-using TML.Patcher.Common.Framework;
 
 namespace TML.Patcher.Common.Options
 {
@@ -44,8 +44,8 @@ namespace TML.Patcher.Common.Options
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($" Finished extracting mod: {modName}");
             Console.WriteLine($"Took {elapsed} ms");
-            
-            Program.WriteOptionsList(new ConsoleOptions("Return:"));
+
+            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
         private string GetModName()
@@ -57,7 +57,7 @@ namespace TML.Patcher.Common.Options
 
                 if (modName == null)
                 {
-                    Program.WriteAndClear("Specified mod name some-how returned null.");
+                    Program.Instance.WriteAndClear("Specified mod name some-how returned null.");
                     continue;
                 }
 
@@ -67,7 +67,7 @@ namespace TML.Patcher.Common.Options
                 if (File.Exists(Path.Combine(Program.Configuration.ModsPath, modName))) 
                     return modName;
                 
-                Program.WriteAndClear("Specified mod could not be located!");
+                Program.Instance.WriteAndClear("Specified mod could not be located!");
             }
         }
 

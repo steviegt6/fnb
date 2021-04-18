@@ -3,8 +3,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Consolation;
+using Consolation.Common;
+using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Common;
-using TML.Patcher.Common.Framework;
 using TML.Patcher.Common.Options;
 
 namespace TML.Patcher
@@ -13,19 +14,30 @@ namespace TML.Patcher
     {
         public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public const string Line = "-----------------------------------------------------------------";
-
         public static ConfigurationFile Configuration { get; set; }
 
         public static ConsoleOptions DefaultOptions { get; set; }
 
-        public static ConsoleOptions SelectedOptions { get; set; }
+        public static Patcher Instance { get; private set; }
 
         public static void Main(string[] args)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
+            Instance = new Patcher(args);
+            ConsoleAPI.Window = Instance;
+        }
+    }
+
+    public sealed class Patcher : ConsoleWindow
+    {
+        public const string Line = "-----------------------------------------------------------------";
+
+        public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
+
+        public Patcher(string[] args)
+        {
             ConsoleAPI.Initialize();
             ConsoleAPI.ParseParameters(args);
 
@@ -34,13 +46,13 @@ namespace TML.Patcher
 
             WriteStaticText(false);
             CheckForUndefinedPath();
-            SelectedOptions.ListForOption();
+            ConsoleAPI.SelectedOptionSet.ListForOption();
         }
 
         /// <summary>
         /// Writes text that will always show at the beginning, and should persist after clears.
         /// </summary>
-        public static void WriteStaticText(bool withMessage)
+        public override void WriteStaticText(bool withMessage)
         {
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -74,10 +86,10 @@ namespace TML.Patcher
 
             Console.WriteLine(Line);
             Console.WriteLine(" Loaded with configuration options:");
-            Console.WriteLine($"  {nameof(Configuration.ModsPath)}: {Configuration.ModsPath}");
-            Console.WriteLine($"  {nameof(Configuration.ExtractPath)}: {Configuration.ExtractPath}");
-            Console.WriteLine($"  {nameof(Configuration.DecompilePath)}: {Configuration.DecompilePath}");
-            Console.WriteLine($"  {nameof(Configuration.ReferencesPath)}: {Configuration.ReferencesPath}");
+            Console.WriteLine($"  {nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
+            Console.WriteLine($"  {nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
+            Console.WriteLine($"  {nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
+            Console.WriteLine($"  {nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
 
             Console.WriteLine(Line);
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -93,22 +105,22 @@ namespace TML.Patcher
                 Console.WriteLine();
         }
 
-        public static void CheckForUndefinedPath()
+        public void CheckForUndefinedPath()
         {
             while (true)
             {
-                if (!Configuration.ModsPath.Equals("undefined"))
+                if (!Program.Configuration.ModsPath.Equals("undefined"))
                     return;
 
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($" {nameof(Configuration.ModsPath)} is undefined!");
+                Console.WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined!");
                 Console.WriteLine(" Please enter the directory of your tModLoader Mods folder:");
                 
                 string modsPath = Console.ReadLine();
 
                 if (Directory.Exists(modsPath))
                 {
-                    Configuration.ModsPath = modsPath;
+                    Program.Configuration.ModsPath = modsPath;
                     ConfigurationFile.Save();
                     WriteAndClear("New specified path accepted!", ConsoleColor.Green);
                 }
@@ -124,35 +136,15 @@ namespace TML.Patcher
 
         public static void InitializeConsoleOptions()
         {
-            DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption())
+            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption())
             {
                 DisplayReturn = false,
                 DisplayGoBack = false
             };
 
-            SelectedOptions = DefaultOptions;
+            ConsoleAPI.SelectedOptionSet = Program.DefaultOptions;
         }
 
-        public static void InitializeProgramOptions() => Configuration = ConfigurationFile.Load(EXEPath + Path.DirectorySeparatorChar + "configuration.json");
-
-        public static void Clear(bool withMessage)
-        {
-            Console.Clear();
-            WriteStaticText(withMessage);
-        }
-
-        public static void WriteAndClear(string message, ConsoleColor color = ConsoleColor.Red)
-        {
-            Clear(true);
-            Console.ForegroundColor = color;
-            Console.WriteLine(message);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void WriteOptionsList(ConsoleOptions options)
-        {
-            SelectedOptions = options;
-            SelectedOptions.ListForOption();
-        }
+        public static void InitializeProgramOptions() => Program.Configuration = ConfigurationFile.Load(Program.EXEPath + Path.DirectorySeparatorChar + "configuration.json");
     }
 }

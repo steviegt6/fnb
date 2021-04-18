@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using TML.Patcher.Common.Framework;
+using Consolation.Common.Framework.OptionsSystem;
 
 namespace TML.Patcher.Common.Options
 {
@@ -36,7 +36,7 @@ namespace TML.Patcher.Common.Options
                 if (selectedPage >= pages.Count)
                     break;
 
-                Program.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
+                Program.Instance.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
                 foreach ((string modName, int modNumber) in pages[selectedPage])
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -70,7 +70,7 @@ namespace TML.Patcher.Common.Options
                 selectedPage = realInput - 1;
             }
 
-            Program.WriteOptionsList(new ConsoleOptions("Return:"));
+            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }
 }

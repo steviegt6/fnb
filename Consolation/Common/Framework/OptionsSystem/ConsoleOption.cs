@@ -1,4 +1,4 @@
-﻿namespace TML.Patcher.Common.Framework
+﻿namespace Consolation.Common.Framework.OptionsSystem
 {
     public abstract class ConsoleOption
     {

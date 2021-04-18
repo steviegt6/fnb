@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TML.Patcher.Common.Framework
+namespace Consolation.Common.Framework.OptionsSystem
 {
     public class ConsoleOptions : ICloneable, IList<ConsoleOption>
     {
@@ -29,7 +29,7 @@ namespace TML.Patcher.Common.Framework
         public ConsoleOptions(string optionText, params ConsoleOption[] options)
         {
             OptionText = optionText;
-            _prevOptionsState = Program.SelectedOptions;
+            _prevOptionsState = ConsoleAPI.SelectedOptionSet;
 
             // Assign index values to the ConsoleOption types
             for (int i = 0; i < options.Length; i++)
@@ -49,21 +49,21 @@ namespace TML.Patcher.Common.Framework
                 switch (key)
                 {
                     case null:
-                        Program.WriteAndClear("Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
+                        ConsoleAPI.Window.WriteAndClear("Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
                         continue;
 
                     case "/" when DisplayReturn:
-                        Program.WriteAndClear("Returned to the start!", ConsoleColor.Green);
-                        Program.SelectedOptions = Program.DefaultOptions;
-                        Program.SelectedOptions.ListForOption();
+                        ConsoleAPI.Window.WriteAndClear("Returned to the start!", ConsoleColor.Green);
+                        ConsoleAPI.SelectedOptionSet = ConsoleAPI.Window.DefaultOptions;
+                        ConsoleAPI.SelectedOptionSet.ListForOption();
                         return;
 
                     case "." when DisplayGoBack:
-                        if (_prevOptionsState == null) 
-                            Program.WriteAndClear("No previous state was found, falling back to the beginning...");
+                        if (_prevOptionsState == null)
+                            ConsoleAPI.Window.WriteAndClear("No previous state was found, falling back to the beginning...");
                         else
                         {
-                            Program.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
+                            ConsoleAPI.Window.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
                             _prevOptionsState.ListForOption();
                         }
                         return;
@@ -71,13 +71,13 @@ namespace TML.Patcher.Common.Framework
 
                 if (!int.TryParse(key, out int option))
                 {
-                    Program.WriteAndClear("Whoops! We weren't able to parse your response. Please only enter actual numbers (1, 5, 27, etc.).");
+                    ConsoleAPI.Window.WriteAndClear("Whoops! We weren't able to parse your response. Please only enter actual numbers (1, 5, 27, etc.).");
                     continue;
                 }
 
                 if (option < 0 || option > Count)
                 {
-                    Program.WriteAndClear("Whoops! The number entered does not correspond to any of the available options.");
+                    ConsoleAPI.Window.WriteAndClear("Whoops! The number entered does not correspond to any of the available options.");
                     continue;
                 }
 

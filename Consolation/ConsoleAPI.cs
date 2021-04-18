@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using Consolation.Common;
+using Consolation.Common.Framework.OptionsSystem;
 using Consolation.Common.Framework.ParameterSystem;
 using Consolation.Common.Utilities;
 
@@ -13,6 +15,10 @@ namespace Consolation
         /// Initializes <c>Consolation</c> systems.
         /// </summary>
         public static void Initialize() => ParameterLoader.Initialize(Assembly.GetCallingAssembly());
+
+        public static ConsoleWindow Window { get; set; }
+
+        public static ConsoleOptions SelectedOptionSet { get; set; }
 
         public static void ParseParameters(string[] args)
         {
