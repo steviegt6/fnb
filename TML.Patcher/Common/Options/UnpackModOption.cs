@@ -6,12 +6,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Data;
 using TML.Files.Generic.Files;
-using TML.Files.Specific.Data;
 using TML.Files.Specific.Files;
 
 namespace TML.Patcher.Common.Options
@@ -36,10 +34,10 @@ namespace TML.Patcher.Common.Options
                 modFile = new TModFile(reader);
             }
             
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             ExtractAllFiles(modFile.files, directory);
             sw.Stop();
-            var elapsed = sw.ElapsedMilliseconds;
+            long elapsed = sw.ElapsedMilliseconds;
             
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($" Finished extracting mod: {modName}");
