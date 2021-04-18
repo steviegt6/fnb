@@ -61,8 +61,9 @@ namespace TML.Patcher
             Console.WriteLine(Line);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine(" Please note that if you are trying to decompile a mod,");
-            Console.WriteLine(" you'll have to add all of the mod's required references");
-            Console.WriteLine(" to /References/! (i.e. tModLoader.exe, XNA DLLs, ...)");
+            Console.WriteLine(" you'll have to add all of the mod's required references to:");
+            Console.WriteLine($" \"{Program.Configuration.ReferencesPath}\"");
+            Console.WriteLine(" (i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Console.WriteLine(Line);
