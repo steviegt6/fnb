@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -7,6 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
 using TML.Files.Generic.Data;
 using TML.Files.Generic.Files;
 using TML.Files.Specific.Data;
@@ -17,12 +19,19 @@ namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
+        private bool _extractionInProcess;
+        private bool _threadCompletedTask;
+        private readonly ConcurrentBag<(FileEntryData, byte[], string)> _filesToConvert = new();
+
         public override string Text => "Unpack a mod.";
 
         public override void Execute()
         {
             while (true)
             {
+                _extractionInProcess = true;
+                _threadCompletedTask = false;
+
                 Console.WriteLine("Please enter the name of the mod you want to extract:");
                 string? modName = Console.ReadLine();
 
@@ -44,6 +53,11 @@ namespace TML.Patcher.Common.Options
                 Stopwatch timeTook = new();
                 timeTook.Start();
 
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("Starting image conversion thread...");
+                new Thread(ConvertAllRawsToPNGs).Start();
+                Console.WriteLine("Started image conversion thread...");
+
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine( $" Extracting mod: {modName}...");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -55,6 +69,8 @@ namespace TML.Patcher.Common.Options
                 {
                     modFile = new TModFile(reader);
                 }
+
+
 
                 foreach (FileEntryData file in modFile.files)
                 {
@@ -76,15 +92,15 @@ namespace TML.Patcher.Common.Options
                     Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
 
                     if (Path.GetExtension(properPath) == ".rawimg")
-                    {
-                        Console.WriteLine($" Converting {file.fileName} to .png");
-                        SaveRawToPNG(data, properPath);
-                    }
+                        _filesToConvert.Add((file, data, properPath));
                     else
                         File.WriteAllBytes(properPath, data);
                 }
 
                 timeTook.Stop();
+
+                while (!_threadCompletedTask) 
+                    Thread.Sleep(100);
 
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($" Finished extracting mod: {modName}");
@@ -93,6 +109,9 @@ namespace TML.Patcher.Common.Options
                 break;
             }
 
+            _extractionInProcess = false;
+            _threadCompletedTask = false;
+            _filesToConvert.Clear();
             Program.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
@@ -106,6 +125,30 @@ namespace TML.Patcher.Common.Options
             }
 
             return emptyStream.ToArray();
+        }
+
+        private void ConvertAllRawsToPNGs()
+        {
+            List<string> pathsConverted = new();
+            int cycles = 0;
+
+            while (_extractionInProcess)
+            {
+                if (pathsConverted.Count == _filesToConvert.Count && _filesToConvert.Count > 0)
+                {
+                    _threadCompletedTask = true;
+                    break;
+                }
+
+                foreach ((FileEntryData file, byte[] data, string path) in _filesToConvert)
+                {
+                    if (pathsConverted.Contains(path))
+                        continue;
+
+                    Console.WriteLine($" Converting {file.fileName} to .png");
+                    SaveRawToPNG(data, path);
+                }
+            }
         }
 
         private static void SaveRawToPNG(byte[] data, string properPath)
