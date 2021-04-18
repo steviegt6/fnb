@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
-using System.Threading;
 using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
@@ -10,26 +8,6 @@ using TML.Patcher.Common.Options;
 
 namespace TML.Patcher
 {
-    public static class Program
-    {
-        public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        public static ConfigurationFile Configuration { get; set; }
-
-        public static ConsoleOptions DefaultOptions { get; set; }
-
-        public static Patcher Instance { get; private set; }
-
-        public static void Main(string[] args)
-        {
-            Console.Title = "TMLPatcher - by convicted tomatophile";
-            Thread.CurrentThread.Name = "Main";
-
-            Instance = new Patcher(args);
-            ConsoleAPI.Window = Instance;
-        }
-    }
-
     public sealed class Patcher : ConsoleWindow
     {
         public const string Line = "-----------------------------------------------------------------";
