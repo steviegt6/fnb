@@ -130,7 +130,6 @@ namespace TML.Patcher.Common.Options
         private void ConvertAllRawsToPNGs()
         {
             List<string> pathsConverted = new();
-            int cycles = 0;
 
             while (_extractionInProcess)
             {
@@ -147,6 +146,7 @@ namespace TML.Patcher.Common.Options
 
                     Console.WriteLine($" Converting {file.fileName} to .png");
                     SaveRawToPNG(data, path);
+                    pathsConverted.Add(path);
                 }
             }
         }
