@@ -40,7 +40,7 @@ namespace TML.Patcher.Common.Options
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($" Finished extracting mod: {modName}");
-            Console.WriteLine($"Took {sw.Elapsed} ms");
+            Console.WriteLine($" Extraction time: {sw.Elapsed}");
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
