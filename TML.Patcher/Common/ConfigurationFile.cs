@@ -8,6 +8,9 @@ namespace TML.Patcher.Common
     {
         [JsonIgnore]
         public const string UndefinedPath = "undefined";
+        public const string WindowsDefault = @"%UserProfile%\Documents\My Games\Terraria\ModLoader\Mods";
+        public const string MacDefault = @"~/.local/share/Terraria/ModLoader/ or $XDG_DATA_HOME/Terraria/ModLoader/Mods";
+        public const string LinuxDefault = @"~/Library/Application support/Terraria/ModLoader/Mods";
 
         public static string FilePath { get; private set; }
 
@@ -34,7 +37,6 @@ namespace TML.Patcher.Common
 
             ConfigurationFile config = new()
             {
-                ModsPath = UndefinedPath,
                 ExtractPath = Path.Combine(Program.EXEPath, "Extracted"),
                 DecompilePath = Path.Combine(Program.EXEPath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.EXEPath, "References"),
@@ -44,6 +46,25 @@ namespace TML.Patcher.Common
             {
                 NullValueHandling = NullValueHandling.Ignore
             };
+
+            string path = Environment.OSVersion.Platform switch
+            {
+                PlatformID.Win32S => WindowsDefault,
+                PlatformID.Win32Windows => WindowsDefault,
+                PlatformID.Win32NT => WindowsDefault,
+                PlatformID.WinCE => WindowsDefault,
+
+                PlatformID.Unix => LinuxDefault,
+
+                PlatformID.MacOSX => MacDefault,
+
+                // LMAO XBOX
+                PlatformID.Xbox => UndefinedPath,
+                PlatformID.Other => UndefinedPath,
+                _ => throw new ArgumentOutOfRangeException(nameof(Environment.OSVersion.Platform), "Invalid platform")
+            };
+
+            config.ModsPath = Environment.ExpandEnvironmentVariables(path);
 
             using (StreamWriter writer = new(filePath))
             using (JsonWriter jWriter = new JsonTextWriter(writer)) 
