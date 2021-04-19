@@ -128,33 +128,33 @@ namespace TML.Patcher.Common.Options
             return decompressed;
         }
         
-        private static void ConvertRawToPng(byte[] data, string properPath)
+        private static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
             using MemoryStream input = new(data);
             using BinaryReader reader = new(input);
             reader.ReadInt32();
             int width = reader.ReadInt32();
             int height = reader.ReadInt32();
+            byte[] oldPixels = reader.ReadBytes(width * height * 4);
 
             Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
 
             BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, imageMap.PixelFormat);
-            byte[] pixels = new byte[bitmapData.Stride * bitmapData.Height];
 
-            for (int y = 0; y < bitmapData.Height; y++)
+            Parallel.For(0, bitmapData.Height, y =>
             {
-                int currentLine = y * bitmapData.Stride;
+                byte* row = (byte*) (bitmapData.Scan0 + (y * bitmapData.Stride));
                 for (int x = 0; x < bitmapData.Width; x++)
                 {
-                    int currentPos = x * 4 + currentLine;
-                    pixels[currentPos + 2] = reader.ReadByte(); // R
-                    pixels[currentPos + 1] = reader.ReadByte(); // G
-                    pixels[currentPos + 0] = reader.ReadByte(); // B
-                    pixels[currentPos + 3] = reader.ReadByte(); // A
+                    int currentPos = x * 4;
+                    
+                    row[currentPos + 2] = oldPixels[currentPos + 0]; // R
+                    row[currentPos + 1] = oldPixels[currentPos + 1]; // G
+                    row[currentPos + 0] = oldPixels[currentPos + 2]; // B
+                    row[currentPos + 3] = oldPixels[currentPos + 3]; // A
                 }
-            }
+            });
             
-            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
             imageMap.UnlockBits(bitmapData);
             
             imageMap.Save(Path.ChangeExtension(properPath, ".png"));
