@@ -104,7 +104,7 @@ namespace TML.Patcher
 
         public static void InitializeConsoleOptions()
         {
-            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption())
+            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption(), new DecompileModOption())
             {
                 DisplayReturn = false,
                 DisplayGoBack = false

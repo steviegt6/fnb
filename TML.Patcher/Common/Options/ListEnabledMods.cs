@@ -23,6 +23,8 @@ namespace TML.Patcher.Common.Options
             if (mods == null)
                 goto SkipIfNull;
 
+            Program.Instance.WriteAndClear("Displaying mods detected as enabled in enabled.json.", ConsoleColor.Yellow);
+
             int modCount = 0;
             foreach (string modName in mods)
             {

@@ -21,7 +21,7 @@ namespace TML.Patcher.Common.Options
 
         public override void Execute()
         {
-            string modName = GetModName();
+            string modName = GetModName(Program.Configuration.ModsPath);
             
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine( $" Extracting mod: {modName}...");
@@ -46,11 +46,11 @@ namespace TML.Patcher.Common.Options
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
-        private static string GetModName()
+        private static string GetModName(string pathToSearch)
         {
             while (true)
             {
-                Console.WriteLine("Please enter the name of the mod you want to extract:");
+                Program.Instance.WriteAndClear("Please enter the name of the mod you want to extract:", ConsoleColor.Yellow);
                 string? modName = Console.ReadLine();
 
                 if (modName == null)
@@ -62,7 +62,7 @@ namespace TML.Patcher.Common.Options
                 if (!modName.EndsWith(".tmod"))
                     modName += ".tmod";
 
-                if (File.Exists(Path.Combine(Program.Configuration.ModsPath, modName))) 
+                if (File.Exists(Path.Combine(pathToSearch, modName))) 
                     return modName;
                 
                 Program.Instance.WriteAndClear("Specified mod could not be located!");

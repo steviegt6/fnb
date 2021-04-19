@@ -43,7 +43,7 @@ namespace TML.Patcher
         {
             Process process = new()
             {
-                StartInfo = new ProcessStartInfo()
+                StartInfo = new ProcessStartInfo
                 {
                     // TODO: verify this works on other platforms (doubt it)
                     FileName = "cmd.exe",
