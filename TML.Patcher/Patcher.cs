@@ -80,6 +80,14 @@ namespace TML.Patcher
                 if (!Program.Configuration.ModsPath.Equals("undefined") && Directory.Exists(Program.Configuration.ModsPath))
                     return;
 
+                if (Environment.OSVersion.Platform == PlatformID.Unix && !Directory.Exists(Program.Configuration.ModsPath))
+                    if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
+                    {
+                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
+                        ConfigurationFile.Save();
+                        return;
+                    }
+
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
                 Console.WriteLine(" Please enter the directory of your tModLoader Mods folder:");
