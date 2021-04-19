@@ -36,14 +36,18 @@ namespace TML.Patcher.Common.Options
 
             ProcessStartInfo youShouldWork = new("ilspycmd.exe")
             {
-                UseShellExecute = false,
+                UseShellExecute = true,
                 Arguments = commandArgs
             };
 
+            Stopwatch sw = new();
+            sw.Start();
             Process? process = Process.Start(youShouldWork);
             process?.WaitForExit();
+            sw.Start();
 
             Console.WriteLine("Decompilation completed.");
+            Console.WriteLine($"Decompiled {modName} in {sw.Elapsed}!");
             Console.ForegroundColor = ConsoleColor.White;
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
