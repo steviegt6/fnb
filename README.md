@@ -20,3 +20,6 @@ Unzip and run the .exe file
 # Usage
 Using the program is pretty simple. I don't currently have the time to write out a full tutorial but all the options are self-explanatory. Do note that you need to extract a mod before decompiling it, though.
 Download the attached file "TML.Patcher.zip".
+
+## See also
+* [Release notes](RELEASE-NOTES.md)
