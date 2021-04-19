@@ -98,7 +98,7 @@ namespace TML.Patcher.Common.Options
                 byte[] data = file.fileData;
 
                 if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
-                    data = Decompress(file.fileData);
+                    data = Decompress(file.fileData, file.fileLengthData.length);
 
                 string[] pathParts = file.fileName.Split(Path.DirectorySeparatorChar);
                 string[] mendedPath = new string[pathParts.Length + 1];
@@ -117,16 +117,15 @@ namespace TML.Patcher.Common.Options
             }
         }
 
-        private static byte[] Decompress(byte[] data)
+        private static byte[] Decompress(byte[] data, int decompressedSize)
         {
             MemoryStream dataStream = new(data);
-            MemoryStream emptyStream = new();
-            using (DeflateStream deflatedStream = new(dataStream, CompressionMode.Decompress))
-            {
-                deflatedStream.CopyTo(emptyStream);
-            }
+            byte[] decompressed = new byte[decompressedSize];
             
-            return emptyStream.ToArray();
+            using DeflateStream deflatedStream = new(dataStream, CompressionMode.Decompress);
+            deflatedStream.Read(decompressed, 0, decompressedSize);
+            
+            return decompressed;
         }
         
         private static void ConvertRawToPng(byte[] data, string properPath)
