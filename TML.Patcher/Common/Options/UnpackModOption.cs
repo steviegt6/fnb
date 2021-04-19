@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Data;
@@ -17,6 +18,9 @@ namespace TML.Patcher.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
+        public static long a = 0;
+        public static long b = 0;
+        
         public override string Text => "Unpack a mod.";
 
         public override void Execute()
@@ -93,7 +97,7 @@ namespace TML.Patcher.Common.Options
         {
             foreach (FileEntryData file in files)
             {
-                Console.WriteLine($" Extracting file: {file.fileName}");
+                // Console.WriteLine($" Extracting file: {file.fileName}");
 
                 byte[] data = file.fileData;
 
@@ -137,17 +141,38 @@ namespace TML.Patcher.Common.Options
             int height = reader.ReadInt32();
             ImagePixelColor[] colors = new ImagePixelColor[width * height];
 
+            var sw = Stopwatch.StartNew();
             for (int i = 0; i < colors.Length; i++)
                 colors[i] = new ImagePixelColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
-
+            sw.Stop();
+            System.Threading.Interlocked.Add(ref a, sw.ElapsedMilliseconds);
+            
+            sw.Restart();
             Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
-            for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-            {
-                ImagePixelColor pixelColor = colors[y * width + x];
-                imageMap.SetPixel(x, y, Color.FromArgb(pixelColor.a, pixelColor.r, pixelColor.g, pixelColor.b));
-            }
 
+            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, imageMap.PixelFormat);
+            byte[] pixels = new byte[bitmapData.Stride * bitmapData.Height];
+
+            for (int y = 0; y < bitmapData.Height; y++)
+            {
+                int currentLine = y * bitmapData.Stride;
+                for (int x = 0; x < bitmapData.Width; x++)
+                {
+                    int currentPos = x * 4 + currentLine;
+                    ImagePixelColor color = colors[y * width + x];
+                    pixels[currentPos + 0] = color.b;
+                    pixels[currentPos + 1] = color.g;
+                    pixels[currentPos + 2] = color.r;
+                    pixels[currentPos + 3] = color.a;
+                }
+            }
+            
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            imageMap.UnlockBits(bitmapData);
+            
+            sw.Stop();
+            System.Threading.Interlocked.Add(ref b, sw.ElapsedMilliseconds);
+            
             imageMap.Save(Path.ChangeExtension(properPath, ".png"));
         }
     }
