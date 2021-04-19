@@ -7,7 +7,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Files;
@@ -143,15 +142,17 @@ namespace TML.Patcher.Common.Options
 
             Parallel.For(0, bitmapData.Height, y =>
             {
-                byte* row = (byte*) (bitmapData.Scan0 + (y * bitmapData.Stride));
+                int currentLine = y * bitmapData.Stride;
+                byte* row = (byte*) bitmapData.Scan0 + currentLine;
                 for (int x = 0; x < bitmapData.Width; x++)
                 {
-                    int currentPos = x * 4;
+                    int posRaw = x * 4;
+                    int posNormal = posRaw + currentLine;
                     
-                    row[currentPos + 2] = oldPixels[currentPos + 0]; // R
-                    row[currentPos + 1] = oldPixels[currentPos + 1]; // G
-                    row[currentPos + 0] = oldPixels[currentPos + 2]; // B
-                    row[currentPos + 3] = oldPixels[currentPos + 3]; // A
+                    row[posRaw + 2] = oldPixels[posNormal + 0]; // R
+                    row[posRaw + 1] = oldPixels[posNormal + 1]; // G
+                    row[posRaw + 0] = oldPixels[posNormal + 2]; // B
+                    row[posRaw + 3] = oldPixels[posNormal + 3]; // A
                 }
             });
             
