@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Generic.Files;
@@ -129,18 +130,16 @@ namespace TML.Patcher.Common.Options
         
         private static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
-            using MemoryStream input = new(data);
-            using BinaryReader reader = new(input);
-            reader.ReadInt32();
-            int width = reader.ReadInt32();
-            int height = reader.ReadInt32();
-            byte[] oldPixels = reader.ReadBytes(width * height * 4);
+            ReadOnlySpan<byte> dataSpan = data;
+            int width = MemoryMarshal.Read<int>(dataSpan[4..8]);
+            int height = MemoryMarshal.Read<int>(dataSpan[8..12]);
+            ReadOnlySpan<byte> oldPixels = dataSpan[12..];
 
-            Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
+            using Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
 
             BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, imageMap.PixelFormat);
 
-            Parallel.For(0, bitmapData.Height, y =>
+            for (int y = 0; y < bitmapData.Height; y++)
             {
                 int currentLine = y * bitmapData.Stride;
                 byte* row = (byte*) bitmapData.Scan0 + currentLine;
@@ -154,7 +153,7 @@ namespace TML.Patcher.Common.Options
                     row[posRaw + 0] = oldPixels[posNormal + 2]; // B
                     row[posRaw + 3] = oldPixels[posNormal + 3]; // A
                 }
-            });
+            }
             
             imageMap.UnlockBits(bitmapData);
             
