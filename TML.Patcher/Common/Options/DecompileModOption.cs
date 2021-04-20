@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Consolation.Common.Framework.OptionsSystem;
-using Newtonsoft.Json;
+using TML.Patcher.Backend.Decompilation;
 
 namespace TML.Patcher.Common.Options
 {
@@ -20,34 +20,23 @@ namespace TML.Patcher.Common.Options
             Console.WriteLine($" Decompiling mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            string? fileName = Directory.GetFiles(Path.Combine(Program.Configuration.ExtractPath, modName), "*.*").FirstOrDefault(x => x.EndsWith(".XNA.dll"));
+            Stopwatch sw = Stopwatch.StartNew();
 
-            if (fileName == null)
-            {
-                Program.Instance.WriteAndClear($"Unable to locate file: {Path.Combine(Program.Configuration.ExtractPath, modName)}.XNA.dll");
-                return;
-            }
+            DecompilationRequest request = new(
+                Directory.GetFiles(Path.Combine(Program.Configuration.ExtractPath, modName), "*.*")
+                    .FirstOrDefault(x => x.EndsWith(".XNA.dll")),
+                Path.Combine(Program.Configuration.DecompilePath, modName), 
+                Program.Configuration.ReferencesPath,
+                modName);
 
-            Directory.CreateDirectory(Path.Combine(Program.Configuration.DecompilePath, modName));
-            Directory.CreateDirectory(Program.Configuration.ReferencesPath);
-            string commandArgs = $"\"{fileName}\" --referencepath \"{Program.Configuration.ReferencesPath}\" --outputdir \"{Path.Combine(Program.Configuration.DecompilePath, modName)}\" --project --languageversion \"CSharp7_3\"";
+            request.OnError += message => Program.Instance.WriteAndClear(message);
 
-            Console.WriteLine($"Starting CMD process with arguments: {commandArgs}");
+            request.ExecuteRequest();
 
-            ProcessStartInfo youShouldWork = new("ilspycmd.exe")
-            {
-                UseShellExecute = true,
-                Arguments = commandArgs
-            };
+            sw.Stop();
 
-            Stopwatch sw = new();
-            sw.Start();
-            Process? process = Process.Start(youShouldWork);
-            process?.WaitForExit();
-            sw.Start();
-
-            Console.WriteLine("Decompilation completed.");
-            Console.WriteLine($"Decompiled {modName} in {sw.Elapsed}!");
+            Console.WriteLine("Decompilation operation completed.");
+            Console.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
             Console.ForegroundColor = ConsoleColor.White;
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
