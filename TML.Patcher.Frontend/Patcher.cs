@@ -3,10 +3,10 @@ using System.IO;
 using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
-using TML.Patcher.Common;
-using TML.Patcher.Common.Options;
+using TML.Patcher.Frontend.Common;
+using TML.Patcher.Frontend.Common.Options;
 
-namespace TML.Patcher
+namespace TML.Patcher.Frontend
 {
     public sealed class Patcher : ConsoleWindow
     {

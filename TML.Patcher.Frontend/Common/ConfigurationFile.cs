@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace TML.Patcher.Common
+namespace TML.Patcher.Frontend.Common
 {
     public sealed class ConfigurationFile
     {

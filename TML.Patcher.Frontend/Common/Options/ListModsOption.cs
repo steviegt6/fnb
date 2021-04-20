@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 
-namespace TML.Patcher.Common.Options
+namespace TML.Patcher.Frontend.Common.Options
 {
     public class ListModsOption : ConsoleOption
     {

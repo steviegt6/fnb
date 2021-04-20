@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <AssemblyName>TML.Patcher</AssemblyName>
-    <RootNamespace>TML.Patcher</RootNamespace>
+    <AssemblyName>TML.Patcher.Frontend</AssemblyName>
+    <RootNamespace>TML.Patcher.Frontend</RootNamespace>
     <StartupObject>TML.Patcher.Program</StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>

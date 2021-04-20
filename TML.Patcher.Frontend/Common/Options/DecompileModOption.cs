@@ -6,7 +6,7 @@ using System.Linq;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Decompilation;
 
-namespace TML.Patcher.Common.Options
+namespace TML.Patcher.Frontend.Common.Options
 {
     public class DecompileModOption : ConsoleOption
     {

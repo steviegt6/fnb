@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Consolation", "Consolation\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Files", "TML.Files\TML.Files.csproj", "{16A80AA9-7D0A-448E-A9BA-F46D0C526CF2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Patcher", "TML.Patcher\TML.Patcher.csproj", "{8745E3FB-BA8B-44F3-8843-FF98E87D0BCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Patcher.Frontend", "TML.Patcher\TML.Patcher.Frontend.csproj", "{8745E3FB-BA8B-44F3-8843-FF98E87D0BCB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TML.Patcher.Backend", "TML.Patcher.Backend\TML.Patcher.Backend.csproj", "{306BA4F7-388A-41EF-B8A6-9F430DD47FDE}"
 EndProject

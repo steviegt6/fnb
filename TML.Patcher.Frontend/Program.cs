@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Threading;
 using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
-using TML.Patcher.Common;
+using TML.Patcher.Frontend.Common;
 
-namespace TML.Patcher
+namespace TML.Patcher.Frontend
 {
     public static class Program
     {

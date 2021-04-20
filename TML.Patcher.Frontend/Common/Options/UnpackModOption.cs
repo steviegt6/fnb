@@ -5,7 +5,7 @@ using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Packing;
 
-namespace TML.Patcher.Common.Options
+namespace TML.Patcher.Frontend.Common.Options
 {
     public class UnpackModOption : ConsoleOption
     {
