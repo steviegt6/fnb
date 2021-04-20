@@ -3,6 +3,7 @@ using System.IO;
 using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
+using TML.Files;
 using TML.Patcher.Frontend.Common;
 using TML.Patcher.Frontend.Common.Options;
 
@@ -38,8 +39,24 @@ namespace TML.Patcher.Frontend
                 "Archanyhm - Help with Linux and Mac compatibility"
             };
 
+            string[] versions =
+            {
+                $"TML.Patcher.Frontend v{Program.FrontendVersion}",
+                $"TML.Patcher.Backend v{Backend.Backend.BackendVersion}",
+                $"TML.Files v{TMLFilesVersion.Version}",
+                $"Consolation v{ConsoleAPI.ConsolationVersion}"
+            };
+
             Console.WriteLine();
             Console.WriteLine(" Welcome to TMLPatcher!");
+            Console.WriteLine();
+
+            Console.WriteLine(" Running:");
+            foreach (string version in versions)
+                Console.WriteLine($"  {version}");
+
+            Console.WriteLine();
+
             Console.WriteLine(" This is a program that allows you to:");
 
             for (int i = 0; i < whatCanThisDoLol.Length; i++)

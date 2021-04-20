@@ -11,6 +11,8 @@ namespace TML.Patcher.Frontend
 {
     public static class Program
     {
+        public static Version FrontendVersion => new(0, 1, 1, 0);
+
         public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static ConfigurationFile Configuration { get; set; }
