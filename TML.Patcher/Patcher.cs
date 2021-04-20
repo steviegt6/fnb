@@ -33,8 +33,9 @@ namespace TML.Patcher
             string[] contributors =
             {
                 "convicted tomatophile (Stevie) - Main developer",
-                "Trivaxy - Unpack code",
-                "Chik3r - Improved multithreading/task code"
+                "Trivaxy - Original mod unpacking code",
+                "Chik3r - Improved multithreading/task code",
+                "Archanyhm - Help with Linux and Mac compatibility"
             };
 
             Console.WriteLine();

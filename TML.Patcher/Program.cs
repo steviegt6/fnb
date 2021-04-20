@@ -34,9 +34,7 @@ namespace TML.Patcher
             Patcher.InitializeProgramOptions();
 
             if (Configuration.ShowIlSpyCmdInstallPrompt)
-            {
-                InstallILSpyCMD();    
-            }
+                InstallILSpyCMD();
             
             Instance.WriteStaticText(false);
             Instance.CheckForUndefinedPath();
