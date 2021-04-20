@@ -32,8 +32,12 @@ namespace TML.Patcher
 
             Patcher.InitializeConsoleOptions();
             Patcher.InitializeProgramOptions();
-            InstallILSpyCMD();
 
+            if (Configuration.ShowIlSpyCmdInstallPrompt)
+            {
+                InstallILSpyCMD();    
+            }
+            
             Instance.WriteStaticText(false);
             Instance.CheckForUndefinedPath();
             ConsoleAPI.SelectedOptionSet.ListForOption();
@@ -41,19 +45,52 @@ namespace TML.Patcher
 
         private static void InstallILSpyCMD()
         {
-            Process process = new()
+            Console.WriteLine("Do you want to install ilspycmd?");
+            Console.WriteLine("<y/n>");
+            
+            ConsoleKeyInfo pressedKey = Console.ReadKey();
+            Console.WriteLine();
+
+            if (pressedKey.Key == ConsoleKey.Y)
             {
-                StartInfo = new ProcessStartInfo
+                const string dotNetCommand = "dotnet tool install ilspycmd -g";
+                
+                Console.WriteLine("Attempting to install ilspycmd...");
+                
+                Process process = new();
+
+                switch (Environment.OSVersion.Platform)
                 {
-                    // TODO: verify this works on other platforms (doubt it)
-                    FileName = "cmd.exe",
-                    Arguments = "/C dotnet tool install ilspycmd -g",
-                    UseShellExecute = false
+                    case PlatformID.Win32S:
+                    case PlatformID.Win32Windows:
+                    case PlatformID.Win32NT:
+                    case PlatformID.WinCE:
+                        process.StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "cmd.exe",
+                            Arguments = "/C " + dotNetCommand,
+                            UseShellExecute = false
+                        };
+                        
+                        break;
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        process.StartInfo = new ProcessStartInfo
+                        {
+                            FileName = "bash",
+                            Arguments = "-c \" " + dotNetCommand + " \"",
+                            UseShellExecute = false
+                        };
+
+                        break;
                 }
-            };
-            Console.WriteLine("Attempting to install ilspycmd...");
-            process.Start();
-            process.WaitForExit();
+                
+                process.Start();
+                process.WaitForExit();
+            }
+            
+            Configuration.ShowIlSpyCmdInstallPrompt = false;
+            ConfigurationFile.Save();
         }
     }
 }
