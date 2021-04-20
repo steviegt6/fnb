@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -23,7 +24,9 @@ namespace TML.Patcher.Common
         public string DecompilePath { get; set; }
 
         public string ReferencesPath { get; set; }
-
+        
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(4)]
         public double Threads { get; set; }
 
         internal ConfigurationFile() { }

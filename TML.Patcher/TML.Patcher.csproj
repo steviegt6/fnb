@@ -6,6 +6,7 @@
     <AssemblyName>TML.Patcher</AssemblyName>
     <RootNamespace>TML.Patcher</RootNamespace>
     <StartupObject>TML.Patcher.Program</StartupObject>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
