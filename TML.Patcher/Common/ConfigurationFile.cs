@@ -9,10 +9,12 @@ namespace TML.Patcher.Common
         public const string UndefinedPath = "undefined";
         public const string WindowsDefault = @"%UserProfile%\Documents\My Games\Terraria\ModLoader\Mods";
         public const string MacDefault = @"~/Library/Application support/Terraria/ModLoader/Mods";
-        public const string LinuxDefault1 = @"~/.local/share/Terraria/ModLoader/Mods";
-        public const string LinuxDefault2 = @"$XDG_DATA_HOME/Terraria/ModLoader/Mods";
+        public const string LinuxDefault1 = @"%HOME%/.local/share/Terraria/ModLoader/Mods";
+        public const string LinuxDefault2 = @"%XDG_DATA_HOME%/Terraria/ModLoader/Mods";
 
         public static string FilePath { get; private set; }
+        
+        public bool ShowIlSpyCmdInstallPrompt { get; set; }
 
         public string ModsPath { get; set; }
 
@@ -37,6 +39,7 @@ namespace TML.Patcher.Common
 
             ConfigurationFile config = new()
             {
+                ShowIlSpyCmdInstallPrompt = true,
                 ExtractPath = Path.Combine(Program.EXEPath, "Extracted"),
                 DecompilePath = Path.Combine(Program.EXEPath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.EXEPath, "References"),
@@ -79,6 +82,7 @@ namespace TML.Patcher.Common
         {
             ConfigurationFile config = new()
             {
+                ShowIlSpyCmdInstallPrompt = Program.Configuration.ShowIlSpyCmdInstallPrompt,
                 ModsPath = Program.Configuration.ModsPath,
                 ExtractPath = Program.Configuration.ExtractPath,
                 DecompilePath = Program.Configuration.DecompilePath,
