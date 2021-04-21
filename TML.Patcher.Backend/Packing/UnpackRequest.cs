@@ -20,12 +20,19 @@ namespace TML.Patcher.Backend.Packing
         public TModFile? File { get; private set; } = null;
 
         public double Threads { get; set; }
+        
+        /// <summary>
+        /// The IProgress to use to report the progress of the extractor.
+        /// The first report that is sent contains the total amount of files to extract.
+        /// </summary>
+        public IProgress<int> ProgressReporter { get; }
 
-        public UnpackRequest(DirectoryInfo extractDirectory, string filePath, double threads)
+        public UnpackRequest(DirectoryInfo extractDirectory, string filePath, double threads, IProgress<int> progressReporter)
         {
             ExtractDirectory = extractDirectory;
             FilePath = filePath;
             Threads = threads;
+            ProgressReporter = progressReporter;
         }
 
         public void ExecuteRequest()
@@ -53,13 +60,15 @@ namespace TML.Patcher.Backend.Packing
             for (int i = 0; i < files.Count; i += chunkSize)
                 chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
 
+            // Report the total amount of files to the progress reporter
+            ProgressReporter.Report(files.Count);
 
             // Run a task for each chunk
             // Wait for all tasks to finish
             Task.WaitAll(chunks.Select(chunk => Task.Run(() => ExtractChunkFiles(chunk, extractDirectory))).ToArray());
         }
 
-        private static void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
+        private void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             foreach (FileEntryData file in files)
             {
@@ -82,6 +91,9 @@ namespace TML.Patcher.Backend.Packing
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
                     FileIO.WriteAllBytes(properPath, data);
+
+                // Report that a file has been completed to the progress reporter
+                ProgressReporter.Report(1);
             }
         }
     }

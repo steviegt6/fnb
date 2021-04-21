@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Packing;
 
@@ -21,13 +22,19 @@ namespace TML.Patcher.Frontend.Common.Options
 
             Stopwatch sw = Stopwatch.StartNew();
 
+            ProgressBar bar = new();
+            bar.Start();
+
             UnpackRequest request =
                 new(Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName)),
-                    Path.Combine(Program.Configuration.ModsPath, modName), Program.Configuration.Threads);
+                    Path.Combine(Program.Configuration.ModsPath, modName), Program.Configuration.Threads, bar);
 
             request.ExecuteRequest();
 
             sw.Stop();
+
+            // Finish reporting the progress
+            bar.Finish();
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($" Finished extracting mod: {modName}");
