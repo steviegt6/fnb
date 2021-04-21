@@ -12,8 +12,6 @@ namespace Consolation
     /// </summary>
     public static class ConsoleAPI
     {
-        public static Version ConsolationVersion => new(1, 0, 0, 0);
-
         /// <summary>
         /// Initializes <c>Consolation</c> systems.
         /// </summary>

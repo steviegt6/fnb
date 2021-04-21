@@ -41,10 +41,10 @@ namespace TML.Patcher.Frontend
 
             string[] versions =
             {
-                $"TML.Patcher.Frontend v{Program.FrontendVersion}",
-                $"TML.Patcher.Backend v{Backend.Backend.BackendVersion}",
-                $"TML.Files v{TMLFilesVersion.Version}",
-                $"Consolation v{ConsoleAPI.ConsolationVersion}"
+                $"TML.Patcher.Frontend v{typeof(TML.Patcher.Frontend.Program).Assembly.GetName().Version}",
+                $"TML.Patcher.Backend v{typeof(TML.Patcher.Backend.Packing.UnpackRequest).Assembly.GetName().Version}",
+                $"TML.Files v{typeof(TML.Files.Generic.Files.FileData).Assembly.GetName().Version}",
+                $"Consolation v{typeof(Consolation.ConsoleAPI).Assembly.GetName().Version}"
             };
 
             Console.WriteLine();
