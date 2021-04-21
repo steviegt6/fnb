@@ -22,8 +22,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            ProgressBar bar = new();
-            bar.Start();
+            ProgressBar bar = ProgressBar.StartNew();
 
             UnpackRequest request =
                 new(Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName)),
