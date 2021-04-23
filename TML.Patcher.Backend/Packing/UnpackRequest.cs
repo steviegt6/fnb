@@ -53,7 +53,7 @@ namespace TML.Patcher.Backend.Packing
             if (Threads <= 0)
                 Threads = 1D;
 
-            double numThreads = Math.Min(files.Count, Threads); // Use either '4' threads, or the number of files, whatever is lower
+            double numThreads = Math.Min(files.Count, Threads); // use either the amount of configured threads or the amount of files (whichever is lower)
             int chunkSize = (int)Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
 
             // Split the files into chunks
