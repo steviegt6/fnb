@@ -20,7 +20,7 @@ While this program is pretty basic in its operations, it does read and write fil
 ### Reporting Issues
 If an issue is found, just report it on the GitHub issue tracker. There's no specific format to follow*, but be sure to be as informative as possible in your reporting.
 
-* For now, there isn't. This may change in the future.
+*For now, there isn't. This may change in the future.
 
 ## For developers:
 ### How TML.Patcher Works:
