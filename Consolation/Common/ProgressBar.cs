@@ -8,12 +8,13 @@ namespace Consolation.Common
     {
         private int _currentElements;
 
-        public virtual byte NumberOfBlocks => 16;
+        public byte NumberOfBlocks { get; protected set; }
 
         public virtual TimeSpan AnimationInterval => TimeSpan.FromSeconds(1.0 / 8); // Update 8 times a second 
 
-        public int? MaxElements { get; protected set; }
+        public virtual int? MaxElements { get; protected set; }
 
+        // Property used because refs :(
         public int CurrentElements
         {
             get => _currentElements;
@@ -24,20 +25,21 @@ namespace Consolation.Common
 
         public bool Disposed { get; protected set; }
 
-        public ProgressBar()
+        public ProgressBar(byte barSize = 16)
         {
             CurrentElements = 0;
             Timer = new Timer(TimerHandle);
+            NumberOfBlocks = barSize;
         }
 
-        public static ProgressBar StartNew()
+        public static ProgressBar StartNew(byte barSize = 16)
         {
-            ProgressBar bar = new ProgressBar();
+            ProgressBar bar = new(barSize);
             bar.Start();
             return bar;
         }
 
-        public void Report(int amount)
+        public virtual void Report(int amount)
         {
             if (!MaxElements.HasValue)
             {
@@ -57,9 +59,12 @@ namespace Consolation.Common
             Console.WriteLine();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
-            lock (Timer) Disposed = true;
+            lock (Timer)
+            {
+                Disposed = true;
+            }
 
             GC.SuppressFinalize(this);
         }
@@ -68,7 +73,8 @@ namespace Consolation.Common
         {
             lock (Timer)
             {
-                if (Disposed) return;
+                if (Disposed)
+                    return;
 
                 ResetTimer();
                 UpdateProgressText(CreateProgressText());
@@ -83,11 +89,11 @@ namespace Consolation.Common
                 return "";
 
             double percent = (double) CurrentElements / MaxElements.Value;
-
             int numFullBlocks = (int) Math.Round(percent * NumberOfBlocks);
+            StringBuilder sb = new();
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < NumberOfBlocks; i++) sb.Append(i <= numFullBlocks ? "#" : "-");
+            for (int i = 0; i < NumberOfBlocks; i++)
+                sb.Append(i <= numFullBlocks ? "#" : "-");
 
             return $"\r[{sb}] {CurrentElements}/{MaxElements}";
         }

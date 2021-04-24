@@ -29,6 +29,10 @@ namespace TML.Patcher.Frontend.Common
         [DefaultValue(4)]
         public double Threads { get; set; }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue((byte)16)]
+        public byte ProgressBarSize { get; set; }
+
         internal ConfigurationFile() { }
 
         public static ConfigurationFile Load(string filePath)
@@ -46,11 +50,13 @@ namespace TML.Patcher.Frontend.Common
                 ExtractPath = Path.Combine(Program.EXEPath, "Extracted"),
                 DecompilePath = Path.Combine(Program.EXEPath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.EXEPath, "References"),
-                Threads = 4
+                Threads = 4,
+                ProgressBarSize = 16
             };
             JsonSerializer serializer = new()
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
             };
 
             string path = Environment.OSVersion.Platform switch
@@ -91,11 +97,13 @@ namespace TML.Patcher.Frontend.Common
                 DecompilePath = Program.Configuration.DecompilePath,
                 ReferencesPath = Program.Configuration.ReferencesPath,
                 // TODO: give extract, decompile, & references default values that don't save to the config for portability
-                Threads = Program.Configuration.Threads
+                Threads = Program.Configuration.Threads,
+                ProgressBarSize = Program.Configuration.ProgressBarSize
             }; 
             JsonSerializer serializer = new()
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
             };
 
             using (StreamWriter writer = new(FilePath))

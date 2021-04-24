@@ -3,7 +3,6 @@ using System.IO;
 using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
-using TML.Files;
 using TML.Patcher.Frontend.Common;
 using TML.Patcher.Frontend.Common.Options;
 
@@ -41,10 +40,10 @@ namespace TML.Patcher.Frontend
 
             string[] versions =
             {
-                $"TML.Patcher.Frontend v{typeof(TML.Patcher.Frontend.Program).Assembly.GetName().Version}",
-                $"TML.Patcher.Backend v{typeof(TML.Patcher.Backend.Packing.UnpackRequest).Assembly.GetName().Version}",
-                $"TML.Files v{typeof(TML.Files.Generic.Files.FileData).Assembly.GetName().Version}",
-                $"Consolation v{typeof(Consolation.ConsoleAPI).Assembly.GetName().Version}"
+                $"TML.Patcher.Frontend v{typeof(Program).Assembly.GetName().Version}",
+                $"TML.Patcher.Backend v{typeof(Backend.Packing.UnpackRequest).Assembly.GetName().Version}",
+                $"TML.Files v{typeof(Files.Generic.Files.FileData).Assembly.GetName().Version}",
+                $"Consolation v{typeof(ConsoleAPI).Assembly.GetName().Version}"
             };
 
             Console.WriteLine();
@@ -75,6 +74,7 @@ namespace TML.Patcher.Frontend
             Console.WriteLine($"  {nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
             Console.WriteLine($"  {nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
             Console.WriteLine($"  {nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
+            Console.WriteLine($"  {nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
 
             Console.WriteLine(Line);
             Console.ForegroundColor = ConsoleColor.Yellow;

@@ -81,6 +81,14 @@ namespace TML.Patcher.Frontend
                         };
 
                         break;
+
+                    case PlatformID.Xbox:
+                    case PlatformID.Other:
+                        Console.WriteLine("Current platform is not supported.");
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
                 
                 process.Start();
