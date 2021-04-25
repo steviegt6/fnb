@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -21,6 +22,8 @@ namespace TML.Patcher.Frontend
 
         public static void Main(string[] args)
         {
+            PreLoadAssemblies();
+
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
@@ -97,6 +100,20 @@ namespace TML.Patcher.Frontend
             
             Configuration.ShowIlSpyCmdInstallPrompt = false;
             ConfigurationFile.Save();
+        }
+
+        [SuppressMessage("Style", "IDE0059", 
+            Justification = "Assembly pre-loading.")]
+        private static void PreLoadAssemblies()
+        {
+            // ReSharper disable once NotAccessedVariable
+            // ReSharper disable once JoinDeclarationAndInitializer
+            Type
+            discard = typeof(global:: Consolation                               .ConsoleAPI);           // Consolation
+            discard = typeof(global::  Newtonsoft.Json                          .JsonConvert);          // Newtonsoft.JSON
+            discard = typeof(global::         TML.Files  .Generic .Data         .ImagePixelColor);      // TML.Files
+            discard = typeof(global::         TML.Patcher.Backend .Decompilation.DecompilationRequest); // TML.Patcher.Backend
+            discard = typeof(global::         TML.Patcher.Frontend              .Program);              // TML.Patcher.Frontend
         }
     }
 }

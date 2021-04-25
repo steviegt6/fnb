@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
@@ -38,12 +40,21 @@ namespace TML.Patcher.Frontend
                 "Archanyhm - Help with Linux and Mac compatibility"
             };
 
-            string[] versions =
+            string[] releaseNotes =
             {
-                $"TML.Patcher.Frontend v{typeof(Program).Assembly.GetName().Version}",
-                $"TML.Patcher.Backend v{typeof(Backend.Packing.UnpackRequest).Assembly.GetName().Version}",
-                $"TML.Files v{typeof(Files.Generic.Files.FileData).Assembly.GetName().Version}",
-                $"Consolation v{typeof(ConsoleAPI).Assembly.GetName().Version}"
+                "Release Notes - v0.1.2.0",
+                " * Added release notes.",
+                " * Added configurable progress bar.",
+                " * Official splitting of the frontend and backend.",
+                " * Internal code clean-up."
+            };
+
+            string[] assemblyDisplayBlacklist =
+            {
+                "System.",
+                "netstandard",
+                "Microsoft.Win32",
+                "Anonymously" // Hosted DynamicMethods Assembly
             };
 
             Console.WriteLine();
@@ -51,8 +62,18 @@ namespace TML.Patcher.Frontend
             Console.WriteLine();
 
             Console.WriteLine(" Running:");
-            foreach (string version in versions)
-                Console.WriteLine($"  {version}");
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.GetName().Name))
+            {
+                AssemblyName name = assembly.GetName();
+
+                foreach (string blacklistedName in assemblyDisplayBlacklist)
+                    if (name.Name == null || name.Name.Contains(blacklistedName))
+                        goto ForceContinue;
+
+                Console.WriteLine($"  {name.Name} v{name.Version}");
+
+                ForceContinue: ;
+            }
 
             Console.WriteLine();
 
@@ -83,6 +104,10 @@ namespace TML.Patcher.Frontend
             Console.WriteLine($" \"{Program.Configuration.ReferencesPath}\"");
             Console.WriteLine(" (i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            Console.WriteLine(Line);
+            foreach (string note in releaseNotes)
+                Console.WriteLine($" {note}");
 
             Console.WriteLine(Line);
             Console.WriteLine();

@@ -1,5 +1,7 @@
 **TML.Patcher** is a piece of software designed to aid in the decompilation and unpacking (and eventually patching and re-packing) of `.tmod` files for tModLoader.
 
+See: [Release Notes](RELEASENOTES.md)
+
 ## For users:
 ### Installation Guide
 Installation is incredibly simple. Just ensure you meet the prerequisites before following the rest of these steps.
