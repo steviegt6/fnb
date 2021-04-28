@@ -16,7 +16,8 @@ namespace TML.Patcher.Frontend.Common.Options
         public override void Execute()
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-            string modName = GetModName(Program.Configuration.ExtractPath);
+            string modName = Utilities.GetModName(Program.Configuration.ExtractPath,
+                "Please enter the name of the mod you want to decompile:");
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             window.WriteLine(1, $"Decompiling mod: {modName}...");
@@ -42,31 +43,6 @@ namespace TML.Patcher.Frontend.Common.Options
             Console.ForegroundColor = ConsoleColor.White;
 
             window.WriteOptionsList(new ConsoleOptions("Return:"));
-        }
-
-        private static string GetModName(string pathToSearch)
-        {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-
-            while (true)
-            {
-                window.WriteAndClear("Please enter the name of the mod you want to decompile:", ConsoleColor.Yellow);
-                string? modName = Console.ReadLine();
-
-                if (modName == null)
-                {
-                    window.WriteAndClear("Specified mod name some-how returned null.");
-                    continue;
-                }
-
-                if (!modName.EndsWith(".tmod"))
-                    modName += ".tmod";
-
-                if (Directory.Exists(Path.Combine(pathToSearch, modName)))
-                    return modName;
-
-                window.WriteAndClear("Specified mod could not be located!");
-            }
         }
     }
 }

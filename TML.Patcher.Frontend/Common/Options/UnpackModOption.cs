@@ -16,7 +16,8 @@ namespace TML.Patcher.Frontend.Common.Options
         public override void Execute()
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-            string modName = GetModName(Program.Configuration.ModsPath);
+            string modName = Utilities.GetModName(Program.Configuration.ModsPath,
+                "Please enter the name of the mod you want to extract:");
             
             Console.ForegroundColor = ConsoleColor.Yellow;
             window.WriteLine(1, $"Extracting mod: {modName}...");
@@ -41,31 +42,6 @@ namespace TML.Patcher.Frontend.Common.Options
             window.WriteLine($"Finished extracting mod: {modName}");
             window.WriteLine($"Extraction time: {sw.Elapsed}");
             window.WriteOptionsList(new ConsoleOptions("Return:"));
-        }
-
-        private static string GetModName(string pathToSearch)
-        {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-
-            while (true)
-            {
-                window.WriteAndClear("Please enter the name of the mod you want to extract:", ConsoleColor.Yellow);
-                string? modName = Console.ReadLine();
-
-                if (modName == null)
-                {
-                    window.WriteAndClear("Specified mod name some-how returned null.");
-                    continue;
-                }
-
-                if (!modName.EndsWith(".tmod"))
-                    modName += ".tmod";
-
-                if (File.Exists(Path.Combine(pathToSearch, modName))) 
-                    return modName;
-
-                window.WriteAndClear("Specified mod could not be located!");
-            }
         }
     }
 }
