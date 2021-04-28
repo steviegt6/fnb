@@ -1,9 +1,7 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Decompilation;
 

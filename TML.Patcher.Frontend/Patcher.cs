@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Frontend.Common;

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Frontend.Common;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using Consolation;
 using Newtonsoft.Json;
 
 namespace TML.Patcher.Frontend.Common

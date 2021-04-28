@@ -1,5 +1,4 @@
-﻿#nullable enable
-namespace Consolation.Common.Framework.ParameterSystem
+﻿namespace Consolation.Common.Framework.ParameterSystem
 {
     public interface IParameter
     {

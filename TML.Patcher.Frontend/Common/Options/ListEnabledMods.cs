@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System;
 using System.IO;
-using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
 

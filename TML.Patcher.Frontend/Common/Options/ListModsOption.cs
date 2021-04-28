@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 
 namespace TML.Patcher.Frontend.Common.Options

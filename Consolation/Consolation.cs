@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using Consolation.Common.Framework.ParameterSystem;

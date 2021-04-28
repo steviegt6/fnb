@@ -1,8 +1,6 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Packing;
