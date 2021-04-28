@@ -135,7 +135,7 @@ namespace TML.Patcher.Frontend
                 WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
                 WriteLine("Please enter the directory of your tModLoader Mods folder:");
 
-                string modsPath = Console.ReadLine();
+                string? modsPath = Console.ReadLine();
 
                 if (Directory.Exists(modsPath))
                 {

@@ -46,7 +46,7 @@ namespace Consolation.Common.Framework.OptionsSystem
             {
                 Console.ForegroundColor = ConsoleColor.White;
                 window.WriteLine(ToString());
-                string key = Console.ReadLine();
+                string? key = Console.ReadLine();
 
                 switch (key)
                 {
@@ -98,7 +98,7 @@ namespace Consolation.Common.Framework.OptionsSystem
         {
             string text = this.Aggregate($" {OptionText}", (current, option) => current + $"\n{option}");
 
-            if (_prevOptionsState != null && DisplayGoBack)
+            if (DisplayGoBack)
                 text += "\n  [.] Return to the previous set of options.";
 
             if (DisplayReturn)
