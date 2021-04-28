@@ -24,7 +24,7 @@ namespace TML.Patcher.Frontend
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("File not valid for decompilation.");
+                    Console.WriteLine("File not valid for unpacking.");
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.WriteLine("Press any key to exit...");
                     Console.ReadKey();

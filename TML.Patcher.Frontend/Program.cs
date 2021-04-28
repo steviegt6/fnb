@@ -152,6 +152,9 @@ namespace TML.Patcher.Frontend
 
         internal static void PreLoadAssemblies()
         {
+            if (LightweightLoad)
+                return;
+
             List<Assembly> loaded = AppDomain.CurrentDomain.GetAssemblies().ToList();
 
             Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
