@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Consolation;
@@ -22,13 +24,13 @@ namespace TML.Patcher.Frontend
 
         public static void Main(string[] args)
         {
-            PreLoadAssemblies();
-
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
             Instance = new Patcher();
             ConsoleAPI.Window = Instance;
+
+            PreLoadAssemblies();
 
             ConsoleAPI.Initialize();
             ConsoleAPI.ParseParameters(args);
@@ -102,18 +104,13 @@ namespace TML.Patcher.Frontend
             ConfigurationFile.Save();
         }
 
-        [SuppressMessage("Style", "IDE0059", 
-            Justification = "Assembly pre-loading.")]
         private static void PreLoadAssemblies()
         {
-            // ReSharper disable once NotAccessedVariable
-            // ReSharper disable once JoinDeclarationAndInitializer
-            Type
-            discard = typeof(global:: Consolation                               .ConsoleAPI);           // Consolation
-            discard = typeof(global::  Newtonsoft.Json                          .JsonConvert);          // Newtonsoft.JSON
-            discard = typeof(global::         TML.Files  .Generic .Data         .ImagePixelColor);      // TML.Files
-            discard = typeof(global::         TML.Patcher.Backend .Decompilation.DecompilationRequest); // TML.Patcher.Backend
-            discard = typeof(global::         TML.Patcher.Frontend              .Program);              // TML.Patcher.Frontend
+            List<Assembly> loaded = AppDomain.CurrentDomain.GetAssemblies().ToList();
+
+            Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
+                .Where(x => !loaded.Select(y => y.Location).Contains(x, StringComparer.InvariantCultureIgnoreCase))
+                .ToList().ForEach(z => loaded.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(z))));
         }
     }
 }
