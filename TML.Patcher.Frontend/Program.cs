@@ -12,9 +12,9 @@ namespace TML.Patcher.Frontend
 {
     public static class Program
     {
-        public static string ExePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ExePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
-        public static ConfigurationFile Configuration { get; set; }
+        public static ConfigurationFile? Configuration { get; set; }
 
         public static ConsoleOptions DefaultOptions { get; set; }
 

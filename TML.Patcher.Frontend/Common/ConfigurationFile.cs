@@ -18,17 +18,17 @@ namespace TML.Patcher.Frontend.Common
         {
         }
 
-        public static string FilePath { get; private set; }
+        public static string FilePath { get; private set; } = null!;
 
-        public bool ShowIlSpyCmdInstallPrompt { get; set; }
+        public bool ShowIlSpyCmdInstallPrompt { get; set; } = false;
 
-        public string ModsPath { get; set; }
+        public string ModsPath { get; set; } = null!;
 
-        public string ExtractPath { get; set; }
+        public string ExtractPath { get; set; } = null!;
 
-        public string DecompilePath { get; set; }
+        public string DecompilePath { get; set; } = null!;
 
-        public string ReferencesPath { get; set; }
+        public string ReferencesPath { get; set; } = null!;
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue(4)]
@@ -38,7 +38,7 @@ namespace TML.Patcher.Frontend.Common
         [DefaultValue((byte) 16)]
         public byte ProgressBarSize { get; set; }
 
-        public static ConfigurationFile Load(string filePath)
+        public static ConfigurationFile? Load(string filePath)
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             FilePath = filePath;

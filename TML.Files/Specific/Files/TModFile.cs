@@ -6,14 +6,13 @@ using TML.Files.Generic.Files;
 
 namespace TML.Files.Specific.Files
 {
-    public class TModFile
+    public class ModFile
     {
         public FileData fileData;
         public ModData fileModData;
         public List<FileEntryData> files = new();
-        public string fileSig;
 
-        public TModFile(BinaryReader reader)
+        public ModFile(BinaryReader reader)
         {
             PopulateDefault(reader);
         }

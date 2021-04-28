@@ -139,7 +139,7 @@ namespace TML.Patcher.Frontend
 
                 if (Directory.Exists(modsPath))
                 {
-                    Program.Configuration.ModsPath = modsPath;
+                    Program.Configuration.ModsPath = modsPath!;
                     ConfigurationFile.Save();
                     WriteAndClear("New specified path accepted!", ConsoleColor.Green);
                 }
@@ -209,7 +209,7 @@ namespace TML.Patcher.Frontend
         public static void InitializeProgramOptions()
         {
             Program.Configuration =
-                ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json");
+                ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json")!;
         }
     }
 }

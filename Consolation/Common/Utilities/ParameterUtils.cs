@@ -55,16 +55,16 @@ namespace Consolation.Common.Utilities
         {
             try
             {
-                IParameter param = ParameterLoader.GetParameter(parameter);
+                IParameter? param = ParameterLoader.GetParameter(parameter);
 
-                if (param.ExpectsValue)
+                if (param?.ExpectsValue ?? false)
                 {
                     if (args.TryGetParameterValue(param.Name, out string value))
                         param.Parse(value);
                 }
                 else
                 {
-                    param.Parse("");
+                    param?.Parse("");
                 }
             }
             catch

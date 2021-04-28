@@ -1,4 +1,6 @@
-﻿namespace TML.Files.Generic.Files
+﻿using System;
+
+namespace TML.Files.Generic.Files
 {
     public readonly struct FileEntryData
     {
@@ -6,11 +8,11 @@
         public readonly FileLengthData fileLengthData;
         public readonly byte[] fileData;
 
-        public FileEntryData(string fileName, FileLengthData fileLengthData, byte[] fileData)
+        public FileEntryData(string fileName, FileLengthData fileLengthData, byte[]? fileData)
         {
             this.fileName = fileName;
             this.fileLengthData = fileLengthData;
-            this.fileData = fileData;
+            this.fileData = fileData ?? Array.Empty<byte>();
         }
     }
 }

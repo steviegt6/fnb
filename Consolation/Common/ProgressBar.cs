@@ -72,7 +72,7 @@ namespace Consolation.Common
             Consolation.Window.WriteLine();
         }
 
-        protected virtual void TimerHandle(object state)
+        protected virtual void TimerHandle(object? state)
         {
             lock (Timer)
             {
