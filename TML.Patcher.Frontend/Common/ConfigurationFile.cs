@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using Consolation;
 using Newtonsoft.Json;
 
 namespace TML.Patcher.Frontend.Common
@@ -42,15 +43,15 @@ namespace TML.Patcher.Frontend.Common
 
             if (File.Exists(filePath))
                 return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
-
-            Console.WriteLine(" Configuration file not found! Generating a new config.json file...");
+            
+            ConsoleAPI.Window.WriteLine(1, "Configuration file not found! Generating a new config.json file...");
 
             ConfigurationFile config = new()
             {
                 ShowIlSpyCmdInstallPrompt = true,
-                ExtractPath = Path.Combine(Program.EXEPath, "Extracted"),
-                DecompilePath = Path.Combine(Program.EXEPath, "Decompiled"),
-                ReferencesPath = Path.Combine(Program.EXEPath, "References"),
+                ExtractPath = Path.Combine(Program.ExePath, "Extracted"),
+                DecompilePath = Path.Combine(Program.ExePath, "Decompiled"),
+                ReferencesPath = Path.Combine(Program.ExePath, "References"),
                 Threads = 4,
                 ProgressBarSize = 16
             };
@@ -83,7 +84,7 @@ namespace TML.Patcher.Frontend.Common
             using (JsonWriter jWriter = new JsonTextWriter(writer)) 
             { serializer.Serialize(jWriter, config); }
 
-            Console.WriteLine($" Created a new configuration file in: {filePath}");
+            ConsoleAPI.Window.WriteLine($"Created a new configuration file in: {filePath}");
 
             return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
         }

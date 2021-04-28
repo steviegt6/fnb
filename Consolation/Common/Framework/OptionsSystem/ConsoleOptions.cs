@@ -43,7 +43,7 @@ namespace Consolation.Common.Framework.OptionsSystem
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(ToString());
+                ConsoleAPI.Window.WriteLine(ToString());
                 string key = Console.ReadLine();
 
                 switch (key)

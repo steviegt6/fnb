@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +13,7 @@ namespace TML.Patcher.Frontend
 {
     public static class Program
     {
-        public static string EXEPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ExePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static ConfigurationFile Configuration { get; set; }
 
@@ -48,17 +47,17 @@ namespace TML.Patcher.Frontend
 
         private static void InstallILSpyCMD()
         {
-            Console.WriteLine("Do you want to install ilspycmd?");
-            Console.WriteLine("<y/n>");
+            ConsoleAPI.Window.WriteLine("Do you want to install ilspycmd?");
+            ConsoleAPI.Window.WriteLine("<y/n>");
             
             ConsoleKeyInfo pressedKey = Console.ReadKey();
-            Console.WriteLine();
+            ConsoleAPI.Window.WriteLine();
 
             if (pressedKey.Key == ConsoleKey.Y)
             {
                 const string dotNetCommand = "dotnet tool install ilspycmd -g";
-                
-                Console.WriteLine("Attempting to install ilspycmd...");
+
+                ConsoleAPI.Window.WriteLine("Attempting to install ilspycmd...");
                 
                 Process process = new();
 
@@ -89,7 +88,7 @@ namespace TML.Patcher.Frontend
 
                     case PlatformID.Xbox:
                     case PlatformID.Other:
-                        Console.WriteLine("Current platform is not supported.");
+                        ConsoleAPI.Window.WriteLine("Current platform is not supported.");
                         break;
 
                     default:

@@ -57,11 +57,12 @@ namespace TML.Patcher.Frontend
                 "Anonymously" // Hosted DynamicMethods Assembly
             };
 
-            Console.WriteLine();
-            Console.WriteLine(" Welcome to TMLPatcher!");
-            Console.WriteLine();
+            ConsoleAPI.Window.WriteLine();
+            ConsoleAPI.Window.WriteLine(1, "Welcome to TMLPatcher!");
+            ConsoleAPI.Window.WriteLine();
 
-            Console.WriteLine(" Running:");
+            ConsoleAPI.Window.WriteLine("Running:");
+            ConsoleAPI.Window.SpaceCount = 2;
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.GetName().Name))
             {
                 AssemblyName name = assembly.GetName();
@@ -70,50 +71,55 @@ namespace TML.Patcher.Frontend
                     if (name.Name == null || name.Name.Contains(blacklistedName))
                         goto ForceContinue;
 
-                Console.WriteLine($"  {name.Name} v{name.Version}");
+                ConsoleAPI.Window.WriteLine($"{name.Name} v{name.Version}");
 
                 ForceContinue: ;
             }
 
-            Console.WriteLine();
+            ConsoleAPI.Window.WriteLine();
 
-            Console.WriteLine(" This is a program that allows you to:");
+            ConsoleAPI.Window.WriteLine(1, "This is a program that allows you to:");
+            ConsoleAPI.Window.SpaceCount = 2;
 
             for (int i = 0; i < whatCanThisDoLol.Length; i++)
-                Console.WriteLine($"  [{i + 1}] {whatCanThisDoLol[i]}");
+                ConsoleAPI.Window.WriteLine($"[{i + 1}] {whatCanThisDoLol[i]}");
 
-            Console.WriteLine();
+            ConsoleAPI.Window.WriteLine();
 
-            Console.WriteLine(" Credits:");
+            ConsoleAPI.Window.WriteLine(1, "Credits:");
+            ConsoleAPI.Window.SpaceCount = 2;
             foreach (string contributor in contributors)
-                Console.WriteLine($"  {contributor}");
+                ConsoleAPI.Window.WriteLine($"{contributor}");
 
-            Console.WriteLine(Line);
-            Console.WriteLine(" Loaded with configuration options:");
-            Console.WriteLine($"  {nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
-            Console.WriteLine($"  {nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
-            Console.WriteLine($"  {nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
-            Console.WriteLine($"  {nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
-            Console.WriteLine($"  {nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
-            Console.WriteLine($"  {nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
+            ConsoleAPI.Window.WriteLine(0, Line);
+            ConsoleAPI.Window.WriteLine(1, "Loaded with configuration options:");
 
-            Console.WriteLine(Line);
+            ConsoleAPI.Window.SpaceCount = 2;
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
+            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
+
+            ConsoleAPI.Window.WriteLine(0, Line);
+            ConsoleAPI.Window.SpaceCount = 1;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine(" Please note that if you are trying to decompile a mod,");
-            Console.WriteLine(" you'll have to add all of the mod's required references to:");
-            Console.WriteLine($" \"{Program.Configuration.ReferencesPath}\"");
-            Console.WriteLine(" (i.e. tModLoader.exe, XNA DLLs, ...)");
+            ConsoleAPI.Window.WriteLine("Please note that if you are trying to decompile a mod,");
+            ConsoleAPI.Window.WriteLine("you'll have to add all of the mod's required references to:");
+            ConsoleAPI.Window.WriteLine($"\"{Program.Configuration.ReferencesPath}\"");
+            ConsoleAPI.Window.WriteLine("(i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            Console.WriteLine(Line);
+            ConsoleAPI.Window.WriteLine(0, Line);
             foreach (string note in releaseNotes)
-                Console.WriteLine($" {note}");
+                ConsoleAPI.Window.WriteLine(1, $"{note}");
 
-            Console.WriteLine(Line);
-            Console.WriteLine();
+            ConsoleAPI.Window.WriteLine(1, Line);
+            ConsoleAPI.Window.WriteLine();
 
             if (!withMessage)
-                Console.WriteLine();
+                ConsoleAPI.Window.WriteLine();
         }
 
         public void CheckForUndefinedPath()
@@ -159,8 +165,8 @@ namespace TML.Patcher.Frontend
                 }
 
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
-                Console.WriteLine(" Please enter the directory of your tModLoader Mods folder:");
+                ConsoleAPI.Window.WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
+                ConsoleAPI.Window.WriteLine("Please enter the directory of your tModLoader Mods folder:");
                 
                 string modsPath = Console.ReadLine();
 
@@ -191,6 +197,6 @@ namespace TML.Patcher.Frontend
             ConsoleAPI.SelectedOptionSet = Program.DefaultOptions;
         }
 
-        public static void InitializeProgramOptions() => Program.Configuration = ConfigurationFile.Load(Program.EXEPath + Path.DirectorySeparatorChar + "configuration.json");
+        public static void InitializeProgramOptions() => Program.Configuration = ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json");
     }
 }

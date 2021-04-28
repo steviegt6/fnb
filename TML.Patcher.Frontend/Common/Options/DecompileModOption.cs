@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Decompilation;
 
@@ -17,7 +18,7 @@ namespace TML.Patcher.Frontend.Common.Options
             string modName = GetModName(Program.Configuration.ExtractPath);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($" Decompiling mod: {modName}...");
+            ConsoleAPI.Window.WriteLine(1, $"Decompiling mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -35,8 +36,8 @@ namespace TML.Patcher.Frontend.Common.Options
 
             sw.Stop();
 
-            Console.WriteLine("Decompilation operation completed.");
-            Console.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
+            ConsoleAPI.Window.WriteLine("Decompilation operation completed.");
+            ConsoleAPI.Window.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
             Console.ForegroundColor = ConsoleColor.White;
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));

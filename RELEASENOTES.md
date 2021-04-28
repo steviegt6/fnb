@@ -2,6 +2,7 @@
 * Added a logo to the program.
 * Added a progress bar with a configurable length.
 * Official internal code clean-up and splitting.
+* Added One Drive directory detection.
 
 # 0.1.1.0
 * Considerably quicker extracting speeds.

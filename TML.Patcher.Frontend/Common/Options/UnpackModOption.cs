@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using Consolation;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Backend.Packing;
@@ -17,7 +18,7 @@ namespace TML.Patcher.Frontend.Common.Options
             string modName = GetModName(Program.Configuration.ModsPath);
             
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine( $" Extracting mod: {modName}...");
+            ConsoleAPI.Window.WriteLine(1, $"Extracting mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -36,8 +37,8 @@ namespace TML.Patcher.Frontend.Common.Options
             bar.Finish();
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($" Finished extracting mod: {modName}");
-            Console.WriteLine($" Extraction time: {sw.Elapsed}");
+            ConsoleAPI.Window.WriteLine($"Finished extracting mod: {modName}");
+            ConsoleAPI.Window.WriteLine($"Extraction time: {sw.Elapsed}");
 
             Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
         }

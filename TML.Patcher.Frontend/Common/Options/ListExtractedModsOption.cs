@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 
 namespace TML.Patcher.Frontend.Common.Options
@@ -44,18 +45,18 @@ namespace TML.Patcher.Frontend.Common.Options
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write($" [{modNumber}]");
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($" - {modName}");
+                    ConsoleAPI.Window.WriteLine(0, $" - {modName}");
                 }
 
                 AskForInput:
-                Console.WriteLine();
-                Console.WriteLine("Goto page (-1 to exit):");
+                ConsoleAPI.Window.WriteLine();
+                ConsoleAPI.Window.WriteLine(0, "Goto page (-1 to exit):");
                 string input = Console.ReadLine();
 
                 if (!int.TryParse(input, out int realInput))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(" Invalid input.");
+                    ConsoleAPI.Window.WriteLine(1, "Invalid input.");
                     Console.ForegroundColor = ConsoleColor.White;
                     goto AskForInput;
                 }

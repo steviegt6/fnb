@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using Consolation;
 using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
 
@@ -32,7 +33,7 @@ namespace TML.Patcher.Frontend.Common.Options
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write($" [{modCount}]");
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine($" - {modName}");
+                ConsoleAPI.Window.WriteLine(0, $" - {modName}");
             }
 
             SkipIfNull:
