@@ -7,18 +7,21 @@ using Consolation.Common.Utilities;
 namespace Consolation
 {
     /// <summary>
-    /// Core <c>Consolation</c> class.
+    ///     Core <c>Consolation</c> class.
     /// </summary>
     public static class Consolation
     {
+        public static ConsoleWindow Window { get; set; } = null!;
+
+        public static ConsoleOptions SelectedOptionSet { get; set; } = null!;
+
         /// <summary>
-        /// Initializes <c>Consolation</c> systems.
+        ///     Initializes <c>Consolation</c> systems.
         /// </summary>
-        public static void Initialize() => ParameterLoader.Initialize(Assembly.GetCallingAssembly());
-
-        public static ConsoleWindow Window { get; set; }
-
-        public static ConsoleOptions SelectedOptionSet { get; set; }
+        public static void Initialize()
+        {
+            ParameterLoader.Initialize(Assembly.GetCallingAssembly());
+        }
 
         public static void ParseParameters(string[] args)
         {
@@ -27,7 +30,7 @@ namespace Consolation
         }
 
         /// <summary>
-        ///     Returns <see cref="Window"/> but cast to <typeparamref name="TWindow"></typeparamref>.
+        ///     Returns <see cref="Window" /> but cast to <typeparamref name="TWindow"></typeparamref>.
         /// </summary>
         public static TWindow GetWindow<TWindow>() where TWindow : ConsoleWindow => (TWindow) Window;
     }

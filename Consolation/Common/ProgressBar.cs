@@ -8,6 +8,13 @@ namespace Consolation.Common
     {
         private int _currentElements;
 
+        public ProgressBar(byte barSize = 16)
+        {
+            CurrentElements = 0;
+            Timer = new Timer(TimerHandle);
+            NumberOfBlocks = barSize;
+        }
+
         public byte NumberOfBlocks { get; protected set; }
 
         public virtual TimeSpan AnimationInterval => TimeSpan.FromSeconds(1.0 / 8); // Update 8 times a second 
@@ -25,18 +32,14 @@ namespace Consolation.Common
 
         public bool Disposed { get; protected set; }
 
-        public ProgressBar(byte barSize = 16)
+        public virtual void Dispose()
         {
-            CurrentElements = 0;
-            Timer = new Timer(TimerHandle);
-            NumberOfBlocks = barSize;
-        }
+            lock (Timer)
+            {
+                Disposed = true;
+            }
 
-        public static ProgressBar StartNew(byte barSize = 16)
-        {
-            ProgressBar bar = new(barSize);
-            bar.Start();
-            return bar;
+            GC.SuppressFinalize(this);
         }
 
         public virtual void Report(int amount)
@@ -50,23 +53,23 @@ namespace Consolation.Common
             Interlocked.Add(ref _currentElements, amount);
         }
 
-        public virtual void Start() => ResetTimer();
+        public static ProgressBar StartNew(byte barSize = 16)
+        {
+            ProgressBar bar = new(barSize);
+            bar.Start();
+            return bar;
+        }
+
+        public virtual void Start()
+        {
+            ResetTimer();
+        }
 
         public virtual void Finish()
         {
             UpdateProgressText(CreateProgressText());
             Dispose();
             Consolation.Window.WriteLine();
-        }
-
-        public virtual void Dispose()
-        {
-            lock (Timer)
-            {
-                Disposed = true;
-            }
-
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void TimerHandle(object state)
@@ -81,7 +84,10 @@ namespace Consolation.Common
             }
         }
 
-        protected virtual void ResetTimer() => Timer.Change(AnimationInterval, TimeSpan.FromMilliseconds(-1));
+        protected virtual void ResetTimer()
+        {
+            Timer.Change(AnimationInterval, TimeSpan.FromMilliseconds(-1));
+        }
 
         protected virtual string CreateProgressText()
         {
@@ -98,6 +104,9 @@ namespace Consolation.Common
             return $"\r[{sb}] {CurrentElements}/{MaxElements}";
         }
 
-        protected virtual void UpdateProgressText(string text) => Console.Write(text);
+        protected virtual void UpdateProgressText(string text)
+        {
+            Console.Write(text);
+        }
     }
 }

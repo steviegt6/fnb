@@ -8,14 +8,20 @@ namespace TML.Files.Specific.Files
 {
     public class TModFile
     {
-        public List<FileEntryData> files = new();
-        public ModData fileModData;
         public FileData fileData;
+        public ModData fileModData;
+        public List<FileEntryData> files = new();
         public string fileSig;
 
-        public TModFile(BinaryReader reader) => PopulateDefault(reader);
+        public TModFile(BinaryReader reader)
+        {
+            PopulateDefault(reader);
+        }
 
-        private void PopulateDefault(BinaryReader reader) => PopulateFiles(reader);
+        private void PopulateDefault(BinaryReader reader)
+        {
+            PopulateFiles(reader);
+        }
 
         public virtual void PopulateFiles(BinaryReader reader)
         {

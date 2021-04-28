@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
@@ -20,7 +19,9 @@ namespace TML.Patcher.Frontend.Common.Options
                 return;
             }
 
-            string[]? mods = JsonConvert.DeserializeObject<string[]>(File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
+            string[]? mods =
+                JsonConvert.DeserializeObject<string[]>(
+                    File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
 
             if (mods == null)
                 goto SkipIfNull;

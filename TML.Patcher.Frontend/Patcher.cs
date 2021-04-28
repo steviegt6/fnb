@@ -16,7 +16,7 @@ namespace TML.Patcher.Frontend
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
         /// <summary>
-        /// Writes text that will always show at the beginning, and should persist after clears.
+        ///     Writes text that will always show at the beginning, and should persist after clears.
         /// </summary>
         public override void WriteStaticText(bool withMessage)
         {
@@ -125,7 +125,8 @@ namespace TML.Patcher.Frontend
         {
             while (true)
             {
-                if (!Program.Configuration.ModsPath.Equals("undefined") && Directory.Exists(Program.Configuration.ModsPath))
+                if (!Program.Configuration.ModsPath.Equals("undefined") &&
+                    Directory.Exists(Program.Configuration.ModsPath))
                     return;
 
                 SearchForPathAlternatives();
@@ -133,7 +134,7 @@ namespace TML.Patcher.Frontend
                 Console.ForegroundColor = ConsoleColor.White;
                 WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
                 WriteLine("Please enter the directory of your tModLoader Mods folder:");
-                
+
                 string modsPath = Console.ReadLine();
 
                 if (Directory.Exists(modsPath))
@@ -154,7 +155,7 @@ namespace TML.Patcher.Frontend
 
         private static void SearchForPathAlternatives()
         {
-            if (Directory.Exists(Program.Configuration.ModsPath)) 
+            if (Directory.Exists(Program.Configuration.ModsPath))
                 return;
 
             switch (Environment.OSVersion.Platform)
@@ -165,19 +166,21 @@ namespace TML.Patcher.Frontend
                 case PlatformID.WinCE:
                     if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2)))
                     {
-                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2);
+                        Program.Configuration.ModsPath =
+                            Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2);
                         ConfigurationFile.Save();
-                        return;
                     }
+
                     break;
 
                 case PlatformID.Unix:
                     if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
                     {
-                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
+                        Program.Configuration.ModsPath =
+                            Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
                         ConfigurationFile.Save();
-                        return;
                     }
+
                     break;
 
                 case PlatformID.Xbox:
@@ -192,7 +195,9 @@ namespace TML.Patcher.Frontend
 
         public static void InitializeConsoleOptions()
         {
-            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(), new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption(), new DecompileModOption())
+            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(),
+                new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption(),
+                new DecompileModOption())
             {
                 DisplayReturn = false,
                 DisplayGoBack = false
@@ -201,6 +206,10 @@ namespace TML.Patcher.Frontend
             Consolation.Consolation.SelectedOptionSet = Program.DefaultOptions;
         }
 
-        public static void InitializeProgramOptions() => Program.Configuration = ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json");
+        public static void InitializeProgramOptions()
+        {
+            Program.Configuration =
+                ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json");
+        }
     }
 }

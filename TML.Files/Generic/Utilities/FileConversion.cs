@@ -18,12 +18,13 @@ namespace TML.Files.Generic.Utilities
 
             using Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
 
-            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, imageMap.PixelFormat);
+            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite,
+                imageMap.PixelFormat);
 
             for (int y = 0; y < bitmapData.Height; y++)
             {
                 int currentLine = y * bitmapData.Stride;
-                byte* row = (byte*)bitmapData.Scan0 + currentLine;
+                byte* row = (byte*) bitmapData.Scan0 + currentLine;
                 for (int x = 0; x < bitmapData.Width; x++)
                 {
                     int posRaw = x * 4;

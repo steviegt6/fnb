@@ -47,7 +47,7 @@ namespace TML.Patcher.Frontend
 
             window.WriteLine("Do you want to install ilspycmd?");
             window.WriteLine("<y/n>");
-            
+
             ConsoleKeyInfo pressedKey = Console.ReadKey();
             window.WriteLine();
 
@@ -56,7 +56,7 @@ namespace TML.Patcher.Frontend
                 const string dotNetCommand = "dotnet tool install ilspycmd -g";
 
                 window.WriteLine("Attempting to install ilspycmd...");
-                
+
                 Process process = new();
 
                 switch (Environment.OSVersion.Platform)
@@ -71,7 +71,7 @@ namespace TML.Patcher.Frontend
                             Arguments = "/C " + dotNetCommand,
                             UseShellExecute = false
                         };
-                        
+
                         break;
                     case PlatformID.Unix:
                     case PlatformID.MacOSX:
@@ -92,11 +92,11 @@ namespace TML.Patcher.Frontend
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                
+
                 process.Start();
                 process.WaitForExit();
             }
-            
+
             Configuration.ShowIlSpyCmdInstallPrompt = false;
             ConfigurationFile.Save();
         }

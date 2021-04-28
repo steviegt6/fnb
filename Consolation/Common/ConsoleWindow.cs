@@ -12,7 +12,10 @@ namespace Consolation.Common
 
         public abstract void WriteStaticText(bool withMessage);
 
-        public virtual void WriteLine() => Console.WriteLine();
+        public virtual void WriteLine()
+        {
+            Console.WriteLine();
+        }
 
         public virtual void WriteLine(int spaces, string message)
         {

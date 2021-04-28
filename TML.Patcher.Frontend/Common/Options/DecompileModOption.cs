@@ -26,7 +26,7 @@ namespace TML.Patcher.Frontend.Common.Options
             DecompilationRequest request = new(
                 Directory.GetFiles(Path.Combine(Program.Configuration.ExtractPath, modName), "*.*")
                     .FirstOrDefault(x => x.EndsWith(".XNA.dll")),
-                Path.Combine(Program.Configuration.DecompilePath, modName), 
+                Path.Combine(Program.Configuration.DecompilePath, modName),
                 Program.Configuration.ReferencesPath,
                 modName);
 

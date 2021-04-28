@@ -12,27 +12,28 @@ namespace TML.Patcher.Backend.Packing
 {
     public sealed class UnpackRequest
     {
-        public DirectoryInfo ExtractDirectory { get; }
-
-        public string FilePath { get; }
-
-        public TModFile? File { get; private set; } = null;
-
-        public double Threads { get; set; }
-        
-        /// <summary>
-        /// The IProgress to use to report the progress of the extractor.
-        /// The first report that is sent contains the total amount of files to extract.
-        /// </summary>
-        public IProgress<int> ProgressReporter { get; }
-
-        public UnpackRequest(DirectoryInfo extractDirectory, string filePath, double threads, IProgress<int> progressReporter)
+        public UnpackRequest(DirectoryInfo extractDirectory, string filePath, double threads,
+            IProgress<int> progressReporter)
         {
             ExtractDirectory = extractDirectory;
             FilePath = filePath;
             Threads = threads;
             ProgressReporter = progressReporter;
         }
+
+        public DirectoryInfo ExtractDirectory { get; }
+
+        public string FilePath { get; }
+
+        public TModFile? File { get; private set; }
+
+        public double Threads { get; set; }
+
+        /// <summary>
+        ///     The IProgress to use to report the progress of the extractor.
+        ///     The first report that is sent contains the total amount of files to extract.
+        /// </summary>
+        public IProgress<int> ProgressReporter { get; }
 
         public void ExecuteRequest()
         {
@@ -52,8 +53,11 @@ namespace TML.Patcher.Backend.Packing
             if (Threads <= 0)
                 Threads = 1D;
 
-            double numThreads = Math.Min(files.Count, Threads); // use either the amount of configured threads or the amount of files (whichever is lower)
-            int chunkSize = (int)Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
+            double
+                numThreads =
+                    Math.Min(files.Count,
+                        Threads); // use either the amount of configured threads or the amount of files (whichever is lower)
+            int chunkSize = (int) Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
 
             // Split the files into chunks
             for (int i = 0; i < files.Count; i += chunkSize)

@@ -2,13 +2,19 @@
 using System.IO;
 using FileIO = System.IO.File;
 
-namespace TML.Patcher.Backend.Decompilation 
+namespace TML.Patcher.Backend.Decompilation
 {
     public sealed class DecompilationRequest
     {
         public delegate void ErrorMessage(string message);
 
-        public event ErrorMessage? OnError;
+        public DecompilationRequest(string? file, string decompilePath, string referencesPath, string modName)
+        {
+            File = file;
+            DecompilePath = decompilePath;
+            ReferencesPath = referencesPath;
+            ModName = modName;
+        }
 
         public string? File { get; }
 
@@ -18,13 +24,7 @@ namespace TML.Patcher.Backend.Decompilation
 
         public string ReferencesPath { get; }
 
-        public DecompilationRequest(string? file, string decompilePath, string referencesPath, string modName)
-        {
-            File = file;
-            DecompilePath = decompilePath;
-            ReferencesPath = referencesPath;
-            ModName = modName;
-        }
+        public event ErrorMessage? OnError;
 
         public void ExecuteRequest()
         {

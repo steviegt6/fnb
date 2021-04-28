@@ -16,7 +16,7 @@ namespace TML.Patcher.Frontend.Common.Options
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             string modName = Utilities.GetModName(Program.Configuration.ModsPath,
                 "Please enter the name of the mod you want to extract:");
-            
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             window.WriteLine(1, $"Extracting mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
