@@ -11,7 +11,7 @@ namespace TML.Patcher.Frontend.Common.Options
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
-            window.DisplayPagedList(10, Directory.GetFiles(Program.Configuration.ModsPath, "*.tmod"));
+            window.DisplayPagedList(Program.Configuration.ItemsPerPage, Directory.GetFiles(Program.Configuration.ModsPath, "*.tmod"));
             window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }

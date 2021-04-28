@@ -26,26 +26,9 @@ namespace TML.Patcher.Frontend
             string[] whatCanThisDoLol =
             {
                 "Unpack .tmod files",
-                "Repack .tmod files",
+                //"Repack .tmod files",
                 "Decompile stored assembles in .tmod files",
-                "Patch and recompile assemblies"
-            };
-
-            string[] contributors =
-            {
-                "convicted tomatophile (Stevie) - Main developer",
-                "Trivaxy - Original mod unpacking code",
-                "Chik3r - Improved multithreading/task code",
-                "Archanyhm - Help with Linux and Mac compatibility"
-            };
-
-            string[] releaseNotes =
-            {
-                "Release Notes - v0.1.2.0",
-                " * Added release notes.",
-                " * Added configurable progress bar.",
-                " * Official splitting of the frontend and backend.",
-                " * Internal code clean-up."
+                //"Patch and recompile assemblies"
             };
 
             string[] assemblyDisplayBlacklist =
@@ -83,13 +66,6 @@ namespace TML.Patcher.Frontend
             for (int i = 0; i < whatCanThisDoLol.Length; i++)
                 WriteLine($"[{i + 1}] {whatCanThisDoLol[i]}");
 
-            WriteLine();
-
-            WriteLine(1, "Credits:");
-            SpaceCount = 2;
-            foreach (string contributor in contributors)
-                WriteLine($"{contributor}");
-
             WriteLine(0, Line);
             WriteLine(1, "Loaded with configuration options:");
 
@@ -100,6 +76,7 @@ namespace TML.Patcher.Frontend
             WriteLine($"{nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
             WriteLine($"{nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
             WriteLine($"{nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
+            WriteLine($"{nameof(Program.Configuration.ItemsPerPage)}: {Program.Configuration.ItemsPerPage}");
 
             WriteLine(0, Line);
             SpaceCount = 1;
@@ -109,10 +86,6 @@ namespace TML.Patcher.Frontend
             WriteLine($"\"{Program.Configuration.ReferencesPath}\"");
             WriteLine("(i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
-
-            WriteLine(0, Line);
-            foreach (string note in releaseNotes)
-                WriteLine(1, $"{note}");
 
             WriteLine(1, Line);
             WriteLine();
@@ -195,9 +168,13 @@ namespace TML.Patcher.Frontend
 
         public static void InitializeConsoleOptions()
         {
-            Program.DefaultOptions = new ConsoleOptions("Pick any option:", new ListModsOption(),
-                new ListExtractedModsOption(), new ListEnabledModsOption(), new UnpackModOption(),
-                new DecompileModOption())
+            Program.DefaultOptions = new ConsoleOptions("Pick any option:", 
+                new ListModsOption(),
+                new ListExtractedModsOption(),
+                new ListEnabledModsOption(),
+                new UnpackModOption(),
+                new DecompileModOption(),
+                new CreditsAndReleaseNotesOption())
             {
                 DisplayReturn = false,
                 DisplayGoBack = false

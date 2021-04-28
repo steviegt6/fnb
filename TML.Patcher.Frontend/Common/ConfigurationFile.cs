@@ -20,7 +20,7 @@ namespace TML.Patcher.Frontend.Common
 
         public static string FilePath { get; private set; } = null!;
 
-        public bool ShowIlSpyCmdInstallPrompt { get; set; } = false;
+        public bool ShowIlSpyCmdInstallPrompt { get; set; }
 
         public string ModsPath { get; set; } = null!;
 
@@ -37,6 +37,10 @@ namespace TML.Patcher.Frontend.Common
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue((byte) 16)]
         public byte ProgressBarSize { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(10)]
+        public int ItemsPerPage { get; set; }
 
         public static ConfigurationFile? Load(string filePath)
         {
@@ -55,7 +59,8 @@ namespace TML.Patcher.Frontend.Common
                 DecompilePath = Path.Combine(Program.ExePath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.ExePath, "References"),
                 Threads = 4,
-                ProgressBarSize = 16
+                ProgressBarSize = 16,
+                ItemsPerPage = 10
             };
             JsonSerializer serializer = new()
             {
@@ -104,7 +109,8 @@ namespace TML.Patcher.Frontend.Common
                 ReferencesPath = Program.Configuration.ReferencesPath,
                 // TODO: give extract, decompile, & references default values that don't save to the config for portability
                 Threads = Program.Configuration.Threads,
-                ProgressBarSize = Program.Configuration.ProgressBarSize
+                ProgressBarSize = Program.Configuration.ProgressBarSize,
+                ItemsPerPage = Program.Configuration.ItemsPerPage
             };
             JsonSerializer serializer = new()
             {
@@ -118,7 +124,7 @@ namespace TML.Patcher.Frontend.Common
                 serializer.Serialize(jWriter, config);
             }
 
-            Program.Configuration = JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(FilePath));
+            Program.Configuration = JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(FilePath))!;
         }
     }
 }

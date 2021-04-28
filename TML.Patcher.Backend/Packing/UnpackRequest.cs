@@ -25,7 +25,7 @@ namespace TML.Patcher.Backend.Packing
 
         public string FilePath { get; }
 
-        public TModFile? File { get; private set; }
+        public ModFile? File { get; private set; }
 
         public double Threads { get; set; }
 
@@ -40,7 +40,7 @@ namespace TML.Patcher.Backend.Packing
             using (FileStream stream = FileIO.Open(FilePath, FileMode.Open))
             using (BinaryReader reader = new(stream))
             {
-                File = new TModFile(reader);
+                File = new ModFile(reader);
             }
 
             ExtractAllFiles(File.files, ExtractDirectory);

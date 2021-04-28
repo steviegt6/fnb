@@ -12,7 +12,7 @@ namespace TML.Patcher.Frontend.Common.Options
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             Directory.CreateDirectory(Program.Configuration.ExtractPath);
-            window.DisplayPagedList(10, Directory.GetDirectories(Program.Configuration.ExtractPath));
+            window.DisplayPagedList(Program.Configuration.ItemsPerPage, Directory.GetDirectories(Program.Configuration.ExtractPath));
             window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }

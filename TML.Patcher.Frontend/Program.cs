@@ -14,9 +14,9 @@ namespace TML.Patcher.Frontend
     {
         public static string ExePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "";
 
-        public static ConfigurationFile? Configuration { get; set; }
+        public static ConfigurationFile Configuration { get; set; } = null!;
 
-        public static ConsoleOptions DefaultOptions { get; set; }
+        public static ConsoleOptions DefaultOptions { get; set; } = null!;
 
         public static void Main(string[] args)
         {
@@ -35,6 +35,8 @@ namespace TML.Patcher.Frontend
 
             if (Configuration.ShowIlSpyCmdInstallPrompt)
                 InstallILSpyCMD();
+
+            ConfigurationFile.Save();
 
             Consolation.Consolation.Window.WriteStaticText(false);
             Consolation.Consolation.GetWindow<Patcher>().CheckForUndefinedPath();
@@ -98,7 +100,6 @@ namespace TML.Patcher.Frontend
             }
 
             Configuration.ShowIlSpyCmdInstallPrompt = false;
-            ConfigurationFile.Save();
         }
 
         private static void PreLoadAssemblies()
