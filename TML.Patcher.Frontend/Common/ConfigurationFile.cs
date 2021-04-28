@@ -39,7 +39,7 @@ namespace TML.Patcher.Frontend.Common
 
         public static ConfigurationFile Load(string filePath)
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             FilePath = filePath;
 
             if (File.Exists(filePath))

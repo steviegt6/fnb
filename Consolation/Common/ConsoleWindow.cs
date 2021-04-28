@@ -49,8 +49,8 @@ namespace Consolation.Common
         public virtual void WriteOptionsList(ConsoleOptions options)
         {
             SpaceCount = 0;
-            ConsoleAPI.SelectedOptionSet = options;
-            ConsoleAPI.SelectedOptionSet.ListForOption();
+            Consolation.SelectedOptionSet = options;
+            Consolation.SelectedOptionSet.ListForOption();
         }
     }
 }

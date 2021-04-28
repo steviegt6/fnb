@@ -24,12 +24,12 @@ namespace TML.Patcher.Frontend
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            ConsoleAPI.Window = new Patcher();
+            Consolation.Consolation.Window = new Patcher();
 
             PreLoadAssemblies();
 
-            ConsoleAPI.Initialize();
-            ConsoleAPI.ParseParameters(args);
+            Consolation.Consolation.Initialize();
+            Consolation.Consolation.ParseParameters(args);
 
             Patcher.InitializeConsoleOptions();
             Patcher.InitializeProgramOptions();
@@ -37,14 +37,14 @@ namespace TML.Patcher.Frontend
             if (Configuration.ShowIlSpyCmdInstallPrompt)
                 InstallILSpyCMD();
 
-            ConsoleAPI.Window.WriteStaticText(false);
-            ConsoleAPI.GetWindow<Patcher>().CheckForUndefinedPath();
-            ConsoleAPI.SelectedOptionSet.ListForOption();
+            Consolation.Consolation.Window.WriteStaticText(false);
+            Consolation.Consolation.GetWindow<Patcher>().CheckForUndefinedPath();
+            Consolation.Consolation.SelectedOptionSet.ListForOption();
         }
 
         private static void InstallILSpyCMD()
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             window.WriteLine("Do you want to install ilspycmd?");
             window.WriteLine("<y/n>");

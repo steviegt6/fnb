@@ -10,7 +10,7 @@ namespace Consolation
     /// <summary>
     /// Core <c>Consolation</c> class.
     /// </summary>
-    public static class ConsoleAPI
+    public static class Consolation
     {
         /// <summary>
         /// Initializes <c>Consolation</c> systems.
@@ -27,6 +27,9 @@ namespace Consolation
                 args.ParseParameter(paramCandidate);
         }
 
+        /// <summary>
+        ///     Returns <see cref="Window"/> but cast to <typeparamref name="TWindow"></typeparamref>.
+        /// </summary>
         public static TWindow GetWindow<TWindow>() where TWindow : ConsoleWindow => (TWindow) Window;
     }
 }

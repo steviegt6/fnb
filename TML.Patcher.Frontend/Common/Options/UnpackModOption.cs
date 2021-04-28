@@ -15,7 +15,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             string modName = GetModName(Program.Configuration.ModsPath);
             
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -45,7 +45,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         private static string GetModName(string pathToSearch)
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             while (true)
             {

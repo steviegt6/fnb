@@ -199,7 +199,7 @@ namespace TML.Patcher.Frontend
                 DisplayGoBack = false
             };
 
-            ConsoleAPI.SelectedOptionSet = Program.DefaultOptions;
+            Consolation.Consolation.SelectedOptionSet = Program.DefaultOptions;
         }
 
         public static void InitializeProgramOptions() => Program.Configuration = ConfigurationFile.Load(Program.ExePath + Path.DirectorySeparatorChar + "configuration.json");

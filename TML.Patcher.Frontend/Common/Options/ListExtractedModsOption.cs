@@ -12,7 +12,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             Directory.CreateDirectory(Program.Configuration.ExtractPath);
 

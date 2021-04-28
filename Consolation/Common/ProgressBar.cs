@@ -56,7 +56,7 @@ namespace Consolation.Common
         {
             UpdateProgressText(CreateProgressText());
             Dispose();
-            ConsoleAPI.Window.WriteLine();
+            Consolation.Window.WriteLine();
         }
 
         public virtual void Dispose()

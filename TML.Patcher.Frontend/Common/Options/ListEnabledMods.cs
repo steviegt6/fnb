@@ -13,7 +13,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             if (!File.Exists(Path.Combine(Program.Configuration.ModsPath, "enabled.json")))
             {

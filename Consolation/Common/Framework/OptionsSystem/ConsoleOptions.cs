@@ -29,7 +29,7 @@ namespace Consolation.Common.Framework.OptionsSystem
         public ConsoleOptions(string optionText, params ConsoleOption[] options)
         {
             OptionText = optionText;
-            _prevOptionsState = ConsoleAPI.SelectedOptionSet;
+            _prevOptionsState = Consolation.SelectedOptionSet;
 
             // Assign index values to the ConsoleOption types
             for (int i = 0; i < options.Length; i++)
@@ -40,7 +40,7 @@ namespace Consolation.Common.Framework.OptionsSystem
 
         public virtual void ListForOption()
         {
-            ConsoleWindow window = ConsoleAPI.Window;
+            ConsoleWindow window = Consolation.Window;
 
             while (true)
             {
@@ -56,8 +56,8 @@ namespace Consolation.Common.Framework.OptionsSystem
 
                     case "/" when DisplayReturn:
                         window.WriteAndClear("Returned to the start!", ConsoleColor.Green);
-                        ConsoleAPI.SelectedOptionSet = window.DefaultOptions;
-                        ConsoleAPI.SelectedOptionSet.ListForOption();
+                        Consolation.SelectedOptionSet = window.DefaultOptions;
+                        Consolation.SelectedOptionSet.ListForOption();
                         return;
 
                     case "." when DisplayGoBack:
