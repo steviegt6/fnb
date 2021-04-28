@@ -1,5 +1,6 @@
 # 0.1.3.0
 * Added light-weight mod unpacking through drag-and-dropping.
+* Added the ability to add TML.Patcher.Frontend to the file context menu.
 
 # 0.1.2.0
 * Added a logo to the program.

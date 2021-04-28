@@ -8,15 +8,6 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            /*
-            WriteLine(1, "Credits:");
-            SpaceCount = 2;
-            foreach (string contributor in contributors)
-                WriteLine($"{contributor}");
-            WriteLine(0, Line);
-            foreach (string note in releaseNotes)
-                WriteLine(1, $"{note}");
-             */
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             string[] contributors =
@@ -29,14 +20,9 @@ namespace TML.Patcher.Frontend.Common.Options
 
             string[] releaseNotes =
             {
-                "Release Notes - v0.1.2.0",
-                " * Added release notes.",
-                " * Added configurable progress bar.",
-                " * Official splitting of the frontend and backend.",
-                " * Internal code clean-up.",
-                " * Added One Drive directory detection.",
-                " * Added configurable page count.",
-                " * Moved release notes and credits to their own page."
+                "Release Notes - v0.1.3.0",
+                " * Added light-weight mod unpacking through drag-and-dropping.",
+                " * Added the ability to add TML.Patcher.Frontend to the file context menu."
             };
 
             window.Clear(false);

@@ -42,6 +42,10 @@ namespace TML.Patcher.Frontend.Common
         [DefaultValue(10)]
         public int ItemsPerPage { get; set; }
 
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        [DefaultValue(true)]
+        public bool ShowRegistryAdditionPrompt { get; set; }
+
         public static ConfigurationFile? Load(string filePath)
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
@@ -60,7 +64,8 @@ namespace TML.Patcher.Frontend.Common
                 ReferencesPath = Path.Combine(Program.ExePath, "References"),
                 Threads = 4,
                 ProgressBarSize = 16,
-                ItemsPerPage = 10
+                ItemsPerPage = 10,
+                ShowRegistryAdditionPrompt = true
             };
             JsonSerializer serializer = new()
             {
@@ -110,7 +115,8 @@ namespace TML.Patcher.Frontend.Common
                 // TODO: give extract, decompile, & references default values that don't save to the config for portability
                 Threads = Program.Configuration.Threads,
                 ProgressBarSize = Program.Configuration.ProgressBarSize,
-                ItemsPerPage = Program.Configuration.ItemsPerPage
+                ItemsPerPage = Program.Configuration.ItemsPerPage,
+                ShowRegistryAdditionPrompt = Program.Configuration.ShowRegistryAdditionPrompt
             };
             JsonSerializer serializer = new()
             {

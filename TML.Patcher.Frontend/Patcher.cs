@@ -38,14 +38,7 @@ namespace TML.Patcher.Frontend
                 Consolation.Consolation.ParseParameters(args);
 
             if (Program.LightweightLoad)
-            {
                 InitializeProgramOptions();
-                return;
-            }
-
-            Program.PreLoadAssemblies();
-            InitializeConsoleOptions();
-            InitializeProgramOptions();
         }
 
         /// <summary>
