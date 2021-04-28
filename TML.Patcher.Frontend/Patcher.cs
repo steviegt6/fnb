@@ -15,6 +15,39 @@ namespace TML.Patcher.Frontend
 
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
+        public Patcher(string[]? args)
+        {
+            if (args is {Length: 1})
+            {
+                if (File.Exists(args[0]) && Path.GetExtension(args[0]) == ".tmod")
+                    Program.LightweightLoad = true;
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("File not valid for decompilation.");
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("Press any key to exit...");
+                    Console.ReadKey();
+                    Environment.Exit(0);
+                }
+            }
+
+            Consolation.Consolation.Initialize();
+
+            if (args != null)
+                Consolation.Consolation.ParseParameters(args);
+
+            if (Program.LightweightLoad)
+            {
+                InitializeProgramOptions();
+                return;
+            }
+
+            Program.PreLoadAssemblies();
+            InitializeConsoleOptions();
+            InitializeProgramOptions();
+        }
+
         /// <summary>
         ///     Writes text that will always show at the beginning, and should persist after clears.
         /// </summary>

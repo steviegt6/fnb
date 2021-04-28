@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Patcher.Frontend.Common;
+using TML.Patcher.Frontend.Common.Options;
 
 namespace TML.Patcher.Frontend
 {
@@ -18,25 +19,25 @@ namespace TML.Patcher.Frontend
 
         public static ConsoleOptions DefaultOptions { get; set; } = null!;
 
+        public static bool LightweightLoad { get; set; }
+
         public static void Main(string[] args)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            Consolation.Consolation.Window = new Patcher();
-
-            PreLoadAssemblies();
-
-            Consolation.Consolation.Initialize();
-            Consolation.Consolation.ParseParameters(args);
-
-            Patcher.InitializeConsoleOptions();
-            Patcher.InitializeProgramOptions();
+            Consolation.Consolation.Window = new Patcher(args);
 
             if (Configuration.ShowIlSpyCmdInstallPrompt)
                 InstallILSpyCMD();
 
             ConfigurationFile.Save();
+
+            if (LightweightLoad)
+            {
+                UnpackModOption.PerformExtraction(args[0]);
+                return;
+            }
 
             Consolation.Consolation.Window.WriteStaticText(false);
             Consolation.Consolation.GetWindow<Patcher>().CheckForUndefinedPath();
@@ -45,6 +46,8 @@ namespace TML.Patcher.Frontend
 
         private static void InstallILSpyCMD()
         {
+            Configuration.ShowIlSpyCmdInstallPrompt = false;
+
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
 
             window.WriteLine("Do you want to install ilspycmd?");
@@ -53,62 +56,64 @@ namespace TML.Patcher.Frontend
             ConsoleKeyInfo pressedKey = Console.ReadKey();
             window.WriteLine();
 
-            if (pressedKey.Key == ConsoleKey.Y)
+            if (pressedKey.Key != ConsoleKey.Y)
+                return;
+
+            const string dotNetCommand = "dotnet tool install ilspycmd -g";
+
+            window.WriteLine("Attempting to install ilspycmd...");
+
+            Process process = new();
+
+            switch (Environment.OSVersion.Platform)
             {
-                const string dotNetCommand = "dotnet tool install ilspycmd -g";
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.Win32NT:
+                case PlatformID.WinCE:
+                    process.StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "cmd.exe",
+                        Arguments = "/C " + dotNetCommand,
+                        UseShellExecute = false
+                    };
+                    break;
 
-                window.WriteLine("Attempting to install ilspycmd...");
+                case PlatformID.Unix:
+                case PlatformID.MacOSX:
+                    process.StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "bash",
+                        Arguments = "-c \" " + dotNetCommand + " \"",
+                        UseShellExecute = false
+                    };
+                    break;
 
-                Process process = new();
+                case PlatformID.Xbox:
+                case PlatformID.Other:
+                    window.WriteLine("Current platform is not supported.");
+                    return;
 
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.Win32S:
-                    case PlatformID.Win32Windows:
-                    case PlatformID.Win32NT:
-                    case PlatformID.WinCE:
-                        process.StartInfo = new ProcessStartInfo
-                        {
-                            FileName = "cmd.exe",
-                            Arguments = "/C " + dotNetCommand,
-                            UseShellExecute = false
-                        };
-
-                        break;
-                    case PlatformID.Unix:
-                    case PlatformID.MacOSX:
-                        process.StartInfo = new ProcessStartInfo
-                        {
-                            FileName = "bash",
-                            Arguments = "-c \" " + dotNetCommand + " \"",
-                            UseShellExecute = false
-                        };
-
-                        break;
-
-                    case PlatformID.Xbox:
-                    case PlatformID.Other:
-                        window.WriteLine("Current platform is not supported.");
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                process.Start();
-                process.WaitForExit();
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
-            Configuration.ShowIlSpyCmdInstallPrompt = false;
+            process.Start();
+            process.WaitForExit();
         }
 
-        private static void PreLoadAssemblies()
+        internal static void PreLoadAssemblies()
         {
             List<Assembly> loaded = AppDomain.CurrentDomain.GetAssemblies().ToList();
 
             Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
-                .Where(x => !loaded.Select(y => y.Location).Contains(x, StringComparer.InvariantCultureIgnoreCase))
-                .ToList().ForEach(z => loaded.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(z))));
+                .Where(x => !loaded
+                    .Select(y => y.Location)
+                    .Contains(x, StringComparer.InvariantCultureIgnoreCase))
+                .ToList()
+                .ForEach(z => loaded
+                    .Add(AppDomain.CurrentDomain
+                        .Load(AssemblyName.GetAssemblyName(z))));
         }
     }
 }

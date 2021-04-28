@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Consolation.Common;
@@ -13,33 +14,61 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-            string modName = Utilities.GetModName(Program.Configuration.ModsPath,
-                "Please enter the name of the mod you want to extract:");
+            PerformExtraction(Utilities.GetModName(Program.Configuration.ModsPath,
+                "Please enter the name of the mod you want to extract:"));
 
+            Consolation.Consolation.GetWindow<Patcher>().WriteOptionsList(new ConsoleOptions("Return:"));
+        }
+
+        public static void PerformExtraction(string pathOrModName)
+        {
+            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             Console.ForegroundColor = ConsoleColor.Yellow;
-            window.WriteLine(1, $"Extracting mod: {modName}...");
+            string modExtractFolder = Path.Combine(Program.Configuration.ExtractPath, Program.LightweightLoad 
+                ? Path.GetFileName(pathOrModName) 
+                : pathOrModName);
+
+            window.WriteLine(1, Program.LightweightLoad 
+                ? "Extracting mod..." 
+                : $"Extracting mod: {pathOrModName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
-
             ProgressBar bar = ProgressBar.StartNew(Program.Configuration.ProgressBarSize);
 
-            UnpackRequest request =
-                new(Directory.CreateDirectory(Path.Combine(Program.Configuration.ExtractPath, modName)),
-                    Path.Combine(Program.Configuration.ModsPath, modName), Program.Configuration.Threads, bar);
-
-            request.ExecuteRequest();
+            new UnpackRequest(Directory.CreateDirectory(modExtractFolder),
+                Program.LightweightLoad
+                    ? pathOrModName
+                    : Path.Combine(Program.Configuration.ModsPath, pathOrModName),
+                Program.Configuration.Threads, bar).ExecuteRequest();
 
             sw.Stop();
-
-            // Finish reporting the progress
             bar.Finish();
 
             Console.ForegroundColor = ConsoleColor.White;
-            window.WriteLine($"Finished extracting mod: {modName}");
+            window.WriteLine($"Finished extracting mod: {pathOrModName}");
             window.WriteLine($"Extraction time: {sw.Elapsed}");
-            window.WriteOptionsList(new ConsoleOptions("Return:"));
+
+            if (!Program.LightweightLoad) 
+                return;
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = modExtractFolder,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+            }
+            catch (Exception e) when (e is AccessViolationException or Win32Exception)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Unable to open extracted folder location due to insufficient permissions.");
+            }
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
         }
     }
 }

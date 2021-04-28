@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using Consolation.Common.Framework.OptionsSystem;
-using Newtonsoft.Json;
+﻿using Consolation.Common.Framework.OptionsSystem;
 
 namespace TML.Patcher.Frontend.Common.Options
 {

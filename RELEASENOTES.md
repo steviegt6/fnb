@@ -1,4 +1,7 @@
-# 1.1.2.0
+# 0.1.3.0
+* Added light-weight mod unpacking through drag-and-dropping.
+
+# 0.1.2.0
 * Added a logo to the program.
 * Added a progress bar with a configurable length.
 * Official internal code clean-up and splitting.
