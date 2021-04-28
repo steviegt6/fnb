@@ -8,7 +8,8 @@ namespace TML.Patcher.Frontend.Common
     public sealed class ConfigurationFile
     {
         public const string UndefinedPath = "undefined";
-        public const string WindowsDefault = @"%UserProfile%\Documents\My Games\Terraria\ModLoader\Mods";
+        public const string WindowsDefault1 = @"%UserProfile%\Documents\My Games\Terraria\ModLoader\Mods";
+        public const string WindowsDefault2 = @"%UserProfile%\OneDrive\Documents\My Games\Terraria\ModLoader\Mods";
         public const string MacDefault = @"~/Library/Application support/Terraria/ModLoader/Mods";
         public const string LinuxDefault1 = @"%HOME%/.local/share/Terraria/ModLoader/Mods";
         public const string LinuxDefault2 = @"%XDG_DATA_HOME%/Terraria/ModLoader/Mods";
@@ -61,10 +62,10 @@ namespace TML.Patcher.Frontend.Common
 
             string path = Environment.OSVersion.Platform switch
             {
-                PlatformID.Win32S => WindowsDefault,
-                PlatformID.Win32Windows => WindowsDefault,
-                PlatformID.Win32NT => WindowsDefault,
-                PlatformID.WinCE => WindowsDefault,
+                PlatformID.Win32S => WindowsDefault1,
+                PlatformID.Win32Windows => WindowsDefault1,
+                PlatformID.Win32NT => WindowsDefault1,
+                PlatformID.WinCE => WindowsDefault1,
 
                 PlatformID.Unix => LinuxDefault1,
 

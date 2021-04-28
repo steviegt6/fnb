@@ -123,13 +123,40 @@ namespace TML.Patcher.Frontend
                 if (!Program.Configuration.ModsPath.Equals("undefined") && Directory.Exists(Program.Configuration.ModsPath))
                     return;
 
-                if (Environment.OSVersion.Platform == PlatformID.Unix && !Directory.Exists(Program.Configuration.ModsPath))
-                    if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
+                if (!Directory.Exists(Program.Configuration.ModsPath))
+                {
+                    switch (Environment.OSVersion.Platform)
                     {
-                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
-                        ConfigurationFile.Save();
-                        return;
+                        case PlatformID.Win32S:
+                        case PlatformID.Win32Windows:
+                        case PlatformID.Win32NT:
+                        case PlatformID.WinCE:
+                            if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2)))
+                            {
+                                Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2);
+                                ConfigurationFile.Save();
+                                return;
+                            }
+                            break;
+
+                        case PlatformID.Unix:
+                            if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
+                            {
+                                Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
+                                ConfigurationFile.Save();
+                                return;
+                            }
+                            break;
+
+                        case PlatformID.Xbox:
+                        case PlatformID.MacOSX:
+                        case PlatformID.Other:
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
+                }
 
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
