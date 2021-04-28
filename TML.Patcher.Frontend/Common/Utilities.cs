@@ -5,12 +5,12 @@ namespace TML.Patcher.Frontend.Common
 {
     public static class Utilities
     {
-        public static string GetModName(string path, string promptText)
+        public static string GetModName(string path, string promptText, bool isDirectory = false)
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
-
             while (true)
             {
+                Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+
                 window.WriteAndClear(promptText, ConsoleColor.Yellow);
                 string? modName = Console.ReadLine();
 
@@ -20,10 +20,13 @@ namespace TML.Patcher.Frontend.Common
                     continue;
                 }
 
-                if (!modName.EndsWith(".tmod"))
+                if (!modName.EndsWith(".tmod")) 
                     modName += ".tmod";
 
-                if (Directory.Exists(Path.Combine(path, modName)))
+                if (isDirectory && Directory.Exists(Path.Combine(path, modName)))
+                    return modName;
+
+                if (File.Exists(Path.Combine(path, modName)))
                     return modName;
 
                 window.WriteAndClear("Specified mod could not be located!");

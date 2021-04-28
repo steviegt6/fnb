@@ -15,7 +15,7 @@ namespace TML.Patcher.Frontend.Common.Options
         {
             Patcher window = Consolation.Consolation.GetWindow<Patcher>();
             string modName = Utilities.GetModName(Program.Configuration.ExtractPath,
-                "Please enter the name of the mod you want to decompile:");
+                "Please enter the name of the mod you want to decompile:", true);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             window.WriteLine(1, $"Decompiling mod: {modName}...");
