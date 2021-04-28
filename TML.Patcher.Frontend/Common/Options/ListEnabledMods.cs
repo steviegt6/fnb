@@ -13,9 +13,11 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+
             if (!File.Exists(Path.Combine(Program.Configuration.ModsPath, "enabled.json")))
             {
-                Program.Instance.WriteAndClear("No \"enabled.json\" file found in your Mods folder!");
+                window.WriteAndClear("No \"enabled.json\" file found in your Mods folder!");
                 return;
             }
 
@@ -24,7 +26,7 @@ namespace TML.Patcher.Frontend.Common.Options
             if (mods == null)
                 goto SkipIfNull;
 
-            Program.Instance.WriteAndClear("Displaying mods detected as enabled in enabled.json.", ConsoleColor.Yellow);
+            window.WriteAndClear("Displaying mods detected as enabled in enabled.json.", ConsoleColor.Yellow);
 
             int modCount = 0;
             foreach (string modName in mods)
@@ -33,11 +35,11 @@ namespace TML.Patcher.Frontend.Common.Options
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write($" [{modCount}]");
                 Console.ForegroundColor = ConsoleColor.White;
-                ConsoleAPI.Window.WriteLine(0, $" - {modName}");
+                window.WriteLine(0, $" - {modName}");
             }
 
             SkipIfNull:
-            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }
 }

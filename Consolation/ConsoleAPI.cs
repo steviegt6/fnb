@@ -26,5 +26,7 @@ namespace Consolation
             foreach (string paramCandidate in args)
                 args.ParseParameter(paramCandidate);
         }
+
+        public static TWindow GetWindow<TWindow>() where TWindow : ConsoleWindow => (TWindow) Window;
     }
 }

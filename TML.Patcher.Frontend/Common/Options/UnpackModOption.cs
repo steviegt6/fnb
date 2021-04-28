@@ -15,10 +15,11 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
             string modName = GetModName(Program.Configuration.ModsPath);
             
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ConsoleAPI.Window.WriteLine(1, $"Extracting mod: {modName}...");
+            window.WriteLine(1, $"Extracting mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -37,22 +38,23 @@ namespace TML.Patcher.Frontend.Common.Options
             bar.Finish();
 
             Console.ForegroundColor = ConsoleColor.White;
-            ConsoleAPI.Window.WriteLine($"Finished extracting mod: {modName}");
-            ConsoleAPI.Window.WriteLine($"Extraction time: {sw.Elapsed}");
-
-            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteLine($"Finished extracting mod: {modName}");
+            window.WriteLine($"Extraction time: {sw.Elapsed}");
+            window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
         private static string GetModName(string pathToSearch)
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+
             while (true)
             {
-                Program.Instance.WriteAndClear("Please enter the name of the mod you want to extract:", ConsoleColor.Yellow);
+                window.WriteAndClear("Please enter the name of the mod you want to extract:", ConsoleColor.Yellow);
                 string? modName = Console.ReadLine();
 
                 if (modName == null)
                 {
-                    Program.Instance.WriteAndClear("Specified mod name some-how returned null.");
+                    window.WriteAndClear("Specified mod name some-how returned null.");
                     continue;
                 }
 
@@ -61,8 +63,8 @@ namespace TML.Patcher.Frontend.Common.Options
 
                 if (File.Exists(Path.Combine(pathToSearch, modName))) 
                     return modName;
-                
-                Program.Instance.WriteAndClear("Specified mod could not be located!");
+
+                window.WriteAndClear("Specified mod could not be located!");
             }
         }
     }

@@ -40,30 +40,32 @@ namespace Consolation.Common.Framework.OptionsSystem
 
         public virtual void ListForOption()
         {
+            ConsoleWindow window = ConsoleAPI.Window;
+
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                ConsoleAPI.Window.WriteLine(ToString());
+                window.WriteLine(ToString());
                 string key = Console.ReadLine();
 
                 switch (key)
                 {
                     case null:
-                        ConsoleAPI.Window.WriteAndClear("Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
+                        window.WriteAndClear("Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
                         continue;
 
                     case "/" when DisplayReturn:
-                        ConsoleAPI.Window.WriteAndClear("Returned to the start!", ConsoleColor.Green);
-                        ConsoleAPI.SelectedOptionSet = ConsoleAPI.Window.DefaultOptions;
+                        window.WriteAndClear("Returned to the start!", ConsoleColor.Green);
+                        ConsoleAPI.SelectedOptionSet = window.DefaultOptions;
                         ConsoleAPI.SelectedOptionSet.ListForOption();
                         return;
 
                     case "." when DisplayGoBack:
                         if (_prevOptionsState == null)
-                            ConsoleAPI.Window.WriteAndClear("No previous state was found, falling back to the beginning...");
+                            window.WriteAndClear("No previous state was found, falling back to the beginning...");
                         else
                         {
-                            ConsoleAPI.Window.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
+                            window.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
                             _prevOptionsState.ListForOption();
                         }
                         return;
@@ -71,13 +73,13 @@ namespace Consolation.Common.Framework.OptionsSystem
 
                 if (!int.TryParse(key, out int option))
                 {
-                    ConsoleAPI.Window.WriteAndClear("Whoops! We weren't able to parse your response. Please only enter actual numbers (1, 5, 27, etc.).");
+                    window.WriteAndClear("Whoops! We weren't able to parse your response. Please only enter actual numbers (1, 5, 27, etc.).");
                     continue;
                 }
 
                 if (option < 0 || option > Count)
                 {
-                    ConsoleAPI.Window.WriteAndClear("Whoops! The number entered does not correspond to any of the available options.");
+                    window.WriteAndClear("Whoops! The number entered does not correspond to any of the available options.");
                     continue;
                 }
 

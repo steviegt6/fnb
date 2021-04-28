@@ -57,12 +57,12 @@ namespace TML.Patcher.Frontend
                 "Anonymously" // Hosted DynamicMethods Assembly
             };
 
-            ConsoleAPI.Window.WriteLine();
-            ConsoleAPI.Window.WriteLine(1, "Welcome to TMLPatcher!");
-            ConsoleAPI.Window.WriteLine();
+            WriteLine();
+            WriteLine(1, "Welcome to TMLPatcher!");
+            WriteLine();
 
-            ConsoleAPI.Window.WriteLine("Running:");
-            ConsoleAPI.Window.SpaceCount = 2;
+            WriteLine("Running:");
+            SpaceCount = 2;
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.GetName().Name))
             {
                 AssemblyName name = assembly.GetName();
@@ -71,55 +71,55 @@ namespace TML.Patcher.Frontend
                     if (name.Name == null || name.Name.Contains(blacklistedName))
                         goto ForceContinue;
 
-                ConsoleAPI.Window.WriteLine($"{name.Name} v{name.Version}");
+                WriteLine($"{name.Name} v{name.Version}");
 
                 ForceContinue: ;
             }
 
-            ConsoleAPI.Window.WriteLine();
+            WriteLine();
 
-            ConsoleAPI.Window.WriteLine(1, "This is a program that allows you to:");
-            ConsoleAPI.Window.SpaceCount = 2;
+            WriteLine(1, "This is a program that allows you to:");
+            SpaceCount = 2;
 
             for (int i = 0; i < whatCanThisDoLol.Length; i++)
-                ConsoleAPI.Window.WriteLine($"[{i + 1}] {whatCanThisDoLol[i]}");
+                WriteLine($"[{i + 1}] {whatCanThisDoLol[i]}");
 
-            ConsoleAPI.Window.WriteLine();
+            WriteLine();
 
-            ConsoleAPI.Window.WriteLine(1, "Credits:");
-            ConsoleAPI.Window.SpaceCount = 2;
+            WriteLine(1, "Credits:");
+            SpaceCount = 2;
             foreach (string contributor in contributors)
-                ConsoleAPI.Window.WriteLine($"{contributor}");
+                WriteLine($"{contributor}");
 
-            ConsoleAPI.Window.WriteLine(0, Line);
-            ConsoleAPI.Window.WriteLine(1, "Loaded with configuration options:");
+            WriteLine(0, Line);
+            WriteLine(1, "Loaded with configuration options:");
 
-            ConsoleAPI.Window.SpaceCount = 2;
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
-            ConsoleAPI.Window.WriteLine($"{nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
+            SpaceCount = 2;
+            WriteLine($"{nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
+            WriteLine($"{nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
+            WriteLine($"{nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
+            WriteLine($"{nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
+            WriteLine($"{nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
+            WriteLine($"{nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
 
-            ConsoleAPI.Window.WriteLine(0, Line);
-            ConsoleAPI.Window.SpaceCount = 1;
+            WriteLine(0, Line);
+            SpaceCount = 1;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ConsoleAPI.Window.WriteLine("Please note that if you are trying to decompile a mod,");
-            ConsoleAPI.Window.WriteLine("you'll have to add all of the mod's required references to:");
-            ConsoleAPI.Window.WriteLine($"\"{Program.Configuration.ReferencesPath}\"");
-            ConsoleAPI.Window.WriteLine("(i.e. tModLoader.exe, XNA DLLs, ...)");
+            WriteLine("Please note that if you are trying to decompile a mod,");
+            WriteLine("you'll have to add all of the mod's required references to:");
+            WriteLine($"\"{Program.Configuration.ReferencesPath}\"");
+            WriteLine("(i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            ConsoleAPI.Window.WriteLine(0, Line);
+            WriteLine(0, Line);
             foreach (string note in releaseNotes)
-                ConsoleAPI.Window.WriteLine(1, $"{note}");
+                WriteLine(1, $"{note}");
 
-            ConsoleAPI.Window.WriteLine(1, Line);
-            ConsoleAPI.Window.WriteLine();
+            WriteLine(1, Line);
+            WriteLine();
 
             if (!withMessage)
-                ConsoleAPI.Window.WriteLine();
+                WriteLine();
         }
 
         public void CheckForUndefinedPath()
@@ -129,44 +129,11 @@ namespace TML.Patcher.Frontend
                 if (!Program.Configuration.ModsPath.Equals("undefined") && Directory.Exists(Program.Configuration.ModsPath))
                     return;
 
-                if (!Directory.Exists(Program.Configuration.ModsPath))
-                {
-                    switch (Environment.OSVersion.Platform)
-                    {
-                        case PlatformID.Win32S:
-                        case PlatformID.Win32Windows:
-                        case PlatformID.Win32NT:
-                        case PlatformID.WinCE:
-                            if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2)))
-                            {
-                                Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2);
-                                ConfigurationFile.Save();
-                                return;
-                            }
-                            break;
-
-                        case PlatformID.Unix:
-                            if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
-                            {
-                                Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
-                                ConfigurationFile.Save();
-                                return;
-                            }
-                            break;
-
-                        case PlatformID.Xbox:
-                        case PlatformID.MacOSX:
-                        case PlatformID.Other:
-                            break;
-
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
+                SearchForPathAlternatives();
 
                 Console.ForegroundColor = ConsoleColor.White;
-                ConsoleAPI.Window.WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
-                ConsoleAPI.Window.WriteLine("Please enter the directory of your tModLoader Mods folder:");
+                WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
+                WriteLine("Please enter the directory of your tModLoader Mods folder:");
                 
                 string modsPath = Console.ReadLine();
 
@@ -183,6 +150,44 @@ namespace TML.Patcher.Frontend
                 }
 
                 break;
+            }
+        }
+
+        private static void SearchForPathAlternatives()
+        {
+            if (Directory.Exists(Program.Configuration.ModsPath)) 
+                return;
+
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32S:
+                case PlatformID.Win32Windows:
+                case PlatformID.Win32NT:
+                case PlatformID.WinCE:
+                    if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2)))
+                    {
+                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.WindowsDefault2);
+                        ConfigurationFile.Save();
+                        return;
+                    }
+                    break;
+
+                case PlatformID.Unix:
+                    if (Directory.Exists(Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2)))
+                    {
+                        Program.Configuration.ModsPath = Environment.ExpandEnvironmentVariables(ConfigurationFile.LinuxDefault2);
+                        ConfigurationFile.Save();
+                        return;
+                    }
+                    break;
+
+                case PlatformID.Xbox:
+                case PlatformID.MacOSX:
+                case PlatformID.Other:
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

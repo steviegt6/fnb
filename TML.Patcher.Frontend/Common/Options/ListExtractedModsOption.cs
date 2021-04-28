@@ -12,6 +12,8 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+
             Directory.CreateDirectory(Program.Configuration.ExtractPath);
 
             int modCount = 0;
@@ -39,24 +41,24 @@ namespace TML.Patcher.Frontend.Common.Options
                 if (selectedPage >= pages.Count)
                     break;
 
-                Program.Instance.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
+                window.WriteAndClear($"Displaying page {selectedPage + 1}/{pages.Count}.", ConsoleColor.Yellow);
                 foreach ((string modName, int modNumber) in pages[selectedPage])
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write($" [{modNumber}]");
                     Console.ForegroundColor = ConsoleColor.White;
-                    ConsoleAPI.Window.WriteLine(0, $" - {modName}");
+                    window.WriteLine(0, $" - {modName}");
                 }
 
                 AskForInput:
-                ConsoleAPI.Window.WriteLine();
-                ConsoleAPI.Window.WriteLine(0, "Goto page (-1 to exit):");
+                window.WriteLine();
+                window.WriteLine(0, "Goto page (-1 to exit):");
                 string input = Console.ReadLine();
 
                 if (!int.TryParse(input, out int realInput))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    ConsoleAPI.Window.WriteLine(1, "Invalid input.");
+                    window.WriteLine(1, "Invalid input.");
                     Console.ForegroundColor = ConsoleColor.White;
                     goto AskForInput;
                 }
@@ -73,7 +75,7 @@ namespace TML.Patcher.Frontend.Common.Options
                 selectedPage = realInput - 1;
             }
 
-            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
     }
 }

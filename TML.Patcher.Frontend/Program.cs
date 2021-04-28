@@ -19,15 +19,12 @@ namespace TML.Patcher.Frontend
 
         public static ConsoleOptions DefaultOptions { get; set; }
 
-        public static Patcher Instance { get; private set; }
-
         public static void Main(string[] args)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            Instance = new Patcher();
-            ConsoleAPI.Window = Instance;
+            ConsoleAPI.Window = new Patcher();
 
             PreLoadAssemblies();
 
@@ -39,25 +36,27 @@ namespace TML.Patcher.Frontend
 
             if (Configuration.ShowIlSpyCmdInstallPrompt)
                 InstallILSpyCMD();
-            
-            Instance.WriteStaticText(false);
-            Instance.CheckForUndefinedPath();
+
+            ConsoleAPI.Window.WriteStaticText(false);
+            ConsoleAPI.GetWindow<Patcher>().CheckForUndefinedPath();
             ConsoleAPI.SelectedOptionSet.ListForOption();
         }
 
         private static void InstallILSpyCMD()
         {
-            ConsoleAPI.Window.WriteLine("Do you want to install ilspycmd?");
-            ConsoleAPI.Window.WriteLine("<y/n>");
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+
+            window.WriteLine("Do you want to install ilspycmd?");
+            window.WriteLine("<y/n>");
             
             ConsoleKeyInfo pressedKey = Console.ReadKey();
-            ConsoleAPI.Window.WriteLine();
+            window.WriteLine();
 
             if (pressedKey.Key == ConsoleKey.Y)
             {
                 const string dotNetCommand = "dotnet tool install ilspycmd -g";
 
-                ConsoleAPI.Window.WriteLine("Attempting to install ilspycmd...");
+                window.WriteLine("Attempting to install ilspycmd...");
                 
                 Process process = new();
 
@@ -88,7 +87,7 @@ namespace TML.Patcher.Frontend
 
                     case PlatformID.Xbox:
                     case PlatformID.Other:
-                        ConsoleAPI.Window.WriteLine("Current platform is not supported.");
+                        window.WriteLine("Current platform is not supported.");
                         break;
 
                     default:

@@ -15,10 +15,11 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
             string modName = GetModName(Program.Configuration.ExtractPath);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            ConsoleAPI.Window.WriteLine(1, $"Decompiling mod: {modName}...");
+            window.WriteLine(1, $"Decompiling mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -30,29 +31,31 @@ namespace TML.Patcher.Frontend.Common.Options
                 Program.Configuration.ReferencesPath,
                 modName);
 
-            request.OnError += message => Program.Instance.WriteAndClear(message);
+            request.OnError += message => window.WriteAndClear(message);
 
             request.ExecuteRequest();
 
             sw.Stop();
 
-            ConsoleAPI.Window.WriteLine("Decompilation operation completed.");
-            ConsoleAPI.Window.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
+            window.WriteLine("Decompilation operation completed.");
+            window.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            Program.Instance.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:"));
         }
 
         private static string GetModName(string pathToSearch)
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
+
             while (true)
             {
-                Program.Instance.WriteAndClear("Please enter the name of the mod you want to decompile:", ConsoleColor.Yellow);
+                window.WriteAndClear("Please enter the name of the mod you want to decompile:", ConsoleColor.Yellow);
                 string? modName = Console.ReadLine();
 
                 if (modName == null)
                 {
-                    Program.Instance.WriteAndClear("Specified mod name some-how returned null.");
+                    window.WriteAndClear("Specified mod name some-how returned null.");
                     continue;
                 }
 
@@ -62,7 +65,7 @@ namespace TML.Patcher.Frontend.Common.Options
                 if (Directory.Exists(Path.Combine(pathToSearch, modName)))
                     return modName;
 
-                Program.Instance.WriteAndClear("Specified mod could not be located!");
+                window.WriteAndClear("Specified mod could not be located!");
             }
         }
     }

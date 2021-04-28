@@ -39,12 +39,13 @@ namespace TML.Patcher.Frontend.Common
 
         public static ConfigurationFile Load(string filePath)
         {
+            Patcher window = ConsoleAPI.GetWindow<Patcher>();
             FilePath = filePath;
 
             if (File.Exists(filePath))
                 return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
-            
-            ConsoleAPI.Window.WriteLine(1, "Configuration file not found! Generating a new config.json file...");
+
+            window.WriteLine(1, "Configuration file not found! Generating a new config.json file...");
 
             ConfigurationFile config = new()
             {
@@ -84,7 +85,7 @@ namespace TML.Patcher.Frontend.Common
             using (JsonWriter jWriter = new JsonTextWriter(writer)) 
             { serializer.Serialize(jWriter, config); }
 
-            ConsoleAPI.Window.WriteLine($"Created a new configuration file in: {filePath}");
+            window.WriteLine($"Created a new configuration file in: {filePath}");
 
             return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
         }
