@@ -1,12 +1,32 @@
 ﻿namespace TML.Files.Generic.Data
 {
-    public readonly struct ImagePixelColor
+    /// <summary>
+    ///     Struct containing R, G, B, and A values in bytes.
+    /// </summary>
+    public struct ImagePixelColor
     {
-        public readonly byte r;
-        public readonly byte g;
-        public readonly byte b;
-        public readonly byte a;
+        /// <summary>
+        /// </summary>
+        public byte r;
 
+        /// <summary>
+        /// </summary>
+        public byte g;
+        
+        /// <summary>
+        /// </summary>
+        public byte b;
+
+        /// <summary>
+        /// </summary>
+        public byte a;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <param name="a"></param>
         public ImagePixelColor(byte r, byte g, byte b, byte a)
         {
             this.r = r;

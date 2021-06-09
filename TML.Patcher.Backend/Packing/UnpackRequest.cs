@@ -41,9 +41,10 @@ namespace TML.Patcher.Backend.Packing
             using (BinaryReader reader = new(stream))
             {
                 File = new ModFile(reader);
+                File.PopulateFiles();
             }
 
-            ExtractAllFiles(File.files, ExtractDirectory);
+            ExtractAllFiles(File.Files, ExtractDirectory);
         }
 
         private void ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)

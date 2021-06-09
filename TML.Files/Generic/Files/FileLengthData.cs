@@ -1,10 +1,24 @@
 ﻿namespace TML.Files.Generic.Files
 {
-    public readonly struct FileLengthData
+    /// <summary>
+    ///     Holds the length and compressed length of a file.
+    /// </summary>
+    public struct FileLengthData
     {
-        public readonly int length;
-        public readonly int lengthCompressed;
+        /// <summary>
+        ///     Standard file length.
+        /// </summary>
+        public int length;
 
+        /// <summary>
+        ///     Compressed file length.
+        /// </summary>
+        public int lengthCompressed;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="lengthCompressed"></param>
         public FileLengthData(int length, int lengthCompressed)
         {
             this.length = length;

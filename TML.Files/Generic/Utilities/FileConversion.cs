@@ -8,7 +8,11 @@ namespace TML.Files.Generic.Utilities
 {
     public static class FileConversion
     {
-        // TODO: maybe move to Specific
+        /// <summary>
+        ///     Converts a .raw file to a .png. The specific .raw format is the one used by tML, which contains raw data about the RGBA values of each individual pixel.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="properPath"></param>
         public static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
             ReadOnlySpan<byte> dataSpan = data;

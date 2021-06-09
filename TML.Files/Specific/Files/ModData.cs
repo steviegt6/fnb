@@ -2,12 +2,31 @@
 
 namespace TML.Files.Specific.Files
 {
-    public readonly struct ModData
+    /// <summary>
+    ///     Struct containing a mod's internal name, version, and the version of tModLoader it was built on.
+    /// </summary>
+    public struct ModData
     {
-        public readonly string modName;
-        public readonly Version modVersion;
-        public readonly Version modLoaderVersion;
+        /// <summary>
+        ///     The tModLoader mod's name.
+        /// </summary>
+        public string modName;
 
+        /// <summary>
+        ///     The version of the tModLoader mod.
+        /// </summary>
+        public Version modVersion;
+
+        /// <summary>
+        ///     The version of tModLoader the mod was built on.
+        /// </summary>
+        public Version modLoaderVersion;
+
+        /// <summary>
+        /// </summary>
+        /// <param name="modName"></param>
+        /// <param name="modVersion"></param>
+        /// <param name="modLoaderVersion"></param>
         public ModData(string modName, Version modVersion, Version modLoaderVersion)
         {
             this.modName = modName;
