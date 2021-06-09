@@ -6,11 +6,9 @@ namespace Consolation.Common
 {
     public class ProgressBar : IDisposable, IProgress<int>
     {
-        public ConsoleWindow Window { get; protected set; }
-
         private int _currentElements;
 
-        public ProgressBar(ConsoleWindow window, byte barSize = 16)
+        public ProgressBar(ConsoleWindow? window = null, byte barSize = 16)
         {
             Window = window;
             CurrentElements = 0;
@@ -18,18 +16,20 @@ namespace Consolation.Common
             NumberOfBlocks = barSize;
         }
 
-        public byte NumberOfBlocks { get; protected set; }
+        public ConsoleWindow? Window { get; protected set; }
 
-        public virtual TimeSpan AnimationInterval => TimeSpan.FromSeconds(1.0 / 8); // Update 8 times a second 
-
-        public virtual int? MaxElements { get; protected set; }
-
-        // Property used because refs :(
+        // Original field kept due to ref requirements
         public int CurrentElements
         {
             get => _currentElements;
             protected set => _currentElements = value;
         }
+
+        public byte NumberOfBlocks { get; protected set; }
+
+        public virtual TimeSpan AnimationInterval => TimeSpan.FromSeconds(1.0 / 8); // Update 8 times a second 
+
+        public virtual int? MaxElements { get; protected set; }
 
         public Timer Timer { get; protected set; }
 
@@ -56,7 +56,7 @@ namespace Consolation.Common
             Interlocked.Add(ref _currentElements, amount);
         }
 
-        public static ProgressBar StartNew(ConsoleWindow window, byte barSize = 16)
+        public static ProgressBar StartNew(ConsoleWindow? window = null, byte barSize = 16)
         {
             ProgressBar bar = new(window, barSize);
             bar.Start();
@@ -72,7 +72,7 @@ namespace Consolation.Common
         {
             UpdateProgressText(CreateProgressText());
             Dispose();
-            Window.WriteLine();
+            Window?.WriteLine();
         }
 
         protected virtual void TimerHandle(object? state)
