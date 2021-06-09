@@ -48,7 +48,7 @@ namespace TML.Patcher.Frontend.Common
 
         public static ConfigurationFile? Load(string filePath)
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
             FilePath = filePath;
 
             if (File.Exists(filePath))

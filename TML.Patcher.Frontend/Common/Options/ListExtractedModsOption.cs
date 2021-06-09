@@ -9,11 +9,11 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
 
             Directory.CreateDirectory(Program.Configuration.ExtractPath);
             window.DisplayPagedList(Program.Configuration.ItemsPerPage, Directory.GetDirectories(Program.Configuration.ExtractPath));
-            window.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
     }
 }

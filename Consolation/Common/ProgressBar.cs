@@ -6,10 +6,13 @@ namespace Consolation.Common
 {
     public class ProgressBar : IDisposable, IProgress<int>
     {
+        public ConsoleWindow Window { get; protected set; }
+
         private int _currentElements;
 
-        public ProgressBar(byte barSize = 16)
+        public ProgressBar(ConsoleWindow window, byte barSize = 16)
         {
+            Window = window;
             CurrentElements = 0;
             Timer = new Timer(TimerHandle);
             NumberOfBlocks = barSize;
@@ -53,9 +56,9 @@ namespace Consolation.Common
             Interlocked.Add(ref _currentElements, amount);
         }
 
-        public static ProgressBar StartNew(byte barSize = 16)
+        public static ProgressBar StartNew(ConsoleWindow window, byte barSize = 16)
         {
-            ProgressBar bar = new(barSize);
+            ProgressBar bar = new(window, barSize);
             bar.Start();
             return bar;
         }
@@ -69,7 +72,7 @@ namespace Consolation.Common
         {
             UpdateProgressText(CreateProgressText());
             Dispose();
-            Consolation.Window.WriteLine();
+            Window.WriteLine();
         }
 
         protected virtual void TimerHandle(object? state)

@@ -17,12 +17,12 @@ namespace TML.Patcher.Frontend.Common.Options
             PerformExtraction(Utilities.GetModName(Program.Configuration.ModsPath,
                 "Please enter the name of the mod you want to extract:"));
 
-            Consolation.Consolation.GetWindow<Patcher>().WriteOptionsList(new ConsoleOptions("Return:"));
+            Program.Patcher.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
 
         public static void PerformExtraction(string pathOrModName)
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
             Console.ForegroundColor = ConsoleColor.Yellow;
             string modExtractFolder = Path.Combine(Program.Configuration.ExtractPath, Program.LightweightLoad 
                 ? Path.GetFileName(pathOrModName) 
@@ -34,7 +34,7 @@ namespace TML.Patcher.Frontend.Common.Options
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
-            ProgressBar bar = ProgressBar.StartNew(Program.Configuration.ProgressBarSize);
+            ProgressBar bar = ProgressBar.StartNew(Program.Patcher, Program.Configuration.ProgressBarSize);
 
             new UnpackRequest(Directory.CreateDirectory(modExtractFolder),
                 Program.LightweightLoad

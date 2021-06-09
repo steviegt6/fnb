@@ -8,7 +8,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
 
             string[] contributors =
             {
@@ -37,7 +37,7 @@ namespace TML.Patcher.Frontend.Common.Options
             foreach (string note in releaseNotes)
                 window.WriteLine(1, $"{note}");
 
-            window.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
     }
 }

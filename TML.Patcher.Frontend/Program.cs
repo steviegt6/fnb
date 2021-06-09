@@ -20,6 +20,8 @@ namespace TML.Patcher.Frontend
 
         public static ConsoleOptions DefaultOptions { get; set; } = null!;
 
+        public static Patcher Patcher { get; private set; } = null!;
+
         public static bool LightweightLoad { get; set; }
 
         public static void Main(string[] args)
@@ -27,7 +29,7 @@ namespace TML.Patcher.Frontend
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            Consolation.Consolation.Window = new Patcher(args);
+            Patcher = new Patcher(args);
 
             PreLoadAssemblies();
             Patcher.InitializeConsoleOptions();
@@ -47,16 +49,16 @@ namespace TML.Patcher.Frontend
                 return;
             }
 
-            Consolation.Consolation.Window.WriteStaticText(false);
-            Consolation.Consolation.GetWindow<Patcher>().CheckForUndefinedPath();
-            Consolation.Consolation.SelectedOptionSet.ListForOption();
+            Patcher.WriteStaticText(false);
+            Patcher.CheckForUndefinedPath();
+            Patcher.SelectedOptions.ListForOption(Patcher);
         }
 
         private static void InstallILSpyCMD()
         {
             Configuration.ShowIlSpyCmdInstallPrompt = false;
 
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Patcher;
 
             window.WriteLine("Do you want to install ilspycmd?");
             window.WriteLine("<y/n>");
@@ -115,7 +117,7 @@ namespace TML.Patcher.Frontend
             if (!OperatingSystem.IsWindows())
                 return;
 
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Patcher;
 
             window.WriteLine("Do you want to add TML.Patcher.Frontend to your file context menu? Please ensure that this program is located in a location it will not move from.");
             window.WriteLine("<y/n> (or 'p' to skip for now and preserve the prompt for later)");

@@ -9,10 +9,10 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
 
             window.DisplayPagedList(Program.Configuration.ItemsPerPage, Directory.GetFiles(Program.Configuration.ModsPath, "*.tmod"));
-            window.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
     }
 }

@@ -11,13 +11,13 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
 
             if (!File.Exists(Path.Combine(Program.Configuration.ModsPath, "enabled.json")))
             {
                 window.WriteAndClear("No \"enabled.json\" file found in your Mods folder!");
-                Consolation.Consolation.SelectedOptionSet = window.DefaultOptions;
-                Consolation.Consolation.SelectedOptionSet.ListForOption();
+                Program.Patcher.SelectedOptions = window.DefaultOptions;
+                Program.Patcher.SelectedOptions.ListForOption(Program.Patcher);
             }
             else
             {
@@ -41,7 +41,7 @@ namespace TML.Patcher.Frontend.Common.Options
                 }
 
                 SkipIfNull:
-                window.WriteOptionsList(new ConsoleOptions("Return:"));
+                window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
             }
         }
     }

@@ -9,6 +9,8 @@ namespace Consolation.Common
     {
         public abstract ConsoleOptions DefaultOptions { get; }
 
+        public virtual ConsoleOptions SelectedOptions { get; set; } = null!;
+
         public virtual int SpaceCount { get; set; }
 
         public abstract void WriteStaticText(bool withMessage);
@@ -53,8 +55,8 @@ namespace Consolation.Common
         public virtual void WriteOptionsList(ConsoleOptions options)
         {
             SpaceCount = 0;
-            Consolation.SelectedOptionSet = options;
-            Consolation.SelectedOptionSet.ListForOption();
+            SelectedOptions = options;
+            SelectedOptions.ListForOption(this);
         }
 
         public virtual void DisplayPagedList<TItem>(int itemsPerPage, TItem[] items) where TItem : notnull

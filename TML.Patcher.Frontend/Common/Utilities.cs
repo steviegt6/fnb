@@ -9,7 +9,7 @@ namespace TML.Patcher.Frontend.Common
         {
             while (true)
             {
-                Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+                Patcher window = Program.Patcher;
 
                 window.WriteAndClear(promptText, ConsoleColor.Yellow);
                 string? modName = Console.ReadLine();

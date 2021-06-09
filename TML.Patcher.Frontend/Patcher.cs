@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,9 +16,9 @@ namespace TML.Patcher.Frontend
 
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
-        public Patcher(string[]? args)
+        public Patcher(IReadOnlyList<string> args)
         {
-            if (args is {Length: 1})
+            if (args is {Count: 1})
             {
                 if (File.Exists(args[0]) && Path.GetExtension(args[0]) == ".tmod")
                     Program.LightweightLoad = true;
@@ -31,11 +32,6 @@ namespace TML.Patcher.Frontend
                     Environment.Exit(0);
                 }
             }
-
-            Consolation.Consolation.Initialize();
-
-            if (args != null)
-                Consolation.Consolation.ParseParameters(args);
 
             if (Program.LightweightLoad)
                 InitializeProgramOptions();
@@ -195,6 +191,7 @@ namespace TML.Patcher.Frontend
         public static void InitializeConsoleOptions()
         {
             Program.DefaultOptions = new ConsoleOptions("Pick any option:", 
+                Program.Patcher.SelectedOptions,
                 new ListModsOption(),
                 new ListExtractedModsOption(),
                 new ListEnabledModsOption(),
@@ -206,7 +203,7 @@ namespace TML.Patcher.Frontend
                 DisplayGoBack = false
             };
 
-            Consolation.Consolation.SelectedOptionSet = Program.DefaultOptions;
+            Program.Patcher.SelectedOptions = Program.DefaultOptions;
         }
 
         public static void InitializeProgramOptions()

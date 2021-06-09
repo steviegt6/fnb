@@ -26,10 +26,10 @@ namespace Consolation.Common.Framework.OptionsSystem
 
         private readonly ConsoleOptions _prevOptionsState;
 
-        public ConsoleOptions(string optionText, params ConsoleOption[] options)
+        public ConsoleOptions(string optionText, ConsoleOptions previousOptions, params ConsoleOption[] options)
         {
             OptionText = optionText;
-            _prevOptionsState = Consolation.SelectedOptionSet;
+            _prevOptionsState = previousOptions;
 
             // Assign index values to the ConsoleOption types
             for (int i = 0; i < options.Length; i++)
@@ -38,10 +38,8 @@ namespace Consolation.Common.Framework.OptionsSystem
             _options = options.ToList();
         }
 
-        public virtual void ListForOption()
+        public virtual void ListForOption(ConsoleWindow window)
         {
-            ConsoleWindow window = Consolation.Window;
-
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
@@ -57,8 +55,8 @@ namespace Consolation.Common.Framework.OptionsSystem
 
                     case "/" when DisplayReturn:
                         window.WriteAndClear("Returned to the start!", ConsoleColor.Green);
-                        Consolation.SelectedOptionSet = window.DefaultOptions;
-                        Consolation.SelectedOptionSet.ListForOption();
+                        window.SelectedOptions = window.DefaultOptions;
+                        window.SelectedOptions.ListForOption(window);
                         return;
 
                     case "." when DisplayGoBack:
@@ -69,7 +67,7 @@ namespace Consolation.Common.Framework.OptionsSystem
                         else
                         {
                             window.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
-                            _prevOptionsState.ListForOption();
+                            _prevOptionsState.ListForOption(window);
                         }
 
                         return;

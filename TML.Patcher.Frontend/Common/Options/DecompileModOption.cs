@@ -13,7 +13,7 @@ namespace TML.Patcher.Frontend.Common.Options
 
         public override void Execute()
         {
-            Patcher window = Consolation.Consolation.GetWindow<Patcher>();
+            Patcher window = Program.Patcher;
             string modName = Utilities.GetModName(Program.Configuration.ExtractPath,
                 "Please enter the name of the mod you want to decompile:", true);
 
@@ -40,7 +40,7 @@ namespace TML.Patcher.Frontend.Common.Options
             window.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            window.WriteOptionsList(new ConsoleOptions("Return:"));
+            window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
     }
 }
