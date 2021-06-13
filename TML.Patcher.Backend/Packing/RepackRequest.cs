@@ -35,16 +35,15 @@ namespace TML.Patcher.Backend.Packing
         public void ExecuteRequest()
         {
             ConcurrentBag<FileEntryData> entries = ConvertFilesToEntries();
-            MemoryStream modStream = ConvertToModStream(entries);
-            SaveModFile(modStream, TargetFilePath);
+            ConvertToModFile(entries);
         }
 
-        private MemoryStream ConvertToModStream(IEnumerable<FileEntryData> entriesEnumerable)
+        private void ConvertToModFile(IEnumerable<FileEntryData> entriesEnumerable)
         {
             // Convert entries IEnumerable to an array
             FileEntryData[] entries = entriesEnumerable.ToArray();
             
-            MemoryStream modStream = new();
+            FileStream modStream = new(TargetFilePath, FileMode.Create);
             BinaryWriter modWriter = new(modStream);
             
             // Write the header
@@ -101,8 +100,8 @@ namespace TML.Patcher.Backend.Packing
             int modBytes = (int) (modStream.Length - dataPos);
             modWriter.Write(modBytes);
 
-            modStream.Position = 0;
-            return modStream;
+            // Close the file
+            modStream.Dispose();
         }
         
         private static void SaveModFile(MemoryStream modStream, string targetFilePath)
