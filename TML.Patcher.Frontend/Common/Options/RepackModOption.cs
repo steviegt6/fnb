@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Specific.Files;
 using TML.Patcher.Backend.Packing;
@@ -13,12 +14,42 @@ namespace TML.Patcher.Frontend.Common.Options
         public override void Execute()
         {
             PerformRepack(Utilities.GetModName(Program.Configuration.ExtractPath,
-                "Please enter the name of the mod you want to repack:", true));
+                "Please enter the name of the mod you want to repack:", true), RequestModData());
             
             Program.Patcher.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
 
-        private static void PerformRepack(string pathOrModName)
+        private static ModData RequestModData()
+        {
+            Patcher window = Program.Patcher;
+
+            // Ask for the internal name of the mod
+            string modInternalName = RequestSimpleValue("Enter an internal name for the mod", window);
+
+            // Ask for the mod's version
+            Version modVersion = Version.Parse(RequestSimpleValue("Enter the version of the mod", window,
+                val => Version.TryParse(val, out _)));
+            
+            // Ask for the mod loader's version
+            Version modLoaderVersion = Version.Parse(RequestSimpleValue("Enter the version of the mod loader this mod was compiled for", window,
+                val => Version.TryParse(val, out _)));
+
+            return new ModData(modInternalName, modVersion, modLoaderVersion);
+        }
+
+        private static string RequestSimpleValue(string query, ConsoleWindow window, Func<string, bool> isValid = null)
+        {
+            while (true)
+            {
+                window.WriteAndClear(query);
+                string value = Console.ReadLine()!;
+                
+                if (!string.IsNullOrWhiteSpace(value) && (isValid == null || isValid?.Invoke(value) == true))
+                    return value;
+            }
+        }
+
+        private static void PerformRepack(string pathOrModName, ModData modData)
         {
             Patcher window = Program.Patcher;
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -34,8 +65,7 @@ namespace TML.Patcher.Frontend.Common.Options
             
             Stopwatch sw = Stopwatch.StartNew();
 
-            new RepackRequest(Directory.CreateDirectory(modFolder), targetFilePath,
-                    new ModData("PotatoKnishes", new Version(0, 11, 8, 4), new Version(1, 2, 3, 4)), Program.Configuration.Threads)
+            new RepackRequest(Directory.CreateDirectory(modFolder), targetFilePath, modData, Program.Configuration.Threads)
                 .ExecuteRequest();
             
             sw.Stop();
