@@ -30,6 +30,8 @@ namespace TML.Patcher.Frontend.Common
 
         public string ReferencesPath { get; set; } = null!;
 
+        public string RepackPath { get; set; } = null!;
+
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue(4)]
         public double Threads { get; set; }
@@ -62,6 +64,7 @@ namespace TML.Patcher.Frontend.Common
                 ExtractPath = Path.Combine(Program.ExePath, "Extracted"),
                 DecompilePath = Path.Combine(Program.ExePath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.ExePath, "References"),
+                RepackPath = Path.Combine(Program.ExePath, "Repacked"),
                 Threads = 4,
                 ProgressBarSize = 16,
                 ItemsPerPage = 10,
@@ -112,6 +115,7 @@ namespace TML.Patcher.Frontend.Common
                 ExtractPath = Program.Configuration.ExtractPath,
                 DecompilePath = Program.Configuration.DecompilePath,
                 ReferencesPath = Program.Configuration.ReferencesPath,
+                RepackPath = Program.Configuration.RepackPath,
                 // TODO: give extract, decompile, & references default values that don't save to the config for portability
                 Threads = Program.Configuration.Threads,
                 ProgressBarSize = Program.Configuration.ProgressBarSize,
