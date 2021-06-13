@@ -146,7 +146,7 @@ namespace TML.Patcher.Backend.Packing
                 
                 // Check if the file is bigger than 1KB, and if it is, compress it
                 // TODO: Convert compress required size to an option
-                if (fileStream.Length > 1024)
+                if (fileStream.Length > 1024 && ShouldCompress(file.Extension))
                 {
                     byte[] compressedStream = FileUtilities.CompressFile(fileMemStream.ToArray());
                     lengthData.lengthCompressed = compressedStream.Length;
@@ -166,5 +166,8 @@ namespace TML.Patcher.Backend.Packing
                 fileBag.Add(entryData);
             }
         }
+
+        private static bool ShouldCompress(string extension) =>
+            extension != ".png" && extension != ".rawimg" && extension != ".ogg" && extension != ".mp3";
     }
 }
