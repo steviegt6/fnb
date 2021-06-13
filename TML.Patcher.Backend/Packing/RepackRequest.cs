@@ -159,7 +159,7 @@ namespace TML.Patcher.Backend.Packing
                 }
 
                 // Set the file name of the entry and the length data
-                entryData.fileName = Path.GetRelativePath(baseFolder, file.FullName);
+                entryData.fileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
                 entryData.fileLengthData = lengthData;
                 
                 // Add the entry to the concurrent bag
