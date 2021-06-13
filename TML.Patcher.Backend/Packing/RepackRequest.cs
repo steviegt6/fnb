@@ -103,13 +103,6 @@ namespace TML.Patcher.Backend.Packing
             // Close the file
             modStream.Dispose();
         }
-        
-        private static void SaveModFile(MemoryStream modStream, string targetFilePath)
-        {
-            FileStream fileStream = new(targetFilePath, FileMode.Create);
-            modStream.CopyTo(fileStream);
-            fileStream.Dispose();
-        }
 
         private ConcurrentBag<FileEntryData> ConvertFilesToEntries()
         {
