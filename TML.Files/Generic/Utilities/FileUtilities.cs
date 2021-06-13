@@ -21,5 +21,22 @@ namespace TML.Files.Generic.Utilities
 
             return decompressed;
         }
+        
+        /// <summary>
+        ///     Uses a <see cref="MemoryStream"/> and <see cref="DeflateStream"/> to compress a file, given the data.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] CompressFile(byte[] data)
+        {
+            MemoryStream dataStream = new(data);
+            MemoryStream compressStream = new();
+
+            DeflateStream deflateStream = new(compressStream, CompressionMode.Compress);
+            dataStream.CopyTo(deflateStream);
+            deflateStream.Dispose();
+
+            return compressStream.ToArray();
+        }
     }
 }
