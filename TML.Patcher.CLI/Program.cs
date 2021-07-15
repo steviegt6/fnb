@@ -46,13 +46,17 @@ namespace TML.Patcher.CLI
         /// <summary>
         ///     Entry-point.
         /// </summary>
+        /// <param name="file">Drag-and-drop file argument.</param>
         /// <param name="path">File path for extracting a single file quickly.</param>
         /// <param name="skipILSpyCMDPrompt">Skips the ILSpyCMD installation prompt.</param>
         /// <param name="skipRegistryPrompt">Skips the Windows registry prompt.</param>
-        public static void Main(string path = "", bool skipILSpyCMDPrompt = false, bool skipRegistryPrompt = false)
+        public static void Main(string[] args, string path = "", bool skipILSpyCMDPrompt = false, bool skipRegistryPrompt = false)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
+
+            if (args is not {Length: 0} && string.IsNullOrEmpty(path))
+                path = args[0];
 
             Patcher = new Patcher(path);
 
@@ -60,10 +64,10 @@ namespace TML.Patcher.CLI
             Patcher.InitializeConsoleOptions();
             Patcher.InitializeProgramOptions();
 
-            if (Configuration.ShowILSpyCMDInstallPrompt)
+            if (Configuration.ShowILSpyCMDInstallPrompt && !skipILSpyCMDPrompt)
                 InstallILSpyCMD();
 
-            if (Configuration.ShowRegistryAdditionPrompt)
+            if (Configuration.ShowRegistryAdditionPrompt && !skipRegistryPrompt)
                 AddRegistryContext();
 
             ConfigurationFile.Save();

@@ -5,6 +5,7 @@
 * Backend renamed to TML.Patcher.
 * Frontend renamed to TML.Patcher.CLI.
 * Uploaded TML.Files and TML.Patcher to NuGet.
+* Repackaging mods is now possible.
 
 # 0.1.3.0
 * Added light-weight mod unpacking through drag-and-dropping.
