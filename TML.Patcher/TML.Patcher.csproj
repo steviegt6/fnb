@@ -12,6 +12,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +21,10 @@
 
   <ItemGroup>
     <None Include="..\..\..\My Games\Terraria\ModLoader\Beta\Mod Sources\Fargowiltas\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

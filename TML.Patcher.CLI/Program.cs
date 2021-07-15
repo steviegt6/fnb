@@ -47,7 +47,9 @@ namespace TML.Patcher.CLI
         ///     Entry-point.
         /// </summary>
         /// <param name="path">File path for extracting a single file quickly.</param>
-        public static void Main(string path = "")
+        /// <param name="skipILSpyCMDPrompt">Skips the ILSpyCMD installation prompt.</param>
+        /// <param name="skipRegistryPrompt">Skips the Windows registry prompt.</param>
+        public static void Main(string path = "", bool skipILSpyCMDPrompt = false, bool skipRegistryPrompt = false)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
