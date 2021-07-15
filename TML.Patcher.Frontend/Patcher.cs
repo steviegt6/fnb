@@ -196,6 +196,7 @@ namespace TML.Patcher.Frontend
                 new ListEnabledModsOption(),
                 new UnpackModOption(),
                 new DecompileModOption(),
+                new RepackModOption(),
                 new CreditsAndReleaseNotesOption())
             {
                 DisplayReturn = false,
