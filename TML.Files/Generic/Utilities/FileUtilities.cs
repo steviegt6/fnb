@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.Compression;
+using System.Text;
 
 namespace TML.Files.Generic.Utilities
 {
@@ -35,6 +36,13 @@ namespace TML.Files.Generic.Utilities
             deflateStream.Dispose();
 
             return compressStream.ToArray();
+        }
+
+        public static string ConvertToString(this byte[] array, Encoding? encoding = null)
+        {
+            encoding ??= Encoding.ASCII;
+
+            return encoding.GetString(array);
         }
     }
 }

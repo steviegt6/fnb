@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using TML.Files.Generic.Files;
+using TML.Files.Generic.Utilities;
 
 namespace TML.Files.ModLoader.Files
 {
@@ -19,17 +20,21 @@ namespace TML.Files.ModLoader.Files
         /// <summary>
         ///     The .tmod's file data.
         /// </summary>
-        public virtual FileDataWithFileCount FileDataWithFileCount { get; protected set; }
+        public virtual FileDataWithFileCount FileDataWithFileCount { get; protected set; } = new("", 0u, 0);
 
         /// <summary>
         ///     Associated .tmod mod data.
         /// </summary>
-        public virtual ModData FileModData { get; protected set; }
+        public virtual ModData FileModData { get; protected set; } = new("", new Version(), new Version());
 
         /// <summary>
         ///     A list of all files.
         /// </summary>
         public virtual List<FileEntryData> Files { get; protected set; } = new();
+
+        public string Header { get; protected set; } = "";
+
+        public byte[] Signature { get; protected set; } = Array.Empty<byte>();
 
         /// <summary>
         /// </summary>
@@ -44,41 +49,40 @@ namespace TML.Files.ModLoader.Files
         /// </summary>
         public virtual void PopulateFiles()
         {
-            _ = Reader.ReadBytes(4); // file header
+            Header = Reader.ReadBytes(4).ConvertToString(); // file header, expected to be TMOD
 
-            string versionString = Reader.ReadString();
-            string fileHash = Encoding.ASCII.GetString(Reader.ReadBytes(20));
+            string loaderVersionString = Reader.ReadString();
+            string hash = Encoding.ASCII.GetString(Reader.ReadBytes(20));
 
-            _ = Reader.ReadBytes(256); // garbage data(?)
+            Signature = Reader.ReadBytes(256);
 
-            uint fileLength = Reader.ReadUInt32();
+            uint length = Reader.ReadUInt32();
             string modName = Reader.ReadString();
             string modVersionString = Reader.ReadString();
-            int fileCount = Reader.ReadInt32();
+            int count = Reader.ReadInt32();
 
-            FileDataWithFileCount = new FileDataWithFileCount(fileHash, fileLength, fileCount);
-            FileModData = new ModData(modName, Version.Parse(modVersionString), Version.Parse(versionString));
+            FileDataWithFileCount = new FileDataWithFileCount(hash, length, count);
+            FileModData = new ModData(modName, Version.Parse(modVersionString), Version.Parse(loaderVersionString));
 
-            RegisterFileEntries(fileCount);
+            RegisterFileEntries(count);
         }
 
         /// <summary>
         ///     Populates the <see cref="Files"/> list.
         /// </summary>
-        /// <param name="fileCount"></param>
-        public virtual void RegisterFileEntries(int fileCount)
+        public virtual void RegisterFileEntries(int count)
         {
             List<FileEntryData> tempFiles = new();
 
-            for (int i = 0; i < fileCount; i++)
+            for (int i = 0; i < count; i++)
             {
-                string fileName = Reader.ReadString();
-                int fileLength = Reader.ReadInt32();
-                int fileLengthCompressed = Reader.ReadInt32();
-                tempFiles.Add(new FileEntryData(fileName, new FileLengthData(fileLength, fileLengthCompressed), null));
+                string name = Reader.ReadString();
+                int length = Reader.ReadInt32();
+                int lengthCompressed = Reader.ReadInt32();
+                tempFiles.Add(new FileEntryData(name, new FileLengthData(length, lengthCompressed), null));
             }
 
-            for (int i = 0; i < fileCount; i++)
+            for (int i = 0; i < count; i++)
             {
                 FileEntryData tempFile = tempFiles[i];
                 byte[] realFileData = Reader.ReadBytes(tempFile.fileLengthData.lengthCompressed);
