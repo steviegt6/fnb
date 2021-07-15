@@ -3,7 +3,7 @@
     /// <summary>
     ///     Struct containing R, G, B, and A values in bytes.
     /// </summary>
-    public struct ImagePixelColor
+    public struct PixelData
     {
         /// <summary>
         /// </summary>
@@ -27,7 +27,7 @@
         /// <param name="g"></param>
         /// <param name="b"></param>
         /// <param name="a"></param>
-        public ImagePixelColor(byte r, byte g, byte b, byte a)
+        public PixelData(byte r, byte g, byte b, byte a)
         {
             this.r = r;
             this.g = g;
