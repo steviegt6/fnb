@@ -20,6 +20,9 @@
         /// </summary>
         public int fileCount;
 
+        /// <summary>
+        ///     Constructs a new <see cref="FileDataWithFileCount"/> instance.
+        /// </summary>
         public FileDataWithFileCount(string hash, uint length, int count)
         {
             fileHash = hash;

@@ -3,9 +3,9 @@
 namespace TML.Files.ModLoader.Files
 {
     /// <summary>
-    ///     Struct containing a mod's internal name, version, and the version of tModLoader it was built on.
+    ///     Class containing a mod's internal name, version, and the version of tModLoader it was built on.
     /// </summary>
-    public struct ModData
+    public class ModData
     {
         /// <summary>
         ///     The tModLoader mod's name.
@@ -23,10 +23,8 @@ namespace TML.Files.ModLoader.Files
         public Version modLoaderVersion;
 
         /// <summary>
+        ///     Constructs a new <see cref="ModData"/> instance.
         /// </summary>
-        /// <param name="modName"></param>
-        /// <param name="modVersion"></param>
-        /// <param name="modLoaderVersion"></param>
         public ModData(string modName, Version modVersion, Version modLoaderVersion)
         {
             this.modName = modName;
