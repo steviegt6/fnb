@@ -1,9 +1,9 @@
-﻿namespace TML.Files.Specific.Files
+﻿namespace TML.Files.ModLoader.Files
 {
     /// <summary>
     ///     Struct containing information for a file's hash, and length, as well as the containing file count.
     /// </summary>
-    public struct FileDataWithFileCount
+    public class FileDataWithFileCount
     {
         /// <summary>
         ///     The .tmod file's hash.
@@ -20,11 +20,11 @@
         /// </summary>
         public int fileCount;
 
-        public FileDataWithFileCount(string fileHash, uint fileLength, int fileCount)
+        public FileDataWithFileCount(string hash, uint length, int count)
         {
-            this.fileHash = fileHash;
-            this.fileLength = fileLength;
-            this.fileCount = fileCount;
+            fileHash = hash;
+            fileLength = length;
+            fileCount = count;
         }
     }
 }

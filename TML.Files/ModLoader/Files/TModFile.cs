@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using TML.Files.Generic.Files;
 
-namespace TML.Files.Specific.Files
+namespace TML.Files.ModLoader.Files
 {
     /// <summary>
     ///     .tmod file representation. Contains file and mod data, as well as a list of files.
