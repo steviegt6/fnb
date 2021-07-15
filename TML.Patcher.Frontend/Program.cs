@@ -24,12 +24,12 @@ namespace TML.Patcher.Frontend
 
         public static bool LightweightLoad { get; set; }
 
-        public static void Main(string[] args)
+        public static void Main(string filePath = "")
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
 
-            Patcher = new Patcher(args);
+            Patcher = new Patcher(filePath);
 
             PreLoadAssemblies();
             Patcher.InitializeConsoleOptions();
@@ -45,7 +45,7 @@ namespace TML.Patcher.Frontend
 
             if (LightweightLoad)
             {
-                UnpackModOption.PerformExtraction(args[0]);
+                UnpackModOption.PerformExtraction(filePath);
                 return;
             }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,11 +15,11 @@ namespace TML.Patcher.Frontend
 
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
-        public Patcher(IReadOnlyList<string> args)
+        public Patcher(string filePath)
         {
-            if (args is {Count: 1})
+            if (filePath is {Length: > 0})
             {
-                if (File.Exists(args[0]) && Path.GetExtension(args[0]) == ".tmod")
+                if (File.Exists(filePath) && Path.GetExtension(filePath) == ".tmod")
                     Program.LightweightLoad = true;
                 else
                 {

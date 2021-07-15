@@ -1,3 +1,8 @@
+# Unreleased
+* Behind-the-scenes code clean-up.
+* TMl.Patcher now uses DragonFruit.
+** Also added some launch parameters.
+
 # 0.1.3.0
 * Added light-weight mod unpacking through drag-and-dropping.
 * Added the ability to add TML.Patcher.Frontend to the file context menu.
