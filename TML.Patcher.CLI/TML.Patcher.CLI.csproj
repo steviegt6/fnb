@@ -42,7 +42,7 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\..\My Games\Terraria\ModLoader\Beta\Mod Sources\Fargowiltas\LICENSE.md">
+    <None Include="..\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
