@@ -6,13 +6,14 @@ using System.Runtime.InteropServices;
 
 namespace TML.Files.Generic.Utilities
 {
+    /// <summary>
+    ///     Provides helper-methods for converting file formats. Usually pertains to tModLoader, though they are not limited to tModLoader.
+    /// </summary>
     public static class FileConversion
     {
         /// <summary>
-        ///     Converts a .raw file to a .png. The specific .raw format is the one used by tML, which contains raw data about the RGBA values of each individual pixel.
+        ///     Converts a .raw file to a .png. The specific .raw format is the one used by tML, which contains raw data about the RGBA values of each individual pixel. <br />
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="properPath"></param>
         public static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
             ReadOnlySpan<byte> dataSpan = data;
@@ -22,8 +23,8 @@ namespace TML.Files.Generic.Utilities
 
             using Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
 
-            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite,
-                imageMap.PixelFormat);
+            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, imageMap.PixelFormat);
 
             for (int y = 0; y < bitmapData.Height; y++)
             {
