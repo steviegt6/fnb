@@ -2,10 +2,17 @@
 
 namespace TML.Patcher.CLI.Common.Options
 {
+    /// <summary>
+    ///     Option for viewing credits and release notes.
+    /// </summary>
     public class CreditsAndReleaseNotesOption : ConsoleOption
     {
+        /// <inheritdoc cref="ConsoleOption.Text"/>
         public override string Text => "View credits and release notes.";
 
+        /// <summary>
+        ///     Writes the credits and notes to the text.
+        /// </summary>
         public override void Execute()
         {
             Patcher window = Program.Patcher;
@@ -20,22 +27,22 @@ namespace TML.Patcher.CLI.Common.Options
 
             string[] releaseNotes =
             {
-                "Release Notes - v0.1.3.0",
+                "Release Notes - v0.2.0.0",
                 " * Added light-weight mod unpacking through drag-and-dropping.",
                 " * Added the ability to add TML.Patcher.Frontend to the file context menu."
             };
 
             window.Clear(false);
 
-            window.WriteLine(1, "Credits:");
-            window.SpaceCount = 2;
-            foreach (string contributor in contributors)
-                window.WriteLine($"{contributor}");
+            window.WriteLine("  Credits:");
 
-            window.WriteLine(0, Patcher.Line);
+            foreach (string contributor in contributors)
+                window.WriteLine($"  {contributor}");
+
+            window.WriteLine("--------------------");
 
             foreach (string note in releaseNotes)
-                window.WriteLine(1, $"{note}");
+                window.WriteLine($" {note}");
 
             window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }

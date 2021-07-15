@@ -9,17 +9,23 @@ using TML.Patcher.CLI.Common.Options;
 
 namespace TML.Patcher.CLI
 {
-    public sealed class Patcher : ConsoleWindow
+    /// <summary>
+    ///     Our class inheriting from <see cref="ConsoleWindow"/>.
+    /// </summary>
+    public class Patcher : ConsoleWindow
     {
-        public const string Line = "-----------------------------------------------------------------";
-
+        /// <inheritdoc cref="ConsoleWindow.DefaultOptions"/>
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
+        /// <summary>
+        ///     Constructs a new <see cref="Patcher"/> instance.
+        /// </summary>
+        /// <param name="path"></param>
         public Patcher(string path)
         {
             if (path is {Length: > 0})
             {
-                if (File.Exists(path) && Path.GetExtension(path) == ".tmod")
+                if (File.Exists(path))
                     Program.LightweightLoad = true;
                 else
                 {
@@ -47,7 +53,7 @@ namespace TML.Patcher.CLI
             string[] whatCanThisDoLol =
             {
                 "Unpack .tmod files",
-                //"Repack .tmod files",
+                "Repack .tmod files",
                 "Decompile stored assembles in .tmod files",
                 //"Patch and recompile assemblies"
             };
@@ -61,11 +67,10 @@ namespace TML.Patcher.CLI
             };
 
             WriteLine();
-            WriteLine(1, "Welcome to TMLPatcher!");
+            WriteLine(" Welcome to TMLPatcher!");
             WriteLine();
 
-            WriteLine("Running:");
-            SpaceCount = 2;
+            WriteLine(" Running:");
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.GetName().Name))
             {
                 AssemblyName name = assembly.GetName();
@@ -74,47 +79,47 @@ namespace TML.Patcher.CLI
                     if (name.Name == null || name.Name.Contains(blacklistedName))
                         goto ForceContinue;
 
-                WriteLine($"{name.Name} v{name.Version}");
+                WriteLine($"  {name.Name} v{name.Version}");
 
                 ForceContinue: ;
             }
 
             WriteLine();
 
-            WriteLine(1, "This is a program that allows you to:");
-            SpaceCount = 2;
+            WriteLine(" This is a program that allows you to:");
 
             for (int i = 0; i < whatCanThisDoLol.Length; i++)
-                WriteLine($"[{i + 1}] {whatCanThisDoLol[i]}");
+                WriteLine($"  [{i + 1}] {whatCanThisDoLol[i]}");
 
-            WriteLine(0, Line);
-            WriteLine(1, "Loaded with configuration options:");
+            WriteLine("--------------------");
+            WriteLine(" Loaded with configuration options:");
 
-            SpaceCount = 2;
-            WriteLine($"{nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
-            WriteLine($"{nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
-            WriteLine($"{nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
-            WriteLine($"{nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
-            WriteLine($"{nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
-            WriteLine($"{nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
-            WriteLine($"{nameof(Program.Configuration.ItemsPerPage)}: {Program.Configuration.ItemsPerPage}");
+            WriteLine($"  {nameof(Program.Configuration.ModsPath)}: {Program.Configuration.ModsPath}");
+            WriteLine($"  {nameof(Program.Configuration.ExtractPath)}: {Program.Configuration.ExtractPath}");
+            WriteLine($"  {nameof(Program.Configuration.DecompilePath)}: {Program.Configuration.DecompilePath}");
+            WriteLine($"  {nameof(Program.Configuration.ReferencesPath)}: {Program.Configuration.ReferencesPath}");
+            WriteLine($"  {nameof(Program.Configuration.Threads)}: {Program.Configuration.Threads}");
+            WriteLine($"  {nameof(Program.Configuration.ProgressBarSize)}: {Program.Configuration.ProgressBarSize}");
+            WriteLine($"  {nameof(Program.Configuration.ItemsPerPage)}: {Program.Configuration.ItemsPerPage}");
 
-            WriteLine(0, Line);
-            SpaceCount = 1;
+            WriteLine("--------------------");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            WriteLine("Please note that if you are trying to decompile a mod,");
-            WriteLine("you'll have to add all of the mod's required references to:");
-            WriteLine($"\"{Program.Configuration.ReferencesPath}\"");
-            WriteLine("(i.e. tModLoader.exe, XNA DLLs, ...)");
+            WriteLine(" Please note that if you are trying to decompile a mod,");
+            WriteLine(" you'll have to add all of the mod's required references to:");
+            WriteLine($" \"{Program.Configuration.ReferencesPath}\"");
+            WriteLine(" (i.e. tModLoader.exe, XNA DLLs, ...)");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
-            WriteLine(1, Line);
+            WriteLine("--------------------");
             WriteLine();
 
             if (!withMessage)
                 WriteLine();
         }
 
+        /// <summary>
+        ///     Check for undefined configuration paths.
+        /// </summary>
         public void CheckForUndefinedPath()
         {
             while (true)
@@ -126,8 +131,8 @@ namespace TML.Patcher.CLI
                 SearchForPathAlternatives();
 
                 Console.ForegroundColor = ConsoleColor.White;
-                WriteLine(1, $"{nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
-                WriteLine("Please enter the directory of your tModLoader Mods folder:");
+                WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
+                WriteLine(" Please enter the directory of your tModLoader Mods folder:");
 
                 string? modsPath = Console.ReadLine();
 
@@ -187,9 +192,12 @@ namespace TML.Patcher.CLI
             }
         }
 
+        /// <summary>
+        ///     Initializes the console options used.
+        /// </summary>
         public static void InitializeConsoleOptions()
         {
-            Program.DefaultOptions = new ConsoleOptions("Pick any option:", 
+            Program.DefaultOptions = new ConsoleOptions("Pick any option:",
                 Program.Patcher.SelectedOptions,
                 new ListModsOption(),
                 new ListExtractedModsOption(),
@@ -206,6 +214,9 @@ namespace TML.Patcher.CLI
             Program.Patcher.SelectedOptions = Program.DefaultOptions;
         }
 
+        /// <summary>
+        ///     Initializes the configuration used.
+        /// </summary>
         public static void InitializeProgramOptions()
         {
             Program.Configuration =

@@ -3,19 +3,27 @@ using System.Diagnostics;
 using System.IO;
 using Consolation;
 using Consolation.Framework.OptionsSystem;
-using TML.Files.Specific.Files;
+using TML.Files.ModLoader.Files;
 using TML.Patcher.Packing;
 
 namespace TML.Patcher.CLI.Common.Options
 {
+    /// <summary>
+    ///     Repacks whatever mod is requested.
+    /// </summary>
     public class RepackModOption : ConsoleOption
     {
+        /// <inheritdoc cref="ConsoleOption.Text"/>
         public override string Text => "Repack a mod.";
+
+        /// <summary>
+        ///     Repacks a mod.
+        /// </summary>
         public override void Execute()
         {
             PerformRepack(Utilities.GetModName(Program.Configuration.ExtractPath,
                 "Please enter the name of the mod you want to repack:", true), RequestModData());
-            
+
             Program.Patcher.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
 
@@ -29,9 +37,10 @@ namespace TML.Patcher.CLI.Common.Options
             // Ask for the mod's version
             Version modVersion = Version.Parse(RequestSimpleValue("Enter the version of the mod", window,
                 val => Version.TryParse(val, out _)));
-            
+
             // Ask for the mod loader's version
-            Version modLoaderVersion = Version.Parse(RequestSimpleValue("Enter the version of the mod loader this mod was compiled for", window,
+            Version modLoaderVersion = Version.Parse(RequestSimpleValue(
+                "Enter the version of the mod loader this mod was compiled for", window,
                 val => Version.TryParse(val, out _)));
 
             return new ModData(modInternalName, modVersion, modLoaderVersion);
@@ -43,7 +52,7 @@ namespace TML.Patcher.CLI.Common.Options
             {
                 window.WriteAndClear(query);
                 string value = Console.ReadLine()!;
-                
+
                 if (!string.IsNullOrWhiteSpace(value) && (isValid == null || isValid?.Invoke(value) == true))
                     return value;
             }
@@ -53,26 +62,27 @@ namespace TML.Patcher.CLI.Common.Options
         {
             Patcher window = Program.Patcher;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            
+
             string targetFilePath = Path.Combine(Program.Configuration.RepackPath, pathOrModName);
             Directory.CreateDirectory(Program.Configuration.RepackPath);
             string modFolder = Path.Combine(Program.Configuration.ExtractPath, pathOrModName);
 
-            window.WriteLine(1, Program.LightweightLoad 
-                ? "Repacking mod..." 
-                : $"Repacking mod: {pathOrModName}...");
+            window.WriteLine(Program.LightweightLoad
+                ? " Repacking mod..."
+                : $" Repacking mod: {pathOrModName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            
+
             Stopwatch sw = Stopwatch.StartNew();
 
-            new RepackRequest(Directory.CreateDirectory(modFolder), targetFilePath, modData, Program.Configuration.Threads)
+            new RepackRequest(Directory.CreateDirectory(modFolder), targetFilePath, modData,
+                    Program.Configuration.Threads)
                 .ExecuteRequest();
-            
+
             sw.Stop();
-            
+
             Console.ForegroundColor = ConsoleColor.White;
-            window.WriteLine($"Finished repacking mod: {pathOrModName}");
-            window.WriteLine($"Repack time: {sw.Elapsed}");
+            window.WriteLine($" Finished repacking mod: {pathOrModName}");
+            window.WriteLine($" Repack time: {sw.Elapsed}");
         }
     }
 }

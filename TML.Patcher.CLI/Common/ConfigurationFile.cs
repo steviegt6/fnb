@@ -1,10 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using Consolation;
 using Newtonsoft.Json;
 
 namespace TML.Patcher.CLI.Common
 {
+    /// <summary>
+    ///     Configuration files for the program.
+    /// </summary>
     public sealed class ConfigurationFile
     {
         public const string UndefinedPath = "undefined";
@@ -18,36 +22,81 @@ namespace TML.Patcher.CLI.Common
         {
         }
 
+        /// <summary>
+        ///     Config file path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public static string FilePath { get; private set; } = null!;
 
-        public bool ShowIlSpyCmdInstallPrompt { get; set; }
+        /// <summary>
+        ///     Whether or not to prompt an ILSpyCMD installation.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool ShowILSpyCMDInstallPrompt { get; set; }
 
+        /// <summary>
+        ///     Mod directory path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ModsPath { get; set; } = null!;
 
+        /// <summary>
+        ///     Mod extraction path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ExtractPath { get; set; } = null!;
 
+        /// <summary>
+        ///     Mod decompilation path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string DecompilePath { get; set; } = null!;
 
+        /// <summary>
+        ///     ILSpy decompilation references path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string ReferencesPath { get; set; } = null!;
 
+        /// <summary>
+        ///     Repack output directory path.
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         public string RepackPath { get; set; } = null!;
 
+        /// <summary>
+        ///     The amount of threads to use.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        [DefaultValue(4)]
+        [DefaultValue(4D)]
         public double Threads { get; set; }
 
+        /// <summary>
+        ///     Rendered <see cref="ProgressBar"/> size.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue((byte) 16)]
         public byte ProgressBarSize { get; set; }
 
+        /// <summary>
+        ///     Amount of items per page for browsing.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue(10)]
         public int ItemsPerPage { get; set; }
 
+        /// <summary>
+        ///     Whether or not to prompt a registry insertion prompt.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
         [DefaultValue(true)]
         public bool ShowRegistryAdditionPrompt { get; set; }
 
+        /// <summary>
+        ///     Loads a config file at the given path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static ConfigurationFile? Load(string path)
         {
             Patcher window = Program.Patcher;
@@ -56,11 +105,11 @@ namespace TML.Patcher.CLI.Common
             if (File.Exists(path))
                 return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(path));
 
-            window.WriteLine(1, "Configuration file not found! Generating a new config.json file...");
+            window.WriteLine(" Configuration file not found! Generating a new config.json file...");
 
             ConfigurationFile config = new()
             {
-                ShowIlSpyCmdInstallPrompt = true,
+                ShowILSpyCMDInstallPrompt = true,
                 ExtractPath = Path.Combine(Program.ExePath, "Extracted"),
                 DecompilePath = Path.Combine(Program.ExePath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.ExePath, "References"),
@@ -70,6 +119,7 @@ namespace TML.Patcher.CLI.Common
                 ItemsPerPage = 10,
                 ShowRegistryAdditionPrompt = true
             };
+
             JsonSerializer serializer = new()
             {
                 NullValueHandling = NullValueHandling.Ignore,
@@ -87,9 +137,9 @@ namespace TML.Patcher.CLI.Common
 
                 PlatformID.MacOSX => MacDefault,
 
-                // LMAO XBOX
                 PlatformID.Xbox => UndefinedPath,
                 PlatformID.Other => UndefinedPath,
+
                 _ => throw new ArgumentOutOfRangeException(nameof(Environment.OSVersion.Platform), "Invalid platform")
             };
 
@@ -97,20 +147,21 @@ namespace TML.Patcher.CLI.Common
 
             using (StreamWriter writer = new(path))
             using (JsonWriter jWriter = new JsonTextWriter(writer))
-            {
                 serializer.Serialize(jWriter, config);
-            }
 
             window.WriteLine($"Created a new configuration file in: {path}");
 
             return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(path));
         }
 
+        /// <summary>
+        ///     Saves the current values to the config.
+        /// </summary>
         public static void Save()
         {
             ConfigurationFile config = new()
             {
-                ShowIlSpyCmdInstallPrompt = Program.Configuration.ShowIlSpyCmdInstallPrompt,
+                ShowILSpyCMDInstallPrompt = Program.Configuration.ShowILSpyCMDInstallPrompt,
                 ModsPath = Program.Configuration.ModsPath,
                 ExtractPath = Program.Configuration.ExtractPath,
                 DecompilePath = Program.Configuration.DecompilePath,
@@ -122,6 +173,7 @@ namespace TML.Patcher.CLI.Common
                 ItemsPerPage = Program.Configuration.ItemsPerPage,
                 ShowRegistryAdditionPrompt = Program.Configuration.ShowRegistryAdditionPrompt
             };
+
             JsonSerializer serializer = new()
             {
                 NullValueHandling = NullValueHandling.Ignore,
@@ -130,9 +182,7 @@ namespace TML.Patcher.CLI.Common
 
             using (StreamWriter writer = new(FilePath))
             using (JsonWriter jWriter = new JsonTextWriter(writer))
-            {
                 serializer.Serialize(jWriter, config);
-            }
 
             Program.Configuration = JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(FilePath))!;
         }

@@ -5,10 +5,17 @@ using Newtonsoft.Json;
 
 namespace TML.Patcher.CLI.Common.Options
 {
+    /// <summary>
+    ///     Lists your enabled tML mods.
+    /// </summary>
     public class ListEnabledModsOption : ConsoleOption
     {
+        /// <inheritdoc cref="ConsoleOption.Text"/>
         public override string Text => "List all enabled tML mods.";
 
+        /// <summary>
+        ///     Writes the listed mods to the console as a paged list.
+        /// </summary>
         public override void Execute()
         {
             Patcher window = Program.Patcher;
@@ -21,26 +28,30 @@ namespace TML.Patcher.CLI.Common.Options
             }
             else
             {
-                string[]? mods =
-                    JsonConvert.DeserializeObject<string[]>(
-                        File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
-
-                if (mods == null)
-                    goto SkipIfNull;
-
-                window.WriteAndClear("Displaying mods detected as enabled in enabled.json.", ConsoleColor.Yellow);
-
-                int modCount = 0;
-                foreach (string modName in mods)
+                while (true)
                 {
-                    modCount++;
-                    Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write($" [{modCount}]");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    window.WriteLine(0, $" - {modName}");
+                    string[]? mods =
+                        JsonConvert.DeserializeObject<string[]>(
+                            File.ReadAllText(Path.Combine(Program.Configuration.ModsPath, "enabled.json")));
+
+                    if (mods == null)
+                        break;
+
+                    window.WriteAndClear("Displaying mods detected as enabled in enabled.json.", ConsoleColor.Yellow);
+
+                    int modCount = 0;
+                    foreach (string modName in mods)
+                    {
+                        modCount++;
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.Write($" [{modCount}]");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        window.WriteLine($" - {modName}");
+                    }
+
+                    break;
                 }
 
-                SkipIfNull:
                 window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
             }
         }

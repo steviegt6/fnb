@@ -8,10 +8,17 @@ using TML.Patcher.Packing;
 
 namespace TML.Patcher.CLI.Common.Options
 {
+    /// <summary>
+    ///     Unpacks the given mod.
+    /// </summary>
     public class UnpackModOption : ConsoleOption
     {
+        /// <inheritdoc cref="ConsoleOption.Text"/>
         public override string Text => "Unpack a mod.";
 
+        /// <summary>
+        ///     Unpacks a mod at the request of the user.
+        /// </summary>
         public override void Execute()
         {
             PerformExtraction(Utilities.GetModName(Program.Configuration.ModsPath,
@@ -20,17 +27,17 @@ namespace TML.Patcher.CLI.Common.Options
             Program.Patcher.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
         }
 
-        public static void PerformExtraction(string pathOrModName)
+        internal static void PerformExtraction(string pathOrModName)
         {
             Patcher window = Program.Patcher;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            string modExtractFolder = Path.Combine(Program.Configuration.ExtractPath, Program.LightweightLoad 
-                ? Path.GetFileName(pathOrModName) 
+            string modExtractFolder = Path.Combine(Program.Configuration.ExtractPath, Program.LightweightLoad
+                ? Path.GetFileName(pathOrModName)
                 : pathOrModName);
 
-            window.WriteLine(1, Program.LightweightLoad 
-                ? "Extracting mod..." 
-                : $"Extracting mod: {pathOrModName}...");
+            window.WriteLine(Program.LightweightLoad
+                ? " Extracting mod..."
+                : $" Extracting mod: {pathOrModName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -46,10 +53,10 @@ namespace TML.Patcher.CLI.Common.Options
             bar.Finish();
 
             Console.ForegroundColor = ConsoleColor.White;
-            window.WriteLine($"Finished extracting mod: {pathOrModName}");
-            window.WriteLine($"Extraction time: {sw.Elapsed}");
+            window.WriteLine($" Finished extracting mod: {pathOrModName}");
+            window.WriteLine($" Extraction time: {sw.Elapsed}");
 
-            if (!Program.LightweightLoad) 
+            if (!Program.LightweightLoad)
                 return;
 
             try
@@ -66,6 +73,7 @@ namespace TML.Patcher.CLI.Common.Options
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Unable to open extracted folder location due to insufficient permissions.");
             }
+
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();

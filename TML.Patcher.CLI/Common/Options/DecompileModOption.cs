@@ -7,10 +7,17 @@ using TML.Patcher.Decompilation;
 
 namespace TML.Patcher.CLI.Common.Options
 {
+    /// <summary>
+    ///     Option for mod decompilation.
+    /// </summary>
     public class DecompileModOption : ConsoleOption
     {
+        /// <inheritdoc cref="ConsoleOption.Text"/>
         public override string Text => "Decompile an extracted mod.";
 
+        /// <summary>
+        ///     Decompiles the mod.
+        /// </summary>
         public override void Execute()
         {
             Patcher window = Program.Patcher;
@@ -18,7 +25,7 @@ namespace TML.Patcher.CLI.Common.Options
                 "Please enter the name of the mod you want to decompile:", true);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            window.WriteLine(1, $"Decompiling mod: {modName}...");
+            window.WriteLine($" Decompiling mod: {modName}...");
             Console.ForegroundColor = ConsoleColor.DarkGray;
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -36,8 +43,8 @@ namespace TML.Patcher.CLI.Common.Options
 
             sw.Stop();
 
-            window.WriteLine("Decompilation operation completed.");
-            window.WriteLine($"Completed decompilation operation of {modName} in {sw.Elapsed}.");
+            window.WriteLine(" Decompilation operation completed.");
+            window.WriteLine($" Completed decompilation operation of {modName} in {sw.Elapsed}.");
             Console.ForegroundColor = ConsoleColor.White;
 
             window.WriteOptionsList(new ConsoleOptions("Return:", Program.Patcher.SelectedOptions));
