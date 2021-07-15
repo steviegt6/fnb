@@ -18,6 +18,7 @@
     <RepositoryUrl>https://github.com/TML-Patcher/TML.Patcher</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod, cli</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
