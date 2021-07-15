@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation.Framework.OptionsSystem;
 using TML.Patcher.Decompilation;
 
 namespace TML.Patcher.CLI.Common.Options

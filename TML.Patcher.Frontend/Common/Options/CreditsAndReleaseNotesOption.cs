@@ -1,4 +1,4 @@
-﻿using Consolation.Common.Framework.OptionsSystem;
+﻿using Consolation.Framework.OptionsSystem;
 
 namespace TML.Patcher.CLI.Common.Options
 {

@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Consolation.Common.Framework.OptionsSystem
+namespace Consolation.Framework.OptionsSystem
 {
+    /// <summary>
+    ///     A list collection of <see cref="ConsoleOption"/>.
+    /// </summary>
     public class ConsoleOptions : ICloneable, IList<ConsoleOption>
     {
         #region ConsoleOptions Code
@@ -16,17 +19,32 @@ namespace Consolation.Common.Framework.OptionsSystem
             set => _options[index] = value;
         }
 
+        /// <summary>
+        ///     Prompt text.
+        /// </summary>
         public string OptionText { get; }
 
+        /// <summary>
+        ///     Whether or not to display a "return" option (returns to default option set).
+        /// </summary>
         public bool DisplayReturn { get; set; } = true;
 
+        /// <summary>
+        ///     Whether or not to display a "go back" option (returns to the previous option set).
+        /// </summary>
         public bool DisplayGoBack { get; set; } = true;
 
         private readonly List<ConsoleOption> _options;
 
-        private readonly ConsoleOptions _prevOptionsState;
+        private readonly ConsoleOptions? _prevOptionsState;
 
-        public ConsoleOptions(string optionText, ConsoleOptions previousOptions, params ConsoleOption[] options)
+        /// <summary>
+        ///     Constructs a new <see cref="ConsoleOptions"/> instance.
+        /// </summary>
+        /// <param name="optionText"></param>
+        /// <param name="previousOptions"></param>
+        /// <param name="options"></param>
+        public ConsoleOptions(string optionText, ConsoleOptions? previousOptions = null, params ConsoleOption[] options)
         {
             OptionText = optionText;
             _prevOptionsState = previousOptions;
@@ -38,19 +56,23 @@ namespace Consolation.Common.Framework.OptionsSystem
             _options = options.ToList();
         }
 
+        /// <summary>
+        ///     List all provided options from <see cref="_options"/>, provided in the constructor.
+        /// </summary>
         public virtual void ListForOption(ConsoleWindow window)
         {
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.White;
+
                 window.WriteLine(ToString());
+
                 string? key = Console.ReadLine();
 
                 switch (key)
                 {
                     case null:
-                        window.WriteAndClear(
-                            "Whoops! The entered value returned null. Please only enter actual numbers (1, 5, 27, etc.).");
+                        window.WriteAndClear("Whoops! The entered value returned null. Please only enter numbers.");
                         continue;
 
                     case "/" when DisplayReturn:
@@ -61,29 +83,24 @@ namespace Consolation.Common.Framework.OptionsSystem
 
                     case "." when DisplayGoBack:
                         if (_prevOptionsState == null)
-                        {
                             window.WriteAndClear("No previous state was found, falling back to the beginning...");
-                        }
                         else
                         {
                             window.WriteAndClear("Returning to the previous options menu...", ConsoleColor.Green);
                             _prevOptionsState.ListForOption(window);
                         }
-
                         return;
                 }
 
                 if (!int.TryParse(key, out int option))
                 {
-                    window.WriteAndClear(
-                        "Whoops! We weren't able to parse your response. Please only enter actual numbers (1, 5, 27, etc.).");
+                    window.WriteAndClear("Whoops! We weren't able to parse your response. Please only enter numbers.");
                     continue;
                 }
 
                 if (option < 0 || option > Count)
                 {
-                    window.WriteAndClear(
-                        "Whoops! The number entered does not correspond to any of the available options.");
+                    window.WriteAndClear("Whoops! The number entered does not correspond to any available options.");
                     continue;
                 }
 
@@ -92,6 +109,10 @@ namespace Consolation.Common.Framework.OptionsSystem
             }
         }
 
+        /// <summary>
+        ///     Returns a string listing all options.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string text = this.Aggregate($" {OptionText}", (current, option) => current + $"\n{option}");

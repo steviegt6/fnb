@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation.Framework.OptionsSystem;
 using Microsoft.Win32;
 using TML.Patcher.CLI.Common;
 using TML.Patcher.CLI.Common.Options;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Consolation.Common;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation;
+using Consolation.Framework.OptionsSystem;
 using TML.Files.Specific.Files;
 using TML.Patcher.Packing;
 

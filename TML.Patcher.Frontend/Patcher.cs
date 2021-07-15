@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Consolation.Common;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation;
+using Consolation.Framework.OptionsSystem;
 using TML.Patcher.CLI.Common;
 using TML.Patcher.CLI.Common.Options;
 

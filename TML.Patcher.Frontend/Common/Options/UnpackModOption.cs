@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Consolation.Common;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation;
+using Consolation.Framework.OptionsSystem;
 using TML.Patcher.Packing;
 
 namespace TML.Patcher.CLI.Common.Options

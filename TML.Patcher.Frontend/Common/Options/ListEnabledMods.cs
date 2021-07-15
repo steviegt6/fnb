@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Consolation.Common.Framework.OptionsSystem;
+using Consolation.Framework.OptionsSystem;
 using Newtonsoft.Json;
 
 namespace TML.Patcher.CLI.Common.Options
