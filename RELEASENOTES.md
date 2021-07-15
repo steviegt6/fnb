@@ -1,7 +1,10 @@
-# Unreleased
-* Behind-the-scenes code clean-up.
+# 0.2.0.0
+* Behind-the-scenes code refactorization.
+* Consolation is completely independent.
 * TMl.Patcher now uses DragonFruit.
-** Also added some launch parameters.
+* Backend renamed to TML.Patcher.
+* Frontend renamed to TML.Patcher.CLI.
+* Uploaded TML.Files and TML.Patcher to NuGet.
 
 # 0.1.3.0
 * Added light-weight mod unpacking through drag-and-dropping.

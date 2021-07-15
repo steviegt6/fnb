@@ -123,32 +123,29 @@ namespace Consolation
                     WriteLine($" - {entryName}");
                 }
 
-                while (true)
+                AskForInput:
+                WriteLine();
+                WriteLine("Goto page (-1 to exit):");
+
+                string? input = Console.ReadLine();
+                if (!int.TryParse(input, out int realInput))
                 {
-                    WriteLine();
-                    WriteLine("Goto page (-1 to exit):");
-
-                    string? input = Console.ReadLine();
-                    if (!int.TryParse(input, out int realInput))
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        WriteLine("Invalid input.");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        continue;
-                    }
-
-                    if (realInput <= -1)
-                        break;
-
-                    if (realInput > pages.Count)
-                        realInput = pages.Count;
-
-                    if (realInput == 0)
-                        realInput = 1;
-
-                    selectedPage = realInput - 1;
-                    break;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    WriteLine("Invalid input.");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    goto AskForInput;
                 }
+
+                if (realInput <= -1)
+                    break;
+
+                if (realInput > pages.Count)
+                    realInput = pages.Count;
+
+                if (realInput == 0)
+                    realInput = 1;
+
+                selectedPage = realInput - 1;
             }
         }
     }
