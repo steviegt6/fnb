@@ -46,7 +46,7 @@ namespace TML.Patcher.CLI
         /// <summary>
         ///     Entry-point.
         /// </summary>
-        /// <param name="file">Drag-and-drop file argument.</param>
+        /// <param name="args">Drag-and-drop file argument array because DragonFruit is funny like that.</param>
         /// <param name="path">File path for extracting a single file quickly.</param>
         /// <param name="skipILSpyCMDPrompt">Skips the ILSpyCMD installation prompt.</param>
         /// <param name="skipRegistryPrompt">Skips the Windows registry prompt.</param>
