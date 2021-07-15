@@ -2,17 +2,34 @@
 
 namespace TML.Files.Generic.Files
 {
-    public struct FileEntryData
+    /// <summary>
+    ///     Simple container for data of a file entry.
+    /// </summary>
+    public class FileEntryData
     {
+        /// <summary>
+        ///     The file's name.
+        /// </summary>
         public string fileName;
+
+        /// <summary>
+        ///     Data pertaining to the file's length.
+        /// </summary>
         public FileLengthData fileLengthData;
+
+        /// <summary>
+        ///     Actual file data stored in a byte array.
+        /// </summary>
         public byte[] fileData;
 
-        public FileEntryData(string fileName, FileLengthData fileLengthData, byte[]? fileData)
+        /// <summary>
+        ///     Constructs a new <see cref="FileEntryData"/> instance.
+        /// </summary>
+        public FileEntryData(string name, FileLengthData lengthData, byte[]? data)
         {
-            this.fileName = fileName;
-            this.fileLengthData = fileLengthData;
-            this.fileData = fileData ?? Array.Empty<byte>();
+            fileName = name;
+            fileLengthData = lengthData;
+            fileData = data ?? Array.Empty<byte>();
         }
     }
 }
