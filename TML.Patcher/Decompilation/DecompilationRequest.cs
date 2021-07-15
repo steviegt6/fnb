@@ -4,10 +4,20 @@ using FileIO = System.IO.File;
 
 namespace TML.Patcher.Decompilation
 {
-    public sealed class DecompilationRequest
+    /// <summary>
+    ///     Allows you to decompile a .dll using ILSpyCMD.
+    /// </summary>
+    public class DecompilationRequest
     {
+        /// <summary>
+        ///     Invoked on errors. Allows you to output to the console.
+        /// </summary>
+        /// <param name="message"></param>
         public delegate void ErrorMessage(string message);
 
+        /// <summary>
+        ///     Constructs a new <see cref="DecompilationRequest"/> instance.
+        /// </summary>
         public DecompilationRequest(string? file, string decompilePath, string referencesPath, string modName)
         {
             File = file;
@@ -16,17 +26,35 @@ namespace TML.Patcher.Decompilation
             ModName = modName;
         }
 
+        /// <summary>
+        ///     The file path.
+        /// </summary>
         public string? File { get; }
 
+        /// <summary>
+        ///     The name of the mod.
+        /// </summary>
         public string ModName { get; }
 
+        /// <summary>
+        ///     The decompilation output path.
+        /// </summary>
         public string DecompilePath { get; }
 
+        /// <summary>
+        ///     Path for ILSpy decompilation references.
+        /// </summary>
         public string ReferencesPath { get; }
 
+        /// <summary>
+        ///     Invoked on errors.
+        /// </summary>
         public event ErrorMessage? OnError;
 
-        public void ExecuteRequest()
+        /// <summary>
+        ///     Executes the request.
+        /// </summary>
+        public virtual void ExecuteRequest()
         {
             if (File == null || !FileIO.Exists(File))
             {

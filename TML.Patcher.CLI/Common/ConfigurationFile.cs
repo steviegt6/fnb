@@ -48,13 +48,13 @@ namespace TML.Patcher.CLI.Common
         [DefaultValue(true)]
         public bool ShowRegistryAdditionPrompt { get; set; }
 
-        public static ConfigurationFile? Load(string filePath)
+        public static ConfigurationFile? Load(string path)
         {
             Patcher window = Program.Patcher;
-            FilePath = filePath;
+            FilePath = path;
 
-            if (File.Exists(filePath))
-                return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
+            if (File.Exists(path))
+                return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(path));
 
             window.WriteLine(1, "Configuration file not found! Generating a new config.json file...");
 
@@ -76,7 +76,7 @@ namespace TML.Patcher.CLI.Common
                 Formatting = Formatting.Indented
             };
 
-            string path = Environment.OSVersion.Platform switch
+            string platformPath = Environment.OSVersion.Platform switch
             {
                 PlatformID.Win32S => WindowsDefault1,
                 PlatformID.Win32Windows => WindowsDefault1,
@@ -93,17 +93,17 @@ namespace TML.Patcher.CLI.Common
                 _ => throw new ArgumentOutOfRangeException(nameof(Environment.OSVersion.Platform), "Invalid platform")
             };
 
-            config.ModsPath = Environment.ExpandEnvironmentVariables(path);
+            config.ModsPath = Environment.ExpandEnvironmentVariables(platformPath);
 
-            using (StreamWriter writer = new(filePath))
+            using (StreamWriter writer = new(path))
             using (JsonWriter jWriter = new JsonTextWriter(writer))
             {
                 serializer.Serialize(jWriter, config);
             }
 
-            window.WriteLine($"Created a new configuration file in: {filePath}");
+            window.WriteLine($"Created a new configuration file in: {path}");
 
-            return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(filePath));
+            return JsonConvert.DeserializeObject<ConfigurationFile>(File.ReadAllText(path));
         }
 
         public static void Save()

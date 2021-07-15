@@ -34,7 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Consolation\Consolation.csproj" />
     <ProjectReference Include="..\TML.Files\TML.Files.csproj" />
-    <ProjectReference Include="..\TML.Patcher.Backend\TML.Patcher.csproj" />
+    <ProjectReference Include="..\TML.Patcher\TML.Patcher.csproj" />
   </ItemGroup>
 
   <ItemGroup>

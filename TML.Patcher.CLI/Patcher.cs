@@ -15,11 +15,11 @@ namespace TML.Patcher.CLI
 
         public override ConsoleOptions DefaultOptions => Program.DefaultOptions;
 
-        public Patcher(string filePath)
+        public Patcher(string path)
         {
-            if (filePath is {Length: > 0})
+            if (path is {Length: > 0})
             {
-                if (File.Exists(filePath) && Path.GetExtension(filePath) == ".tmod")
+                if (File.Exists(path) && Path.GetExtension(path) == ".tmod")
                     Program.LightweightLoad = true;
                 else
                 {
