@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TML.Patcher.Frontend.Common
+namespace TML.Patcher.CLI.Common
 {
     public static class Utilities
     {

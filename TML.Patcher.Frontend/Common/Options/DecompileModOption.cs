@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Consolation.Common.Framework.OptionsSystem;
-using TML.Patcher.Backend.Decompilation;
+using TML.Patcher.Decompilation;
 
-namespace TML.Patcher.Frontend.Common.Options
+namespace TML.Patcher.CLI.Common.Options
 {
     public class DecompileModOption : ConsoleOption
     {

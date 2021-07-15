@@ -2,7 +2,7 @@
 using System.IO;
 using FileIO = System.IO.File;
 
-namespace TML.Patcher.Backend.Decompilation
+namespace TML.Patcher.Decompilation
 {
     public sealed class DecompilationRequest
     {

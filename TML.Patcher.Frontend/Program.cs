@@ -7,10 +7,10 @@ using System.Reflection;
 using System.Threading;
 using Consolation.Common.Framework.OptionsSystem;
 using Microsoft.Win32;
-using TML.Patcher.Frontend.Common;
-using TML.Patcher.Frontend.Common.Options;
+using TML.Patcher.CLI.Common;
+using TML.Patcher.CLI.Common.Options;
 
-namespace TML.Patcher.Frontend
+namespace TML.Patcher.CLI
 {
     public static class Program
     {

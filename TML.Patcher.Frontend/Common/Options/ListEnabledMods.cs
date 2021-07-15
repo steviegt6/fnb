@@ -3,7 +3,7 @@ using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 using Newtonsoft.Json;
 
-namespace TML.Patcher.Frontend.Common.Options
+namespace TML.Patcher.CLI.Common.Options
 {
     public class ListEnabledModsOption : ConsoleOption
     {

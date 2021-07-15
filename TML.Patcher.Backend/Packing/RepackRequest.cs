@@ -10,7 +10,7 @@ using TML.Files.Generic.Files;
 using TML.Files.Generic.Utilities;
 using TML.Files.Specific.Files;
 
-namespace TML.Patcher.Backend.Packing
+namespace TML.Patcher.Packing
 {
     public sealed class RepackRequest
     {

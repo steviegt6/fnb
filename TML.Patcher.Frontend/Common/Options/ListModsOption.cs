@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Consolation.Common.Framework.OptionsSystem;
 
-namespace TML.Patcher.Frontend.Common.Options
+namespace TML.Patcher.CLI.Common.Options
 {
     public class ListModsOption : ConsoleOption
     {

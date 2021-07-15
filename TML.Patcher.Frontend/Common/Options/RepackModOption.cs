@@ -4,9 +4,9 @@ using System.IO;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
 using TML.Files.Specific.Files;
-using TML.Patcher.Backend.Packing;
+using TML.Patcher.Packing;
 
-namespace TML.Patcher.Frontend.Common.Options
+namespace TML.Patcher.CLI.Common.Options
 {
     public class RepackModOption : ConsoleOption
     {

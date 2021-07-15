@@ -8,7 +8,7 @@ using TML.Files.Generic.Utilities;
 using TML.Files.Specific.Files;
 using FileIO = System.IO.File;
 
-namespace TML.Patcher.Backend.Packing
+namespace TML.Patcher.Packing
 {
     public sealed class UnpackRequest
     {

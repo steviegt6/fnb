@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using Consolation.Common;
 using Consolation.Common.Framework.OptionsSystem;
-using TML.Patcher.Frontend.Common;
-using TML.Patcher.Frontend.Common.Options;
+using TML.Patcher.CLI.Common;
+using TML.Patcher.CLI.Common.Options;
 
-namespace TML.Patcher.Frontend
+namespace TML.Patcher.CLI
 {
     public sealed class Patcher : ConsoleWindow
     {
