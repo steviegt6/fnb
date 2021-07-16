@@ -130,6 +130,9 @@ namespace TML.Patcher.CLI
 
                 SearchForPathAlternatives();
 
+                if (Directory.Exists(Program.Configuration.ModsPath))
+                    return;
+
                 Console.ForegroundColor = ConsoleColor.White;
                 WriteLine($" {nameof(Program.Configuration.ModsPath)} is undefined or was not found!");
                 WriteLine(" Please enter the directory of your tModLoader Mods folder:");
