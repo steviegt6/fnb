@@ -37,5 +37,8 @@ Project | Purpose
 `[Consolation](https://github.com/Steviegt6/Consolation/)` | Console-focused that provides a simple way to use the console as a properly-functioning interface. Only used for `TML.Patcher.CLI`.
 `TML.Patcher.Fontend` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
 
+### Nuget
+You can get [`TML.Files`](https://www.nuget.org/packages/TML.Files/) and [`TML.Patcher`](https://www.nuget.org/packages/TML.Patcher/) on NuGet.
+
 ### Contributing
 Contributing is extremely simple. There are no real set standards. Do note that this is developed in .NET 5. Anyone is free to PR new features or resolve known issues. If you aren't sure if something is needed, then contact me and ask.
