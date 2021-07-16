@@ -1,3 +1,7 @@
+# 0.2.0.1
+* Fixed registry issue.
+* Fixed path fall-backs.
+
 # 0.2.0.0
 * Behind-the-scenes code refactorization.
 * Consolation is completely independent.

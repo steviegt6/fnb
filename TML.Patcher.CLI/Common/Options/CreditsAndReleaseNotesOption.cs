@@ -18,16 +18,11 @@ namespace TML.Patcher.CLI.Common.Options
             "Archanyhm - Help with Linux and Mac compatibility"
         };
 
-        public static readonly string[] ReleaseNotes =
+        private static readonly string[] ReleaseNotes =
         {
-            "Release Notes - v0.2.0.0",
-            " * Behind-the-scenes code refactorization.",
-            " * Consolation is completely independent.",
-            " * TMl.Patcher now uses DragonFruit.",
-            " * Backend renamed to TML.Patcher.",
-            " * Frontend renamed to TML.Patcher.CLI.",
-            " * Uploaded TML.Files and TML.Patcher to NuGet.",
-            " * Repackaging mods is now possible."
+            "Release Notes - v0.2.0.1",
+            " * Fixed registry issue.",
+            " * Fixed path fall-backs."
         };
 
         /// <summary>
