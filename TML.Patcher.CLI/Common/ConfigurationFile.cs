@@ -11,11 +11,34 @@ namespace TML.Patcher.CLI.Common
     /// </summary>
     public sealed class ConfigurationFile
     {
+        /// <summary>
+        ///     Represents an uninitialized path.
+        /// </summary>
         public const string UndefinedPath = "undefined";
+
+        /// <summary>
+        ///     First default Windows Mods path.
+        /// </summary>
         public const string WindowsDefault1 = @"%UserProfile%\Documents\My Games\Terraria\ModLoader\Mods";
-        public const string WindowsDefault2 = @"%UserProfile%\OneDrive\Documents\My Games\Terraria\ModLoader\Mods";
+
+        /// <summary>
+        ///     Second default Windows Mods path.
+        /// </summary>
+        public const string WindowsDefault2 = @"%UserProfile%\One Drive\Documents\My Games\Terraria\ModLoader\Mods";
+
+        /// <summary>
+        ///     Default Mac Mods path.
+        /// </summary>
         public const string MacDefault = @"~/Library/Application support/Terraria/ModLoader/Mods";
+        
+        /// <summary>
+        ///     First default Linux Mods path.
+        /// </summary>
         public const string LinuxDefault1 = @"%HOME%/.local/share/Terraria/ModLoader/Mods";
+
+        /// <summary>
+        ///     Second default Linux Mods path.
+        /// </summary>
         public const string LinuxDefault2 = @"%XDG_DATA_HOME%/Terraria/ModLoader/Mods";
 
         internal ConfigurationFile()
