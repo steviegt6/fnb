@@ -157,8 +157,8 @@ namespace TML.Patcher.CLI
                 RegistryKey open = Registry.ClassesRoot.CreateSubKey("*\\shell\\Open with TML.Patcher");
                 RegistryKey command = open.CreateSubKey("command");
                 open.SetValue(null, "Open with TML.Patcher");
-                open.SetValue("icon", Path.Combine(ExePath, "TML.Patcher.Frontend.exe"));
-                command.SetValue(null, $"{Path.Combine(ExePath, "TML.Patcher.Frontend.exe")} \"%1\"");
+                open.SetValue("icon", Path.Combine(ExePath, "TML.Patcher.CLI.exe"));
+                command.SetValue(null, $"{Path.Combine(ExePath, "TML.Patcher.CLI.exe")} \"%1\"");
             }
             catch (UnauthorizedAccessException)
             {

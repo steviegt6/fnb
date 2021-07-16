@@ -24,7 +24,7 @@ namespace TML.Patcher.CLI.Common
         /// <summary>
         ///     Second default Windows Mods path.
         /// </summary>
-        public const string WindowsDefault2 = @"%UserProfile%\One Drive\Documents\My Games\Terraria\ModLoader\Mods";
+        public const string WindowsDefault2 = @"%UserProfile%\OneDrive\Documents\My Games\Terraria\ModLoader\Mods";
 
         /// <summary>
         ///     Default Mac Mods path.
