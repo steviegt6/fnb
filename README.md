@@ -34,7 +34,7 @@ Project | Purpose
 ------- | -------
 `TML.Files` | A simple library that provides both generic and tML-specific structures and and classes, along with helper/utility methods for handling files. Includes methods for converting `.rawimg`s (tML-specific) to `.png`s, simple decompression, etc. Heavily used by the TML.Patcher backend.
 `TML.Patcher` | The core library that provides methods for decompilation and unpacking `.tmod` files. Requires `TML.Files` to use, and `ilspycmd` to decompile extracted mods.
-`[Consolation](https://github.com/Steviegt6/Consolation/)` | Console-focused that provides a simple way to use the console as a properly-functioning interface. Only used for `TML.Patcher.CLI`.
+[`Consolation`](https://github.com/Steviegt6/Consolation/) | Library that provides a simple way to use the console as a properly-functioning interface. Only used for `TML.Patcher.CLI`.
 `TML.Patcher.Fontend` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
 
 ### Nuget
