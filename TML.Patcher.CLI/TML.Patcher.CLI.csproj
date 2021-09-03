@@ -14,7 +14,6 @@
     <Copyright>MIT License</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/TML-Patcher/TML.Patcher</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/TML-Patcher/TML.Patcher</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod, cli</PackageTags>
@@ -39,10 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\My Games\Terraria\ModLoader\Beta\Mod Sources\Fargowiltas\icon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
