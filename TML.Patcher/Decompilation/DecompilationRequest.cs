@@ -68,7 +68,8 @@ namespace TML.Patcher.Decompilation
             string commandArgs =
                 $"\"{File}\" --referencepath \"{ReferencesPath}\" --outputdir \"{Path.Combine(DecompilePath)}\" --project --languageversion \"CSharp7_3\"";
 
-            ProcessStartInfo ilSpy = new("ilspycmd.exe")
+            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            ProcessStartInfo ilSpy = new($"ilspycmd" + (isWindows ? ".exe" : string.Empty))
             {
                 UseShellExecute = false,
                 Arguments = commandArgs
