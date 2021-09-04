@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.IO;
+using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.CSharp;
+using ICSharpCode.Decompiler.CSharp.ProjectDecompiler;
+using ICSharpCode.Decompiler.Metadata;
 using FileIO = System.IO.File;
 
 namespace TML.Patcher.Decompilation
@@ -66,18 +68,27 @@ namespace TML.Patcher.Decompilation
             Directory.CreateDirectory(DecompilePath);
             Directory.CreateDirectory(ReferencesPath);
 
-            string commandArgs =
-                $"\"{File}\" --referencepath \"{ReferencesPath}\" --outputdir \"{Path.Combine(DecompilePath)}\" --project --languageversion \"CSharp7_3\"";
+            Decompile(File, DecompilePath, ReferencesPath, LanguageVersion.CSharp7_3); // TODO: Support CSharp 9 on 1.4
+        }
 
-            bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-            ProcessStartInfo ilSpy = new($"ilspycmd" + (isWindows ? ".exe" : string.Empty))
-            {
-                UseShellExecute = false,
-                Arguments = commandArgs
+        private static void Decompile(string assemblyFileName, string outputDirectory, string referencePath, LanguageVersion languageVersion)
+        {
+            PEFile module = new(assemblyFileName);
+            UniversalAssemblyResolver resolver = new(assemblyFileName, false, module.Reader.DetectTargetFrameworkId());
+            
+            // Make the resolver find references in referencePath
+            resolver.AddSearchDirectory(referencePath);
+
+            DecompilerSettings decompilerSettings = new(languageVersion) {
+                ThrowOnAssemblyResolveErrors = false
             };
+            
+            // Create the decompiler
+            WholeProjectDecompiler decompiler = new(decompilerSettings, resolver, resolver, null);
+            decompiler.Settings.SetLanguageVersion(languageVersion);
 
-            Process? process = Process.Start(ilSpy);
-            process?.WaitForExit();
+            // Decompile the dll and output to the outputDirectory
+            decompiler.DecompileProject(module, outputDirectory);
         }
     }
 }

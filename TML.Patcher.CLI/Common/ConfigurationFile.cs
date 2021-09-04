@@ -52,12 +52,6 @@ namespace TML.Patcher.CLI.Common
         public static string FilePath { get; private set; } = null!;
 
         /// <summary>
-        ///     Whether or not to prompt an ILSpyCMD installation.
-        /// </summary>
-        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
-        public bool ShowILSpyCMDInstallPrompt { get; set; }
-
-        /// <summary>
         ///     Mod directory path.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
@@ -132,7 +126,6 @@ namespace TML.Patcher.CLI.Common
 
             ConfigurationFile config = new()
             {
-                ShowILSpyCMDInstallPrompt = true,
                 ExtractPath = Path.Combine(Program.ExePath, "Extracted"),
                 DecompilePath = Path.Combine(Program.ExePath, "Decompiled"),
                 ReferencesPath = Path.Combine(Program.ExePath, "References"),
@@ -184,7 +177,6 @@ namespace TML.Patcher.CLI.Common
         {
             ConfigurationFile config = new()
             {
-                ShowILSpyCMDInstallPrompt = Program.Configuration.ShowILSpyCMDInstallPrompt,
                 ModsPath = Program.Configuration.ModsPath,
                 ExtractPath = Program.Configuration.ExtractPath,
                 DecompilePath = Program.Configuration.DecompilePath,

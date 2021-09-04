@@ -48,9 +48,8 @@ namespace TML.Patcher.CLI
         /// </summary>
         /// <param name="args">Drag-and-drop file argument array because DragonFruit is funny like that.</param>
         /// <param name="path">File path for extracting a single file quickly.</param>
-        /// <param name="skipILSpyCMDPrompt">Skips the ILSpyCMD installation prompt.</param>
         /// <param name="skipRegistryPrompt">Skips the Windows registry prompt.</param>
-        public static void Main(string[] args, string path = "", bool skipILSpyCMDPrompt = false, bool skipRegistryPrompt = false)
+        public static void Main(string[] args, string path = "", bool skipRegistryPrompt = false)
         {
             Console.Title = "TMLPatcher - by convicted tomatophile";
             Thread.CurrentThread.Name = "Main";
@@ -63,9 +62,6 @@ namespace TML.Patcher.CLI
             PreLoadAssemblies();
             Patcher.InitializeConsoleOptions();
             Patcher.InitializeProgramOptions();
-
-            if (Configuration.ShowILSpyCMDInstallPrompt && !skipILSpyCMDPrompt)
-                InstallILSpyCMD();
 
             if (Configuration.ShowRegistryAdditionPrompt && !skipRegistryPrompt)
                 AddRegistryContext();
@@ -81,52 +77,6 @@ namespace TML.Patcher.CLI
             Patcher.WriteStaticText(false);
             Patcher.CheckForUndefinedPath();
             Patcher.SelectedOptions.ListForOption(Patcher);
-        }
-
-        private static void InstallILSpyCMD()
-        {
-            Configuration.ShowILSpyCMDInstallPrompt = false;
-
-            Patcher window = Patcher;
-
-            window.WriteLine("Do you want to install ilspycmd?");
-            window.WriteLine("<y/n>");
-
-            ConsoleKeyInfo pressedKey = Console.ReadKey();
-            window.WriteLine();
-
-            if (pressedKey.Key != ConsoleKey.Y)
-                return;
-
-            const string dotNetCommand = "dotnet tool install ilspycmd -g";
-
-            window.WriteLine("Attempting to install ilspycmd...");
-
-            Process process = new();
-
-            if (OperatingSystem.IsWindows())
-            {
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/C " + dotNetCommand,
-                    UseShellExecute = false
-                };
-            }
-            else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
-            {
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = "bash",
-                    Arguments = "-c \" " + dotNetCommand + " \"",
-                    UseShellExecute = false
-                };
-            }
-            else
-                throw new PlatformNotSupportedException("Unsupported platform for installing ilspycmd.");
-
-            process.Start();
-            process.WaitForExit();
         }
 
         private static void AddRegistryContext()
