@@ -58,7 +58,7 @@ namespace TML.Patcher.Packing
         /// </summary>
         public virtual void ExecuteRequest()
         {
-            using (FileStream stream = FileIO.Open(FilePath, FileMode.Open))
+            using (FileStream stream = FileIO.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (BinaryReader reader = new(stream))
             {
                 File = new ModFile(reader);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using TML.Files.Generic.Files;
 using TML.Files.Generic.Utilities;
@@ -12,6 +13,11 @@ namespace TML.Files.ModLoader.Files
     /// </summary>
     public class ModFile
     {
+        /// <summary>
+        ///     The version when tmod files where upgraded to a new format.
+        /// </summary>
+        protected static readonly Version UpgradeVersion = new(0, 11);
+        
         /// <summary>
         ///     The usable binary reader.
         /// </summary>
@@ -49,22 +55,39 @@ namespace TML.Files.ModLoader.Files
         /// </summary>
         public virtual void PopulateFiles()
         {
-            Header = Reader.ReadBytes(4).ConvertToString(); // file header, expected to be TMOD
+            BinaryReader reader = Reader;
+            
+            Header = reader.ReadBytes(4).ConvertToString(); // file header, expected to be TMOD
 
-            string loaderVersionString = Reader.ReadString();
-            string hash = Encoding.ASCII.GetString(Reader.ReadBytes(20));
+            string loaderVersionString = reader.ReadString();
+            Version loaderVersion = Version.Parse(loaderVersionString);
+            string hash = Encoding.ASCII.GetString(reader.ReadBytes(20));
 
-            Signature = Reader.ReadBytes(256);
+            Signature = reader.ReadBytes(256);
 
-            uint length = Reader.ReadUInt32();
-            string modName = Reader.ReadString();
-            string modVersionString = Reader.ReadString();
-            int count = Reader.ReadInt32();
+            uint length = reader.ReadUInt32();
+
+            if (loaderVersion < UpgradeVersion) 
+            {
+                DeflateStream deflateStream = new(reader.BaseStream, CompressionMode.Decompress, true);
+                BinaryReader deflateReader = new(deflateStream);
+                reader = deflateReader;
+            }
+            
+            string modName = reader.ReadString();
+            string modVersionString = reader.ReadString();
+            int count = reader.ReadInt32();
 
             FileDataWithFileCount = new FileDataWithFileCount(hash, length, count);
-            FileModData = new ModData(modName, Version.Parse(modVersionString), Version.Parse(loaderVersionString));
+            FileModData = new ModData(modName, Version.Parse(modVersionString), loaderVersion);
 
-            RegisterFileEntries(count);
+            if (loaderVersion < UpgradeVersion)
+                RegisterOldFileEntries(count, reader);
+            else
+                RegisterFileEntries(count);
+            
+            if (reader != Reader)
+                reader.Close();
         }
 
         /// <summary>
@@ -87,6 +110,20 @@ namespace TML.Files.ModLoader.Files
                 FileEntryData tempFile = tempFiles[i];
                 byte[] realFileData = Reader.ReadBytes(tempFile.fileLengthData.lengthCompressed);
                 Files.Add(new FileEntryData(tempFile.fileName, tempFile.fileLengthData, realFileData));
+            }
+        }
+
+        /// <summary>
+        /// Populates the <see cref="Files"/> list from the old tmod file format.
+        /// </summary>
+        public virtual void RegisterOldFileEntries(int count, BinaryReader deflateReader)
+        {
+            for (int i = 0; i < count; i++) {
+                string name = deflateReader.ReadString();
+                int length = deflateReader.ReadInt32();
+                byte[] realFileData = deflateReader.ReadBytes(length);
+                
+                Files.Add(new FileEntryData(name, new FileLengthData(length, length), realFileData));
             }
         }
     }
