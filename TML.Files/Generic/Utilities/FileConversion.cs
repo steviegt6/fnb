@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using SkiaSharp;
 
 namespace TML.Files.Generic.Utilities
@@ -15,24 +14,27 @@ namespace TML.Files.Generic.Utilities
         /// </summary>
         public static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
-            ReadOnlySpan<byte> dataSpan = data;
-            int width = MemoryMarshal.Read<int>(dataSpan[4..8]);
-            int height = MemoryMarshal.Read<int>(dataSpan[8..12]);
-            ReadOnlySpan<byte> oldPixels = dataSpan[12..];
-
-            SKImageInfo info = new(width, height, SKColorType.Rgba8888);
-            using SKBitmap imageMap = new(info);
-
-            fixed (byte* ptr = oldPixels)
+            fixed (byte* pData = data)
             {
-                IntPtr intPtr = (IntPtr)ptr;
+                // Get the width and height using pointers to the image data
+                int width = *(int*)pData;
+                int height = *(int*)pData;
+                byte* pPixels = pData + 12;
+
+                // Create a new image with the width and height of the image, and the same color type
+                SKImageInfo info = new(width, height, SKColorType.Rgba8888);
+                using SKBitmap imageMap = new(info);
+
+                // Copy the pixels from the image data onto the Skia Bitmap
+                IntPtr intPtr = (IntPtr)pPixels;
                 SKImageInfo oldInfo = new(width, height, SKColorType.Rgba8888);
                 imageMap.InstallPixels(oldInfo, intPtr);
-            }
 
-            using (SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100))
-            using (Stream stream = File.OpenWrite(Path.ChangeExtension(properPath, ".png")))
-                encodedImage.SaveTo(stream);
+                // Encode and save the image
+                using (SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100))
+                using (Stream stream = File.OpenWrite(Path.ChangeExtension(properPath, ".png")))
+                    encodedImage.SaveTo(stream);
+            }
         }
     }
 }
