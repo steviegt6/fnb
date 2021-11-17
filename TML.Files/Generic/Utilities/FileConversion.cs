@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using SkiaSharp;
 
 namespace TML.Files.Generic.Utilities
 {
@@ -21,30 +20,19 @@ namespace TML.Files.Generic.Utilities
             int height = MemoryMarshal.Read<int>(dataSpan[8..12]);
             ReadOnlySpan<byte> oldPixels = dataSpan[12..];
 
-            using Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
+            SKImageInfo info = new(width, height, SKColorType.Rgba8888);
+            using SKBitmap imageMap = new(info);
 
-            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.ReadWrite, imageMap.PixelFormat);
-
-            for (int y = 0; y < bitmapData.Height; y++)
+            fixed (byte* ptr = oldPixels)
             {
-                int currentLine = y * bitmapData.Stride;
-                byte* row = (byte*) bitmapData.Scan0 + currentLine;
-                for (int x = 0; x < bitmapData.Width; x++)
-                {
-                    int posRaw = x * 4;
-                    int posNormal = posRaw + currentLine;
-
-                    row[posRaw + 2] = oldPixels[posNormal + 0]; // R
-                    row[posRaw + 1] = oldPixels[posNormal + 1]; // G
-                    row[posRaw + 0] = oldPixels[posNormal + 2]; // B
-                    row[posRaw + 3] = oldPixels[posNormal + 3]; // A
-                }
+                IntPtr intPtr = (IntPtr)ptr;
+                SKImageInfo oldInfo = new(width, height, SKColorType.Rgba8888);
+                imageMap.InstallPixels(oldInfo, intPtr);
             }
 
-            imageMap.UnlockBits(bitmapData);
-
-            imageMap.Save(Path.ChangeExtension(properPath, ".png"));
+            using (SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100))
+            using (Stream stream = File.OpenWrite(Path.ChangeExtension(properPath, ".png")))
+                encodedImage.SaveTo(stream);
         }
     }
 }
