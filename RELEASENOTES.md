@@ -1,3 +1,8 @@
+# 0.2.1.0
+* Abolished `ilspycmd` in exchange for directly using the `ICSharpCode.Decompiler` library.
+* Unpacking now opens `.tmod` files with read-only perms, should help with file permission issues.
+* Properly support legacy `.tmod` files.
+
 # 0.2.0.1
 * Fixed registry issue.
 * Fixed path fall-backs.

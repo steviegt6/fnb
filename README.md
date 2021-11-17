@@ -13,12 +13,11 @@ Installation is incredibly simple. Just ensure you meet the prerequisites before
 
 **Prerequisites:**
 1. .NET 5. Get it [here](https://dotnet.microsoft.com/download/dotnet/5.0). (Soon to be .NET 6.0)
-~~2. `ilspycmd` (you can install this through TML.Patcher.Frontend when you first run it).~~ No longer required in an upcoming release.
 
 **Installation:**
 1. Grab the newest release from the Releases page.
 2. Extract it into an empty folder.
-3. Run `dotnet TML.Patcher.Frontend.dll` for Unix/\*Nix in your favorite terminal (Windows users can directly execute the `TML.Patcher.Frontend.exe` program).
+3. Run `dotnet TML.Patcher.CLI.dll` for Unix/\*Nix in your favorite terminal (Windows users can directly execute the `TML.Patcher.CLI.exe` program).
 4. (If prompted:) Enter in your Mods folder directory. This is usually auto-detected if you have it on your main drive.
 
 ### Troubleshooting
@@ -43,8 +42,8 @@ Project | Purpose
 ------- | -------
 `TML.Files` | A simple library that provides both generic and tML-specific structures and and classes, along with helper/utility methods for handling files. Includes methods for converting `.rawimg`s (tML-specific) to `.png`s, simple decompression, etc. Heavily used by the TML.Patcher backend.
 `TML.Patcher` | The core library that provides methods for decompilation and unpacking `.tmod` files. Requires `TML.Files` to use.
-[`Consolation`](https://github.com/Steviegt6/Consolation/) | Library that provides a simple way to use the console as a properly-functioning interface. Only used for `TML.Patcher.Frontend`.
-`TML.Patcher.Fontend` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
+[`Consolation`](https://github.com/Steviegt6/Consolation/) | Library that provides a simple way to use the console as a properly-functioning interface. Only used for `TML.Patcher.CLI`.
+`TML.Patcher.CLI` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
 
 ### Nuget
 You can get [`TML.Files`](https://www.nuget.org/packages/TML.Files/) and [`TML.Patcher`](https://www.nuget.org/packages/TML.Patcher/) on NuGet.

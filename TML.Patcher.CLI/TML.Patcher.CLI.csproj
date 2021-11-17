@@ -7,14 +7,14 @@
     <RootNamespace>TML.Patcher.CLI</RootNamespace>
     <StartupObject></StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Version>0.2.0.1</Version>
+    <Version>0.2.1.0</Version>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <Description>Command-line interface for utilizing TML.Patcher. Also includes some useful tools.</Description>
     <Copyright>MIT License</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/TML-Patcher/TML.Patcher</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIcon>logo.png</PackageIcon>
     <RepositoryUrl>https://github.com/TML-Patcher/TML.Patcher</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod, cli</PackageTags>
@@ -42,6 +42,10 @@
     <None Include="..\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 
