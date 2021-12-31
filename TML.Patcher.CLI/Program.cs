@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CliFx;
+using TML.Patcher.CLI.Configuration;
 using TML.Patcher.CLI.Utilities;
 
 namespace TML.Patcher.CLI
@@ -27,7 +28,12 @@ namespace TML.Patcher.CLI
             Runtime = new Runtime();
 
             if (!Runtime.SetupConfig.SetupCompleted)
+            {
                 RunSetupProcess();
+                Runtime.SetupConfig.SetupCompleted = true;
+                ProgramConfig.SerializeConfig(Runtime.ProgramConfig, Runtime.PlatformStorage);
+                SetupConfig.SerializeConfig(Runtime.SetupConfig, Runtime.PlatformStorage);
+            }
 
             return await new CliApplicationBuilder().AddCommandsFromThisAssembly().Build().RunAsync();
         }

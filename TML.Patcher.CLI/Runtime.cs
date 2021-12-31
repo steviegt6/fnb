@@ -38,6 +38,9 @@ namespace TML.Patcher.CLI
             else
                 throw new PlatformNotSupportedException("No storage system available for your system.");
 
+            // Create base directory.
+            PlatformStorage.CreateDirectory("");
+
             SetupConfig = SetupConfig.DeserializeConfig(PlatformStorage);
             ProgramConfig = ProgramConfig.DeserializeConfig(PlatformStorage);
         }

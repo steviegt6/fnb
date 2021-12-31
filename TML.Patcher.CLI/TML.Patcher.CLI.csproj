@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>TML.Patcher.CLI</AssemblyName>
     <RootNamespace>TML.Patcher.CLI</RootNamespace>
     <StartupObject></StartupObject>
@@ -19,6 +19,7 @@
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod, cli</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

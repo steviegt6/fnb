@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Version>0.2.1.0</Version>
     <Nullable>enable</Nullable>
     <Description>Provides helpful classes and structures for messing with tModLoader files. Also provides useful methods for conversion and unpacking.</Description>
@@ -13,6 +13,7 @@
     <PackageTags>files, terraria, tmodloader, tmod</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <LangVersion>default</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

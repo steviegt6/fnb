@@ -20,12 +20,14 @@ namespace TML.Patcher.CLI.Configuration
         /// <summary>
         ///     Serializes a config instance.
         /// </summary>
-        public static void SerializeConfig(TConfig config, Storage storage) =>
+        public static void SerializeConfig(TConfig config, Storage storage)
+        {
             File.WriteAllText(
                 // If DisplayNameAttribute isn't able to be resolved then we have more problems than it just being absent.
                 storage.GetFullPath(Path),
                 JsonConvert.SerializeObject(config)
             );
+        }
 
         /// <summary>
         ///     Deserializes the singleton config file.
@@ -35,7 +37,7 @@ namespace TML.Patcher.CLI.Configuration
             if (!storage.FileExists(Path))
                 return new TConfig();
 
-            return JsonConvert.DeserializeObject<TConfig>(storage.GetFullPath(Path)) ?? new TConfig();
+            return JsonConvert.DeserializeObject<TConfig>(File.ReadAllText(storage.GetFullPath(Path))) ?? new TConfig();
         }
     }
 }
