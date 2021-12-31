@@ -11,8 +11,8 @@ See: [Release Notes](RELEASENOTES.md)
 ### Installation Guide
 Installation is incredibly simple. Just ensure you meet the prerequisites before following the rest of these steps.
 
-**Prerequisites:**
-1. .NET 5. Get it [here](https://dotnet.microsoft.com/download/dotnet/5.0). (Soon to be .NET 6.0)
+**Prerequisites:**~~~~
+1. .NET 6. Get it [here](https://dotnet.microsoft.com/download/dotnet/6.0).
 
 **Installation:**
 1. Grab the newest release from the Releases page.
