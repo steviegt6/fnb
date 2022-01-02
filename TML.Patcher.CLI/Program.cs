@@ -44,9 +44,9 @@ namespace TML.Patcher.CLI
                 "Detected first-time start-up, proceeding with the core set-up process.\n"
             ); // \n is intentional here to create some empty space
 
-            #region References Path
+            #region Storage Path
 
-            if (Runtime!.ProgramConfig.ReferencesPath == "undefined")
+            if (Runtime!.ProgramConfig.StoragePath == "undefined")
             {
                 if (OperatingSystem.IsWindows())
                 {
@@ -55,24 +55,22 @@ namespace TML.Patcher.CLI
                     if (Directory.Exists(Path.Combine(start, "OneDrive")))
                         start = Path.Combine(start, "OneDrive");
                     
-                    Runtime.ProgramConfig.ReferencesPath = Path.Combine(
+                    Runtime.ProgramConfig.StoragePath = Path.Combine(
                         start,
                         "Documents",
                         "My Games",
                         "Terraria",
-                        "ModLoader",
-                        "references"
+                        "ModLoader"
                     );
                 }
                 else if (OperatingSystem.IsMacOS())
                 {
-                    Runtime.ProgramConfig.ReferencesPath = Path.Combine(
+                    Runtime.ProgramConfig.StoragePath = Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                         "Library",
                         "Application Support",
                         "Terraria",
-                        "ModLoader",
-                        "references"
+                        "ModLoader"
                     );
                 }
                 else if (OperatingSystem.IsLinux())
@@ -81,34 +79,32 @@ namespace TML.Patcher.CLI
 
                     if (!string.IsNullOrEmpty(xdgHome))
                     {
-                        Runtime.ProgramConfig.ReferencesPath = Path.Combine(
+                        Runtime.ProgramConfig.StoragePath = Path.Combine(
                             xdgHome,
                             "Terraria",
-                            "ModLoader",
-                            "references"
+                            "ModLoader"
                         );
                     }
                     else
                     {
-                        Runtime.ProgramConfig.ReferencesPath = Path.Combine(
+                        Runtime.ProgramConfig.StoragePath = Path.Combine(
                             Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                             ".local",
                             "share",
                             "Terraria",
-                            "ModLoader",
-                            "references"
+                            "ModLoader"
                         );
                     }
                 }
             }
 
             DisplayVerify(
-                "Checking references path...",
-                "Checking references path... (Failed to validate)",
-                "Enter a valid references path:",
-                "Verified references path.",
+                "Checking game storage path...",
+                "Checking game storage path... (Failed to validate)",
+                "Enter a valid game storage path (contains folders with Worlds, Players, etc.):",
+                "Verified game storage path.",
                 Directory.Exists,
-                ref Runtime.ProgramConfig.ReferencesPath
+                ref Runtime.ProgramConfig.StoragePath
             );
 
             #endregion

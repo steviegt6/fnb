@@ -5,9 +5,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>TML.Patcher.CLI</AssemblyName>
     <RootNamespace>TML.Patcher.CLI</RootNamespace>
-    <StartupObject></StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Version>0.2.1.0</Version>
+    <Version>1.0.0</Version>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <Description>Command-line interface for utilizing TML.Patcher. Also includes some useful tools.</Description>
@@ -30,13 +29,11 @@
 
   <ItemGroup>
     <PackageReference Include="CliFx" Version="2.0.6" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.21216.1" />
+    <PackageReference Include="Spectre.Console" Version="0.43.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Consolation\Consolation.csproj" />
     <ProjectReference Include="..\TML.Files\TML.Files.csproj" />
     <ProjectReference Include="..\TML.Patcher\TML.Patcher.csproj" />
   </ItemGroup>

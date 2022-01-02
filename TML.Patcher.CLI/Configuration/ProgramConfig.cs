@@ -12,8 +12,8 @@ namespace TML.Patcher.CLI.Configuration
     [DisplayName("programConfig")]
     public sealed class ProgramConfig : JsonConfig<ProgramConfig>
     {
-        [JsonProperty("referencesPath")] [DefaultValue("undefined")]
-        public string ReferencesPath = "undefined";
+        [JsonProperty("storagePath")] [DefaultValue("undefined")]
+        public string StoragePath = "undefined";
 
         [JsonProperty("steamPath")] [DefaultValue("undefined")]
         public string SteamPath = "undefined";
