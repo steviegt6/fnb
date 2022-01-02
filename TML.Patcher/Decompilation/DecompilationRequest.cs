@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.ProjectDecompiler;
@@ -21,18 +23,24 @@ namespace TML.Patcher.Decompilation
         /// <summary>
         ///     Constructs a new <see cref="DecompilationRequest"/> instance.
         /// </summary>
-        public DecompilationRequest(string? file, string decompilePath, string referencesPath, string modName)
+        public DecompilationRequest(
+            string file,
+            string decompilePath,
+            string modName,
+            LanguageVersion version,
+            params string[] searchDirectories)
         {
             File = file;
             DecompilePath = decompilePath;
-            ReferencesPath = referencesPath;
             ModName = modName;
+            Version = version;
+            SearchDirectories = searchDirectories;
         }
 
         /// <summary>
         ///     The file path.
         /// </summary>
-        public string? File { get; }
+        public string File { get; }
 
         /// <summary>
         ///     The name of the mod.
@@ -45,44 +53,49 @@ namespace TML.Patcher.Decompilation
         public string DecompilePath { get; }
 
         /// <summary>
-        ///     Path for ILSpy decompilation references.
+        ///     The C# language version.
         /// </summary>
-        public string ReferencesPath { get; }
+        public LanguageVersion Version { get; }
 
         /// <summary>
-        ///     Invoked on errors.
+        ///     The directories to resolve references in.
         /// </summary>
-        public event ErrorMessage? OnError;
+        public string[] SearchDirectories { get; }
 
         /// <summary>
         ///     Executes the request.
         /// </summary>
         public virtual void ExecuteRequest()
         {
-            if (File == null || !FileIO.Exists(File))
-            {
-                OnError?.Invoke("Unable to locate file to extract.");
-                return;
-            }
+            if (!FileIO.Exists(File))
+                throw new Exception("Could not find extractable file: " + File);
 
             Directory.CreateDirectory(DecompilePath);
-            Directory.CreateDirectory(ReferencesPath);
 
-            Decompile(File, DecompilePath, ReferencesPath, LanguageVersion.CSharp7_3); // TODO: Support CSharp 9 on 1.4
+            foreach (string directory in SearchDirectories)
+                Directory.CreateDirectory(directory);
+
+            Decompile(File, DecompilePath, SearchDirectories, Version);
         }
 
-        private static void Decompile(string assemblyFileName, string outputDirectory, string referencePath, LanguageVersion languageVersion)
+        private static void Decompile(
+            string assemblyFileName,
+            string outputDirectory,
+            IEnumerable<string> searchDirectories,
+            LanguageVersion languageVersion
+        )
         {
             PEFile module = new(assemblyFileName);
             UniversalAssemblyResolver resolver = new(assemblyFileName, false, module.Reader.DetectTargetFrameworkId());
-            
-            // Make the resolver find references in referencePath
-            resolver.AddSearchDirectory(referencePath);
 
-            DecompilerSettings decompilerSettings = new(languageVersion) {
+            foreach (string directory in searchDirectories)
+                resolver.AddSearchDirectory(directory);
+
+            DecompilerSettings decompilerSettings = new(languageVersion)
+            {
                 ThrowOnAssemblyResolveErrors = false
             };
-            
+
             // Create the decompiler
             WholeProjectDecompiler decompiler = new(decompilerSettings, resolver, resolver, null);
             decompiler.Settings.SetLanguageVersion(languageVersion);
