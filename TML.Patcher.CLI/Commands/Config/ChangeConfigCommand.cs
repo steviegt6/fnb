@@ -12,7 +12,7 @@ namespace TML.Patcher.CLI.Commands.Config
         [CommandOption("storage-path", Description = "Sets the game storage path (where worlds, players, etc. are),")]
         public string? NewStoragePath { get; init; } = null;
 
-        [CommandOption("steam-path", Description = "Sets the Steam/GoG game path.")]
+        [CommandOption("steam-path", Description = "Sets the Steam/GOG game path.")]
         public string? NewSteamPath { get; init; } = null;
 
         public async ValueTask ExecuteAsync(IConsole console)

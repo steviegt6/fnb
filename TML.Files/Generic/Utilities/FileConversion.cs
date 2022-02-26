@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using SkiaSharp;
 
 namespace TML.Files.Generic.Utilities
 {
@@ -12,39 +11,34 @@ namespace TML.Files.Generic.Utilities
     public static class FileConversion
     {
         /// <summary>
-        ///     Converts a .raw file to a .png. The specific .raw format is the one used by tML, which contains raw data about the RGBA values of each individual pixel. <br />
+        ///     Converts a <c>.raw</c> file to a <c>.png</c>.
         /// </summary>
+        /// <remarks>
+        ///     The specific <c>.raw</c> format is the one used by tML, which contains a byte for each of the R, G, B, and A channels.
+        /// </remarks>
         public static unsafe void ConvertRawToPng(byte[] data, string properPath)
         {
-            ReadOnlySpan<byte> dataSpan = data;
-            int width = MemoryMarshal.Read<int>(dataSpan[4..8]);
-            int height = MemoryMarshal.Read<int>(dataSpan[8..12]);
-            ReadOnlySpan<byte> oldPixels = dataSpan[12..];
-
-            using Bitmap imageMap = new(width, height, PixelFormat.Format32bppArgb);
-
-            BitmapData bitmapData = imageMap.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.ReadWrite, imageMap.PixelFormat);
-
-            for (int y = 0; y < bitmapData.Height; y++)
+            fixed (byte* pData = data)
             {
-                int currentLine = y * bitmapData.Stride;
-                byte* row = (byte*) bitmapData.Scan0 + currentLine;
-                for (int x = 0; x < bitmapData.Width; x++)
-                {
-                    int posRaw = x * 4;
-                    int posNormal = posRaw + currentLine;
+                // Get the width and height using pointers to the image data
+                int width = *(int*)pData;
+                int height = *(int*)pData;
+                byte* pPixels = pData + 12;
 
-                    row[posRaw + 2] = oldPixels[posNormal + 0]; // R
-                    row[posRaw + 1] = oldPixels[posNormal + 1]; // G
-                    row[posRaw + 0] = oldPixels[posNormal + 2]; // B
-                    row[posRaw + 3] = oldPixels[posNormal + 3]; // A
-                }
+                // Create a new image with the width and height of the image, and the same color type
+                SKImageInfo info = new(width, height, SKColorType.Rgba8888);
+                using SKBitmap imageMap = new(info);
+
+                // Copy the pixels from the image data onto the Skia Bitmap
+                IntPtr intPtr = (IntPtr)pPixels;
+                SKImageInfo oldInfo = new(width, height, SKColorType.Rgba8888);
+                imageMap.InstallPixels(oldInfo, intPtr);
+
+                // Encode and save the image
+                using SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100);
+                using Stream stream = File.OpenWrite(Path.ChangeExtension(properPath, ".png"));
+                encodedImage.SaveTo(stream);
             }
-
-            imageMap.UnlockBits(bitmapData);
-
-            imageMap.Save(Path.ChangeExtension(properPath, ".png"));
         }
     }
 }

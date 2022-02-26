@@ -9,14 +9,14 @@ using TML.Files.Generic.Utilities;
 namespace TML.Files.ModLoader.Files
 {
     /// <summary>
-    ///     .tmod file representation. Contains file and mod data, as well as a list of files.
+    ///     <c>.tmod</c> file representation. Contains file and mod data, as well as a list of files.
     /// </summary>
     public class ModFile
     {
         /// <summary>
         ///     The version when tmod files where upgraded to a new format.
         /// </summary>
-        protected static readonly Version UpgradeVersion = new(0, 11);
+        public static readonly Version UpgradeVersion = new(0, 11);
         
         /// <summary>
         ///     The usable binary reader.
@@ -36,7 +36,7 @@ namespace TML.Files.ModLoader.Files
         /// <summary>
         ///     A list of all files.
         /// </summary>
-        public virtual List<FileEntryData> Files { get; protected set; } = new();
+        public virtual List<FileEntryData> Files { get; } = new();
 
         public string Header { get; protected set; } = "";
 
@@ -58,7 +58,7 @@ namespace TML.Files.ModLoader.Files
             BinaryReader reader = Reader;
             
             Header = reader.ReadBytes(4).ConvertToString(); // file header, expected to be TMOD
-
+            
             string loaderVersionString = reader.ReadString();
             Version loaderVersion = Version.Parse(loaderVersionString);
             string hash = Encoding.ASCII.GetString(reader.ReadBytes(20));
@@ -108,13 +108,13 @@ namespace TML.Files.ModLoader.Files
             for (int i = 0; i < count; i++)
             {
                 FileEntryData tempFile = tempFiles[i];
-                byte[] realFileData = Reader.ReadBytes(tempFile.fileLengthData.lengthCompressed);
-                Files.Add(new FileEntryData(tempFile.fileName, tempFile.fileLengthData, realFileData));
+                byte[] realFileData = Reader.ReadBytes(tempFile.FileLengthData.LengthCompressed);
+                Files.Add(new FileEntryData(tempFile.FileName, tempFile.FileLengthData, realFileData));
             }
         }
 
         /// <summary>
-        /// Populates the <see cref="Files"/> list from the old tmod file format.
+        ///     Populates the <see cref="Files"/> list from the old <c>.tmod</c> file format.
         /// </summary>
         public virtual void RegisterOldFileEntries(int count, BinaryReader deflateReader)
         {

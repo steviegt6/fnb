@@ -13,7 +13,7 @@
     <Copyright>MIT License</Copyright>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/TML-Patcher/TML.Patcher</PackageProjectUrl>
-    <PackageIcon>logo.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/TML-Patcher/TML.Patcher</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>extracting, unpacking, repacking, terraria, tmodloader, tmod, cli</PackageTags>
@@ -43,9 +43,9 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\logo.png">
+    <None Include="..\icon.png">
       <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 

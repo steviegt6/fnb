@@ -101,12 +101,12 @@ namespace TML.Patcher.Packing
         {
             foreach (FileEntryData file in files)
             {
-                byte[] data = file.fileData;
+                byte[] data = file.FileData;
 
-                if (file.fileLengthData.length != file.fileLengthData.lengthCompressed)
-                    data = FileUtilities.DecompressFile(file.fileData, file.fileLengthData.length);
+                if (file.FileLengthData.Length != file.FileLengthData.LengthCompressed)
+                    data = FileUtilities.DecompressFile(file.FileData, file.FileLengthData.Length);
 
-                string[] pathParts = file.fileName.Split(Path.DirectorySeparatorChar);
+                string[] pathParts = file.FileName.Split(Path.DirectorySeparatorChar);
                 string[] mendedPath = new string[pathParts.Length + 1];
                 mendedPath[0] = extractDirectory.FullName;
 

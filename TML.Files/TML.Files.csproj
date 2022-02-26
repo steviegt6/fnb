@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/TML-Patcher/TML.Patcher</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>files, terraria, tmodloader, tmod</PackageTags>
-    <PackageIcon>logo.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <LangVersion>default</LangVersion>
     <PackageVersion>1.0.0</PackageVersion>
@@ -26,18 +26,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\logo.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="..\LICENSE.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
   </ItemGroup>
 
 </Project>

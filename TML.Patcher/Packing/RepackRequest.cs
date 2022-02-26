@@ -78,7 +78,7 @@ namespace TML.Patcher.Packing
             modWriter.Write(Encoding.UTF8.GetBytes(ModFileHeader));
 
             // Write the mod loader version
-            modWriter.Write(ModData.modLoaderVersion.ToString());
+            modWriter.Write(ModData.ModLoaderVersion.ToString());
 
             // Store the position of the hash
             long hashPos = modStream.Position;
@@ -90,10 +90,10 @@ namespace TML.Patcher.Packing
             long dataPos = modStream.Position;
 
             // Write the mod's internal name
-            modWriter.Write(ModData.modName);
+            modWriter.Write(ModData.ModName);
 
             // Write the mod's version
-            modWriter.Write(ModData.modVersion.ToString());
+            modWriter.Write(ModData.ModVersion.ToString());
 
             // Write the number of files in the .tmod file
             modWriter.Write(entries.Length);
@@ -104,14 +104,14 @@ namespace TML.Patcher.Packing
             // * Compressed length
             foreach (FileEntryData entry in entries)
             {
-                modWriter.Write(entry.fileName);
-                modWriter.Write(entry.fileLengthData.length);
-                modWriter.Write(entry.fileLengthData.lengthCompressed);
+                modWriter.Write(entry.FileName);
+                modWriter.Write(entry.FileLengthData.Length);
+                modWriter.Write(entry.FileLengthData.LengthCompressed);
             }
 
             // Iterate over all entries and write the entry bytes
             foreach (FileEntryData entry in entries)
-                modWriter.Write(entry.fileData);
+                modWriter.Write(entry.FileData);
 
             // Go to the start of the mod's data to calculate the hash
             modStream.Position = dataPos;
@@ -174,25 +174,25 @@ namespace TML.Patcher.Packing
                 stream.CopyTo(memStream);
 
                 // Set the uncompressed length of the file
-                lengthData.length = (int) stream.Length;
+                lengthData.Length = (int) stream.Length;
 
                 // Check if the file is bigger than 1KB, and if it is, compress it
                 // TODO: Convert compress required size to an option
                 if (stream.Length > 1024 && ShouldCompress(file.Extension))
                 {
                     byte[] compressedStream = FileUtilities.CompressFile(memStream.ToArray());
-                    lengthData.lengthCompressed = compressedStream.Length;
-                    entryData.fileData = compressedStream;
+                    lengthData.LengthCompressed = compressedStream.Length;
+                    entryData.FileData = compressedStream;
                 }
                 else
                 {
-                    lengthData.lengthCompressed = lengthData.length;
-                    entryData.fileData = memStream.ToArray();
+                    lengthData.LengthCompressed = lengthData.Length;
+                    entryData.FileData = memStream.ToArray();
                 }
 
                 // Set the file name of the entry and the length data
-                entryData.fileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
-                entryData.fileLengthData = lengthData;
+                entryData.FileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
+                entryData.FileLengthData = lengthData;
 
                 // Add the entry to the concurrent bag
                 fileBag.Add(entryData);
