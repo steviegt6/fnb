@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 // no xml comments
 #pragma warning disable 1591
 
-namespace TML.Patcher.CLI.Configuration
+namespace TML.Patcher.Client.Configuration
 {
     /// <summary>
     ///     JSON-powered initial setup configuration class.

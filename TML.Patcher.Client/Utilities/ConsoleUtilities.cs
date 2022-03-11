@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TML.Patcher.CLI.Utilities
+namespace TML.Patcher.Client.Utilities
 {
     /// <summary>
     ///     Reusable utilities for handling text in the console.

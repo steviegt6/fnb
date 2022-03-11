@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace TML.Patcher.CLI.Platform.Windows
+namespace TML.Patcher.Client.Platform.Windows
 {
     internal static class Explorer
     {

@@ -3,7 +3,7 @@ using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
 
-namespace TML.Patcher.CLI.Commands.Informative
+namespace TML.Patcher.Client.Commands.Informative
 {
     /// <summary>
     ///     Prints credits and the latest changelog.

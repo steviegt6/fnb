@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace TML.Patcher.CLI.Platform.Windows
+namespace TML.Patcher.Client.Platform.Windows
 {
     /// <summary>
     ///     The default <see cref="Storage"/> object for Windows computers.

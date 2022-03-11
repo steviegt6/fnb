@@ -1,4 +1,4 @@
-﻿namespace TML.Patcher.CLI.Platform.Linux
+﻿namespace TML.Patcher.Client.Platform.Linux
 {
     /// <summary>
     ///     The default <see cref="Storage"/> object for Linux computers.

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace TML.Patcher.CLI.Platform
+namespace TML.Patcher.Client.Platform
 {
     /// <summary>
     ///     Holds basic information about the creation of a directory in a <see cref="Storage"/> object.

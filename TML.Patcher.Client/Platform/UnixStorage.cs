@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace TML.Patcher.CLI.Platform
+namespace TML.Patcher.Client.Platform
 {
     /// <summary>
     ///     Abstract *Nix-focused <see cref="Storage"/> object.

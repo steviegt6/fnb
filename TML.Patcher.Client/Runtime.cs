@@ -1,11 +1,11 @@
 ﻿using System;
-using TML.Patcher.CLI.Configuration;
-using TML.Patcher.CLI.Platform;
-using TML.Patcher.CLI.Platform.Linux;
-using TML.Patcher.CLI.Platform.Mac;
-using TML.Patcher.CLI.Platform.Windows;
+using TML.Patcher.Client.Configuration;
+using TML.Patcher.Client.Platform;
+using TML.Patcher.Client.Platform.Linux;
+using TML.Patcher.Client.Platform.Mac;
+using TML.Patcher.Client.Platform.Windows;
 
-namespace TML.Patcher.CLI
+namespace TML.Patcher.Client
 {
     /// <summary>
     ///     Contains all the base runtime data.

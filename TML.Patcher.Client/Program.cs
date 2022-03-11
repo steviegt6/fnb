@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using CliFx;
-using TML.Patcher.CLI.Configuration;
-using TML.Patcher.CLI.Utilities;
+using TML.Patcher.Client.Configuration;
+using TML.Patcher.Client.Utilities;
 
-namespace TML.Patcher.CLI
+namespace TML.Patcher.Client
 {
     /// <summary>
     ///     Entry-point and main launch handler.

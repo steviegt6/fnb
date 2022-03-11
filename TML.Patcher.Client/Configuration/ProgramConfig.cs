@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 // no xml comments
 #pragma warning disable 1591
 
-namespace TML.Patcher.CLI.Configuration
+namespace TML.Patcher.Client.Configuration
 {
     /// <summary>
     ///     JSON-powered simple configuration class.
@@ -17,5 +17,18 @@ namespace TML.Patcher.CLI.Configuration
 
         [JsonProperty("steamPath")] [DefaultValue("undefined")]
         public string SteamPath = "undefined";
+
+        [JsonProperty("useModLoaderBeta")] [DefaultValue(false)]
+        public bool UseBeta;
+
+        public string GetStoragePath()
+        {
+            string path = StoragePath;
+
+            if (UseBeta)
+                path = System.IO.Path.Combine(path, "Beta");
+
+            return path;
+        }
     }
 }

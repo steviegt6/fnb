@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace TML.Patcher.CLI.Platform
+namespace TML.Patcher.Client.Platform
 {
     /// <summary>
     ///     Abstracted storage-handling class for proper cross-OS compatibility.

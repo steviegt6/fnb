@@ -8,7 +8,7 @@ using CliFx.Attributes;
 using CliFx.Infrastructure;
 using Newtonsoft.Json;
 
-namespace TML.Patcher.CLI.Commands.Informative
+namespace TML.Patcher.Client.Commands.Informative
 {
     [Command(
         "enabled-mods",
@@ -36,7 +36,7 @@ namespace TML.Patcher.CLI.Commands.Informative
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            string path = PathOverride ?? Path.Combine(Program.Runtime!.ProgramConfig.StoragePath, "Mods");
+            string path = PathOverride ?? Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(), "Mods");
 
             if (PathOverride is not null)
                 await console.Output.WriteLineAsync("Path overriden, using: " + path);

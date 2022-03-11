@@ -1,4 +1,4 @@
-﻿namespace TML.Patcher.CLI.Platform.Mac
+﻿namespace TML.Patcher.Client.Platform.Mac
 {
     /// <summary>
     ///     The default <see cref="Storage"/> object for MacOS computers.

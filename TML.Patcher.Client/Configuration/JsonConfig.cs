@@ -2,9 +2,9 @@
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
-using TML.Patcher.CLI.Platform;
+using TML.Patcher.Client.Platform;
 
-namespace TML.Patcher.CLI.Configuration
+namespace TML.Patcher.Client.Configuration
 {
     /// <summary>
     ///     Serializable JSON configuration file.
