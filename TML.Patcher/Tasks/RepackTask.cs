@@ -59,6 +59,8 @@ namespace TML.Patcher.Tasks
         {
             ConcurrentBag<FileEntryData> entries = ConvertFilesToEntries();
             ConvertToModFile(entries);
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
