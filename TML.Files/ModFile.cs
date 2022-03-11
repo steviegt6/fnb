@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using TML.Files.Generic.Files;
-using TML.Files.Generic.Utilities;
+using TML.Files.Utilities;
 
-namespace TML.Files.ModLoader.Files
+namespace TML.Files
 {
     /// <summary>
     ///     <c>.tmod</c> file representation. Contains file and mod data, as well as a list of files.

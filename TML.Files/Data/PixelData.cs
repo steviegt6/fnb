@@ -1,4 +1,4 @@
-﻿namespace TML.Files.Generic.Data
+﻿namespace TML.Files.Data
 {
     /// <summary>
     ///     Struct containing R, G, B, and A byte values. Represents a single pixel in a <c>.raw</c>.

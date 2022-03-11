@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using System.Text;
 
-namespace TML.Files.Generic.Utilities
+namespace TML.Files.Utilities
 {
     /// <summary>
     ///     Provides numerous helper-methods for messing with files.

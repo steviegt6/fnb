@@ -1,4 +1,4 @@
-﻿namespace TML.Files.ModLoader.Data
+﻿namespace TML.Files.Data
 {
     /// <summary>
     ///     Mod side enum. Replicates the tModLoader enum of the same name.

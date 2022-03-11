@@ -3,75 +3,53 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TML.Files.Generic.Files;
-using TML.Files.Generic.Utilities;
-using TML.Files.ModLoader.Files;
-using FileIO = System.IO.File;
+using TML.Files;
+using TML.Files.Utilities;
 
-namespace TML.Patcher.Packing
+namespace TML.Patcher.Tasks
 {
-    /// <summary>
-    ///     .tmod file unpacking request.
-    /// </summary>
-    public class UnpackRequest
+    public class UnpackTask : ProgressTask
     {
-        /// <summary>
-        ///     Constructs a new <see cref="UnpackRequest"/> instance.
-        /// </summary>
-        public UnpackRequest(DirectoryInfo extractDirectory, string path, double threads,
-            IProgress<int> progressReporter)
+        public UnpackTask(DirectoryInfo extractDirectory, string path, double threads)
         {
             ExtractDirectory = extractDirectory;
             FilePath = path;
             Threads = threads;
-            ProgressReporter = progressReporter;
         }
 
-        /// <summary>
-        ///     The extraction directory.
-        /// </summary>
         public DirectoryInfo ExtractDirectory { get; }
 
-        /// <summary>
-        ///     Path of the file to unpack.
-        /// </summary>
         public string FilePath { get; }
 
         /// <summary>
         ///     <see cref="ModFile"/> instance of the file.
         /// </summary>
-        public ModFile? File { get; private set; }
+        public ModFile? ModFileInstance { get; private set; }
 
         /// <summary>
         ///     Amount of threads to use.
         /// </summary>
         public double Threads { get; set; }
 
-        /// <summary>
-        ///     The IProgress to use to report the progress of the extractor. <br />
-        ///     The first report that is sent contains the total amount of files to extract.
-        /// </summary>
-        public IProgress<int> ProgressReporter { get; }
-
-        /// <summary>
-        ///     Executes the request.
-        /// </summary>
-        public virtual void ExecuteRequest()
+        public override async Task ExecuteAsync()
         {
-            using (FileStream stream = FileIO.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            await using (FileStream stream = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (BinaryReader reader = new(stream))
             {
-                File = new ModFile(reader);
-                File.PopulateFiles();
+                ModFileInstance = new ModFile(reader);
+                
+                ProgressReporter.Report("Populating ModFile.");
+                
+                ModFileInstance.PopulateFiles();
             }
 
-            ExtractAllFiles(File.Files, ExtractDirectory);
+            await ExtractAllFiles(ModFileInstance.Files, ExtractDirectory);
         }
 
         /// <summary>
         ///     Extracts all <see cref="FileEntryData"/> instances.
         /// </summary>
-        protected virtual void ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual async Task ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             List<List<FileEntryData>> chunks = new();
 
@@ -85,19 +63,20 @@ namespace TML.Patcher.Packing
             // Split the files into chunks
             for (int i = 0; i < files.Count; i += chunkSize)
                 chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
-
-            // Report the total amount of files to the progress reporter
-            ProgressReporter.Report(files.Count);
+            
+            ProgressReporter.Report($"Processing {chunks.Count} chunk(s).");
 
             // Run a task for each chunk
             // Wait for all tasks to finish
-            Task.WaitAll(chunks.Select(chunk => Task.Run(() => ExtractChunkFiles(chunk, extractDirectory))).ToArray());
+            Task.WaitAll(chunks.Select(chunk => Task.Run(async () => await ExtractChunkFiles(chunk, extractDirectory))).ToArray());
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
         ///     Extracts a chunk of given files. Used for multi-threading.
         /// </summary>
-        protected virtual void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual async Task ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             foreach (FileEntryData file in files)
             {
@@ -119,11 +98,10 @@ namespace TML.Patcher.Packing
                 if (Path.GetExtension(properPath) == ".rawimg")
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
-                    FileIO.WriteAllBytes(properPath, data);
-
-                // Report that a file has been completed to the progress reporter
-                ProgressReporter.Report(1);
+                    await File.WriteAllBytesAsync(properPath, data);
             }
+            
+            await Task.CompletedTask;
         }
     }
 }

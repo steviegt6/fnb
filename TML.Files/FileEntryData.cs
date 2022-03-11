@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TML.Files.Generic.Files
+namespace TML.Files
 {
     /// <summary>
     ///     Simple container for data of a file entry.

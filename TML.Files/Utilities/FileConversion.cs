@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using SkiaSharp;
 
-namespace TML.Files.Generic.Utilities
+namespace TML.Files.Utilities
 {
     /// <summary>
     ///     Provides helper-methods for converting file formats. Usually pertains to tModLoader, though they are not limited to tModLoader.

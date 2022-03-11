@@ -6,26 +6,25 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using TML.Files.Generic.Files;
-using TML.Files.Generic.Utilities;
-using TML.Files.ModLoader.Files;
+using TML.Files;
+using TML.Files.Utilities;
 
-namespace TML.Patcher.Packing
+namespace TML.Patcher.Tasks
 {
     /// <summary>
     ///     Class for repacking files into a .tmod file.
     /// </summary>
-    public class RepackRequest
+    public class RepackTask : ProgressTask
     {
         /// <summary>
         ///     Bytes for "TMOD", the expected file header.
         /// </summary>
-        private const string ModFileHeader = "TMOD";
+        public const string ModFileHeader = "TMOD";
 
         /// <summary>
-        ///     Constructs a new <see cref="RepackRequest"/> instance.
+        ///     Constructs a new <see cref="RepackTask"/> instance.
         /// </summary>
-        public RepackRequest(DirectoryInfo repackDirectory, string targetFilePath, ModData modData, double threads)
+        public RepackTask(DirectoryInfo repackDirectory, string targetFilePath, ModData modData, double threads)
         {
             RepackDirectory = repackDirectory;
             TargetFilePath = targetFilePath;
@@ -56,7 +55,7 @@ namespace TML.Patcher.Packing
         /// <summary>
         ///     Executes the repackaging request.
         /// </summary>
-        public virtual void ExecuteRequest()
+        public override async Task ExecuteAsync()
         {
             ConcurrentBag<FileEntryData> entries = ConvertFilesToEntries();
             ConvertToModFile(entries);
@@ -68,6 +67,8 @@ namespace TML.Patcher.Packing
         /// <param name="entriesEnumerable"></param>
         protected virtual void ConvertToModFile(IEnumerable<FileEntryData> entriesEnumerable)
         {
+            ProgressReporter.Report("Writing mundane TMOD information.");
+            
             // Convert entries IEnumerable to an array
             FileEntryData[] entries = entriesEnumerable.ToArray();
 
@@ -102,16 +103,32 @@ namespace TML.Patcher.Packing
             // * File path
             // * Uncompressed length
             // * Compressed length
-            foreach (FileEntryData entry in entries)
+            for (int i = 0; i < entries.Length; i++)
             {
+                ProgressReporter.Report(
+                    new ProgressNotification("Writing file entry data", entries.Length, i)
+                );
+                
+                FileEntryData entry = entries[i];
                 modWriter.Write(entry.FileName);
                 modWriter.Write(entry.FileLengthData.Length);
                 modWriter.Write(entry.FileLengthData.LengthCompressed);
             }
 
             // Iterate over all entries and write the entry bytes
-            foreach (FileEntryData entry in entries)
+            for (int i = 0; i < entries.Length; i++)
+            {
+                ProgressReporter.Report(
+                    new ProgressNotification("Writing file entry bytes", entries.Length, i)
+                );
+                
+                FileEntryData entry = entries[i];
                 modWriter.Write(entry.FileData);
+            }
+
+            ProgressReporter.Report(
+                "Finishing writing mundane TMOD information"
+            );
 
             // Go to the start of the mod's data to calculate the hash
             modStream.Position = dataPos;
@@ -138,6 +155,8 @@ namespace TML.Patcher.Packing
         /// <returns></returns>
         protected virtual ConcurrentBag<FileEntryData> ConvertFilesToEntries()
         {
+            ProgressReporter.Report("Collecting files to repack.");
+            
             List<FileInfo> files = new(RepackDirectory.GetFiles("*", SearchOption.AllDirectories));
             List<List<FileInfo>> chunks = new();
             ConcurrentBag<FileEntryData> bag = new();
@@ -152,11 +171,14 @@ namespace TML.Patcher.Packing
             // Split the files into chunks
             for (int i = 0; i < files.Count; i += chunkSize)
                 chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
+            
+            ProgressReporter.Report($"Processing \"{chunks.Count}\" chunk(s).");
 
             // Run a task for each chunk
             // Wait for all tasks to finish
-            Task.WaitAll(chunks
-                .Select(chunk => Task.Run(() => ConvertChunkToEntry(chunk, bag, RepackDirectory.FullName))).ToArray());
+            Task.WaitAll(chunks.Select(chunk =>
+                Task.Run(() => ConvertChunkToEntry(chunk, bag, RepackDirectory.FullName))
+            ).ToArray());
 
             return bag;
         }
@@ -199,7 +221,7 @@ namespace TML.Patcher.Packing
             }
         }
 
-        private static bool ShouldCompress(string extension) => extension != ".png" &&
+        public static bool ShouldCompress(string extension) => extension != ".png" &&
                                                                 extension != ".rawimg" &&
                                                                 extension != ".ogg" &&
                                                                 extension != ".mp3";

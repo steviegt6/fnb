@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TML.Files.ModLoader.Files
+namespace TML.Files
 {
     /// <summary>
     ///     Class containing a mod's internal name, version, and the version of tModLoader it was built on.

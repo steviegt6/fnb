@@ -1,4 +1,4 @@
-﻿namespace TML.Files.Generic.Files
+﻿namespace TML.Files
 {
     /// <summary>
     ///     Holds the length and compressed length of a file.

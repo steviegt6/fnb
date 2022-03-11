@@ -1,4 +1,4 @@
-﻿namespace TML.Files.ModLoader.Files
+﻿namespace TML.Files
 {
     /// <summary>
     ///     Struct containing information for a file's hash, and length, as well as the containing file count.
