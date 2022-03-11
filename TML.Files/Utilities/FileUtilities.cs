@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 
@@ -12,15 +13,15 @@ namespace TML.Files.Utilities
         /// <summary>
         ///     Uses a <see cref="MemoryStream"/> and <see cref="DeflateStream"/> to decompress a file, given the data and decompressed size.
         /// </summary>
-        public static byte[] DecompressFile(byte[] data, int decompressedSize)
+        public static byte[] DecompressFile(byte[] data)
         {
-            MemoryStream dataStream = new(data);
-            byte[] decompressed = new byte[decompressedSize];
-
-            using DeflateStream deflatedStream = new(dataStream, CompressionMode.Decompress);
-            deflatedStream.Read(decompressed, 0, decompressedSize);
-
-            return decompressed;
+            using MemoryStream decompressedStream = new();
+            using MemoryStream compressStream = new(data);
+            using DeflateStream deflateStream = new(compressStream, CompressionMode.Decompress);
+            
+            deflateStream.CopyTo(decompressedStream);
+            
+            return decompressedStream.ToArray();
         }
 
         /// <summary>

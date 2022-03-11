@@ -78,7 +78,7 @@ namespace TML.Patcher.Tasks
                 byte[] data = file.CachedBytes ?? Array.Empty<byte>();
 
                 if (file.IsCompressed)
-                    data = FileUtilities.DecompressFile(data, file.Length);
+                    data = FileUtilities.DecompressFile(data);
 
                 string[] pathParts = file.Name.Split(Path.DirectorySeparatorChar);
                 string[] mendedPath = new string[pathParts.Length + 1];
