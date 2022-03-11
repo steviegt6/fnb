@@ -31,38 +31,35 @@ namespace TML.Patcher.Tasks
         /// </summary>
         public double Threads { get; set; }
 
-        public override async Task ExecuteAsync()
+        public override Task ExecuteAsync()
         {
-            await using (FileStream stream = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (BinaryReader reader = new(stream))
-            {
-                ModFileInstance = new ModFile(reader);
-                
-                ProgressReporter.Report("Populating ModFile.");
-                
-                ModFileInstance.PopulateFiles();
-            }
+            ProgressReporter.Report("Reading the .tmod file.");
+            
+            using ModFile modFile = new(FilePath);
 
-            ExtractAllFiles(ModFileInstance.Files, ExtractDirectory);
+            ExtractAllFiles(modFile, ExtractDirectory);
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
         ///     Extracts all <see cref="FileEntryData"/> instances.
         /// </summary>
-        protected virtual void ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual void ExtractAllFiles(ModFile modFile, FileSystemInfo extractDirectory)
         {
-            List<List<FileEntryData>> chunks = new();
+            List<ModFileEntry> fileList = modFile.FileEntries.ToList();
+            List<List<ModFileEntry>> chunks = new();
 
             if (Threads <= 0)
                 Threads = 1D;
 
             // use either the amount of configured threads or the amount of files (whichever is lower)
-            double numThreads = Math.Min(files.Count, Threads);
-            int chunkSize = (int) Math.Round(files.Count / numThreads, MidpointRounding.AwayFromZero);
+            double numThreads = Math.Min(fileList.Count, Threads);
+            int chunkSize = (int) Math.Round(fileList.Count / numThreads, MidpointRounding.AwayFromZero);
 
             // Split the files into chunks
-            for (int i = 0; i < files.Count; i += chunkSize)
-                chunks.Add(files.GetRange(i, Math.Min(chunkSize, files.Count - i)));
+            for (int i = 0; i < fileList.Count; i += chunkSize)
+                chunks.Add(fileList.GetRange(i, Math.Min(chunkSize, fileList.Count - i)));
             
             ProgressReporter.Report($"Processing {chunks.Count} chunk(s).");
 
@@ -74,16 +71,16 @@ namespace TML.Patcher.Tasks
         /// <summary>
         ///     Extracts a chunk of given files. Used for multi-threading.
         /// </summary>
-        protected virtual void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual void ExtractChunkFiles(IEnumerable<ModFileEntry> files, FileSystemInfo extractDirectory)
         {
-            foreach (FileEntryData file in files)
+            foreach (ModFileEntry file in files)
             {
-                byte[] data = file.FileData;
+                byte[] data = file.CachedBytes ?? Array.Empty<byte>();
 
-                if (file.FileLengthData.Length != file.FileLengthData.LengthCompressed)
-                    data = FileUtilities.DecompressFile(file.FileData, file.FileLengthData.Length);
+                if (file.IsCompressed)
+                    data = FileUtilities.DecompressFile(data, file.Length);
 
-                string[] pathParts = file.FileName.Split(Path.DirectorySeparatorChar);
+                string[] pathParts = file.Name.Split(Path.DirectorySeparatorChar);
                 string[] mendedPath = new string[pathParts.Length + 1];
                 mendedPath[0] = extractDirectory.FullName;
 
