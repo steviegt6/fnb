@@ -190,36 +190,36 @@ namespace TML.Patcher.Tasks
         {
             foreach (FileInfo file in chunk)
             {
-                int newLengthCompressed;
-                byte[] newFileData;
+                FileEntryData entryData = new("", new FileLengthData(0, 0), null);
+                FileLengthData lengthData = new();
 
                 FileStream stream = file.OpenRead();
                 MemoryStream memStream = new();
                 stream.CopyTo(memStream);
 
                 // Set the uncompressed length of the file
-                int newLength = (int) stream.Length;
+                lengthData.Length = (int) stream.Length;
 
                 // Check if the file is bigger than 1KB, and if it is, compress it
                 // TODO: Convert compress required size to an option
                 if (stream.Length > 1024 && ShouldCompress(file.Extension))
                 {
                     byte[] compressedStream = FileUtilities.CompressFile(memStream.ToArray());
-                    newLengthCompressed = compressedStream.Length;
-                    newFileData = compressedStream;
+                    lengthData.LengthCompressed = compressedStream.Length;
+                    entryData.FileData = compressedStream;
                 }
                 else
                 {
-                    newLengthCompressed = newLength;
-                    newFileData = memStream.ToArray();
+                    lengthData.LengthCompressed = lengthData.Length;
+                    entryData.FileData = memStream.ToArray();
                 }
 
                 // Set the file name of the entry and the length data
-                string newFileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
-                FileLengthData newFileLengthData = new(newLength, newLengthCompressed);
+                entryData.FileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
+                entryData.FileLengthData = lengthData;
 
                 // Add the entry to the concurrent bag
-                fileBag.Add(new FileEntryData(newFileName, newFileLengthData, newFileData));
+                fileBag.Add(entryData);
             }
         }
 

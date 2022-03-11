@@ -5,22 +5,22 @@ namespace TML.Files
     /// <summary>
     ///     Simple container for data of a file entry.
     /// </summary>
-    public readonly struct FileEntryData
+    public class FileEntryData
     {
         /// <summary>
         ///     The file's name.
         /// </summary>
-        public readonly string FileName;
+        public string FileName;
 
         /// <summary>
         ///     Data pertaining to the file's length.
         /// </summary>
-        public readonly FileLengthData FileLengthData;
+        public FileLengthData FileLengthData;
 
         /// <summary>
         ///     Actual file data stored in a byte array.
         /// </summary>
-        public readonly byte[] FileData;
+        public byte[] FileData;
 
         /// <summary>
         ///     Constructs a new <see cref="FileEntryData"/> instance.

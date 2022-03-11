@@ -43,13 +43,13 @@ namespace TML.Patcher.Tasks
                 ModFileInstance.PopulateFiles();
             }
 
-            await ExtractAllFiles(ModFileInstance.Files, ExtractDirectory);
+            ExtractAllFiles(ModFileInstance.Files, ExtractDirectory);
         }
 
         /// <summary>
         ///     Extracts all <see cref="FileEntryData"/> instances.
         /// </summary>
-        protected virtual async Task ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual void ExtractAllFiles(List<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             List<List<FileEntryData>> chunks = new();
 
@@ -68,15 +68,13 @@ namespace TML.Patcher.Tasks
 
             // Run a task for each chunk
             // Wait for all tasks to finish
-            Task.WaitAll(chunks.Select(chunk => Task.Run(async () => await ExtractChunkFiles(chunk, extractDirectory))).ToArray());
-
-            await Task.CompletedTask;
+            Task.WaitAll(chunks.Select(chunk => Task.Run(() => ExtractChunkFiles(chunk, extractDirectory))).ToArray());
         }
 
         /// <summary>
         ///     Extracts a chunk of given files. Used for multi-threading.
         /// </summary>
-        protected virtual async Task ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
+        protected virtual void ExtractChunkFiles(IEnumerable<FileEntryData> files, FileSystemInfo extractDirectory)
         {
             foreach (FileEntryData file in files)
             {
@@ -98,10 +96,8 @@ namespace TML.Patcher.Tasks
                 if (Path.GetExtension(properPath) == ".rawimg")
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
-                    await File.WriteAllBytesAsync(properPath, data);
+                    File.WriteAllBytes(properPath, data);
             }
-            
-            await Task.CompletedTask;
         }
     }
 }

@@ -5,22 +5,22 @@ namespace TML.Files
     /// <summary>
     ///     Class containing a mod's internal name, version, and the version of tModLoader it was built on.
     /// </summary>
-    public readonly struct ModData
+    public class ModData
     {
         /// <summary>
         ///     The tModLoader mod's name.
         /// </summary>
-        public readonly string ModName;
+        public string ModName;
 
         /// <summary>
         ///     The version of the tModLoader mod.
         /// </summary>
-        public readonly Version ModVersion;
+        public Version ModVersion;
 
         /// <summary>
         ///     The version of tModLoader the mod was built on.
         /// </summary>
-        public readonly Version ModLoaderVersion;
+        public Version ModLoaderVersion;
 
         /// <summary>
         ///     Constructs a new <see cref="ModData"/> instance.

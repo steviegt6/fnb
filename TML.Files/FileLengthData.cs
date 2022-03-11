@@ -3,17 +3,17 @@
     /// <summary>
     ///     Holds the length and compressed length of a file.
     /// </summary>
-    public readonly struct FileLengthData
+    public struct FileLengthData
     {
         /// <summary>
         ///     Standard file length.
         /// </summary>
-        public readonly int Length;
+        public int Length;
 
         /// <summary>
         ///     Compressed file length.
         /// </summary>
-        public readonly int LengthCompressed;
+        public int LengthCompressed;
 
         /// <summary>
         /// </summary>

@@ -8,14 +8,14 @@ using TML.Files.Utilities;
 namespace TML.Files
 {
     /// <summary>
-    ///     <c>.tmod</c> file representation. Contains file and mod data, as well as a list of files.
+    ///     .tmod file representation. Contains file and mod data, as well as a list of files.
     /// </summary>
     public class ModFile
     {
         /// <summary>
         ///     The version when tmod files where upgraded to a new format.
         /// </summary>
-        public static readonly Version UpgradeVersion = new(0, 11);
+        protected static readonly Version UpgradeVersion = new(0, 11);
         
         /// <summary>
         ///     The usable binary reader.
@@ -35,7 +35,7 @@ namespace TML.Files
         /// <summary>
         ///     A list of all files.
         /// </summary>
-        public virtual List<FileEntryData> Files { get; } = new();
+        public virtual List<FileEntryData> Files { get; protected set; } = new();
 
         public string Header { get; protected set; } = "";
 
@@ -57,7 +57,7 @@ namespace TML.Files
             BinaryReader reader = Reader;
             
             Header = reader.ReadBytes(4).ConvertToString(); // file header, expected to be TMOD
-            
+
             string loaderVersionString = reader.ReadString();
             Version loaderVersion = Version.Parse(loaderVersionString);
             string hash = Encoding.ASCII.GetString(reader.ReadBytes(20));
@@ -113,7 +113,7 @@ namespace TML.Files
         }
 
         /// <summary>
-        ///     Populates the <see cref="Files"/> list from the old <c>.tmod</c> file format.
+        /// Populates the <see cref="Files"/> list from the old tmod file format.
         /// </summary>
         public virtual void RegisterOldFileEntries(int count, BinaryReader deflateReader)
         {

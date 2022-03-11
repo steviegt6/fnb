@@ -3,22 +3,22 @@
     /// <summary>
     ///     Struct containing information for a file's hash, and length, as well as the containing file count.
     /// </summary>
-    public readonly struct FileDataWithFileCount
+    public class FileDataWithFileCount
     {
         /// <summary>
         ///     The .tmod file's hash.
         /// </summary>
-        public readonly string FileHash;
+        public string FileHash;
 
         /// <summary>
         ///     The length of the .tmod file.
         /// </summary>
-        public readonly uint FileLength;
+        public uint FileLength;
 
         /// <summary>
         ///     The amount of files stored in the .tmod file.
         /// </summary>
-        public readonly int FileCount;
+        public int FileCount;
 
         /// <summary>
         ///     Constructs a new <see cref="FileDataWithFileCount"/> instance.
