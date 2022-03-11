@@ -89,7 +89,7 @@ namespace TML.Patcher.Tasks
 
                 string properPath = Path.Combine(mendedPath);
                 Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
-
+                
                 if (Path.GetExtension(properPath) == ".rawimg")
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
