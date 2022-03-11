@@ -21,11 +21,14 @@ namespace TML.Patcher.Client.Configuration
         [JsonProperty("useModLoaderBeta")] [DefaultValue(false)]
         public bool UseBeta;
 
-        public string GetStoragePath()
+        [JsonProperty("threads")] [DefaultValue(8D)]
+        public double Threads = 8D;
+
+        public string GetStoragePath(bool? beta = null)
         {
             string path = StoragePath;
 
-            if (UseBeta)
+            if (beta ?? UseBeta)
                 path = System.IO.Path.Combine(path, "Beta");
 
             return path;
