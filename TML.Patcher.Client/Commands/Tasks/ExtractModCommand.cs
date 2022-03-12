@@ -56,6 +56,12 @@ namespace TML.Patcher.Client.Commands.Tasks
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
             AnsiConsole.MarkupLine($"[gray]Using threads:[/] {Threads ??= Program.Runtime!.ProgramConfig.Threads}");
 
+            if (Beta.Value)
+                AnsiConsole.WriteLine(
+                    "\n[yellow]WARNING: WORKSHOP MODS DO NOT APPEAR IN THE MOD SELECTION MENU, YOU WILL HAVE TO SPECIFY A PATH MANUALLY" +
+                    "\nANY DISPLAYED MODS ARE ONES BUILT OR DOWNLOADED LOCALLY"
+                );
+
             DirectoryInfo outputDir = new(OutputOverride);
 
             if (outputDir.Exists)
