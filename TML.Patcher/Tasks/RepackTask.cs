@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -24,11 +24,20 @@ namespace TML.Patcher.Tasks
         /// <summary>
         ///     Constructs a new <see cref="RepackTask"/> instance.
         /// </summary>
-        public RepackTask(DirectoryInfo repackDirectory, string targetFilePath, ModData modData, double threads)
+        public RepackTask(
+            DirectoryInfo repackDirectory,
+            string targetFilePath, 
+            string modName, 
+            string modVersion,
+            string modLoaderVersion,
+            double threads
+            )
         {
             RepackDirectory = repackDirectory;
             TargetFilePath = targetFilePath;
-            ModData = modData;
+            ModName = modName;
+            ModVersion = modVersion;
+            ModLoaderVersion = modLoaderVersion;
             Threads = threads;
         }
 
@@ -42,10 +51,11 @@ namespace TML.Patcher.Tasks
         /// </summary>
         public string TargetFilePath { get; }
 
-        /// <summary>
-        ///     Mod data used for writing.
-        /// </summary>
-        public ModData ModData { get; }
+        public string ModName { get; }
+
+        public string ModVersion { get; }
+
+        public string ModLoaderVersion { get; }
 
         /// <summary>
         ///     The amount of threads to use.
@@ -57,7 +67,7 @@ namespace TML.Patcher.Tasks
         /// </summary>
         public override async Task ExecuteAsync()
         {
-            ConcurrentBag<FileEntryData> entries = ConvertFilesToEntries();
+            ConcurrentBag<ModFileEntry> entries = ConvertFilesToEntries();
             ConvertToModFile(entries);
 
             await Task.CompletedTask;
@@ -67,12 +77,12 @@ namespace TML.Patcher.Tasks
         ///     Converts a collection of <see cref="FileEntryData"/>s to a mod file.
         /// </summary>
         /// <param name="entriesEnumerable"></param>
-        protected virtual void ConvertToModFile(IEnumerable<FileEntryData> entriesEnumerable)
+        protected virtual void ConvertToModFile(IEnumerable<ModFileEntry> entriesEnumerable)
         {
             ProgressReporter.Report("Writing mundane TMOD information.");
             
             // Convert entries IEnumerable to an array
-            FileEntryData[] entries = entriesEnumerable.ToArray();
+            ModFileEntry[] entries = entriesEnumerable.ToArray();
 
             FileStream modStream = new(TargetFilePath, FileMode.Create);
             BinaryWriter modWriter = new(modStream);
@@ -81,7 +91,7 @@ namespace TML.Patcher.Tasks
             modWriter.Write(Encoding.UTF8.GetBytes(ModFileHeader));
 
             // Write the mod loader version
-            modWriter.Write(ModData.ModLoaderVersion.ToString());
+            modWriter.Write(ModLoaderVersion);
 
             // Store the position of the hash
             long hashPos = modStream.Position;
@@ -93,10 +103,10 @@ namespace TML.Patcher.Tasks
             long dataPos = modStream.Position;
 
             // Write the mod's internal name
-            modWriter.Write(ModData.ModName);
+            modWriter.Write(ModName);
 
             // Write the mod's version
-            modWriter.Write(ModData.ModVersion.ToString());
+            modWriter.Write(ModVersion);
 
             // Write the number of files in the .tmod file
             modWriter.Write(entries.Length);
@@ -108,24 +118,24 @@ namespace TML.Patcher.Tasks
             for (int i = 0; i < entries.Length; i++)
             {
                 ProgressReporter.Report(
-                    new ProgressNotification("Writing file entry data", entries.Length, i)
+                    new ProgressNotification("Writing file entry data", entries.Length, i + 1)
                 );
                 
-                FileEntryData entry = entries[i];
-                modWriter.Write(entry.FileName);
-                modWriter.Write(entry.FileLengthData.Length);
-                modWriter.Write(entry.FileLengthData.LengthCompressed);
+                ModFileEntry entry = entries[i];
+                modWriter.Write(entry.Name);
+                modWriter.Write(entry.Length);
+                modWriter.Write(entry.CompressedLength);
             }
 
             // Iterate over all entries and write the entry bytes
             for (int i = 0; i < entries.Length; i++)
             {
                 ProgressReporter.Report(
-                    new ProgressNotification("Writing file entry bytes", entries.Length, i)
+                    new ProgressNotification("Writing file entry bytes", entries.Length, i + 1)
                 );
                 
-                FileEntryData entry = entries[i];
-                modWriter.Write(entry.FileData);
+                ModFileEntry entry = entries[i];
+                modWriter.Write(entry.CachedBytes ?? Array.Empty<byte>());
             }
 
             ProgressReporter.Report(
@@ -155,13 +165,13 @@ namespace TML.Patcher.Tasks
         ///     Converts <see cref="FileInfo"/> instances to <see cref="FileEntryData"/> instances.
         /// </summary>
         /// <returns></returns>
-        protected virtual ConcurrentBag<FileEntryData> ConvertFilesToEntries()
+        protected virtual ConcurrentBag<ModFileEntry> ConvertFilesToEntries()
         {
             ProgressReporter.Report("Collecting files to repack.");
             
             List<FileInfo> files = new(RepackDirectory.GetFiles("*", SearchOption.AllDirectories));
             List<List<FileInfo>> chunks = new();
-            ConcurrentBag<FileEntryData> bag = new();
+            ConcurrentBag<ModFileEntry> bag = new();
 
             if (Threads <= 0D)
                 Threads = 1D;
@@ -185,41 +195,43 @@ namespace TML.Patcher.Tasks
             return bag;
         }
 
-        private static void ConvertChunkToEntry(IEnumerable<FileInfo> chunk, ConcurrentBag<FileEntryData> fileBag,
-            string baseFolder)
+        private static void ConvertChunkToEntry(
+            IEnumerable<FileInfo> chunk,
+            ConcurrentBag<ModFileEntry> fileBag,
+            string baseFolder
+            )
         {
             foreach (FileInfo file in chunk)
             {
-                FileEntryData entryData = new("", new FileLengthData(0, 0), null);
-                FileLengthData lengthData = new();
+                int compressedLength;
+                byte[]? cachedBytes;
 
                 FileStream stream = file.OpenRead();
                 MemoryStream memStream = new();
                 stream.CopyTo(memStream);
 
                 // Set the uncompressed length of the file
-                lengthData.Length = (int) stream.Length;
+                int length = (int) stream.Length;
 
                 // Check if the file is bigger than 1KB, and if it is, compress it
                 // TODO: Convert compress required size to an option
                 if (stream.Length > 1024 && ShouldCompress(file.Extension))
                 {
                     byte[] compressedStream = FileUtilities.CompressFile(memStream.ToArray());
-                    lengthData.LengthCompressed = compressedStream.Length;
-                    entryData.FileData = compressedStream;
+                    compressedLength = compressedStream.Length;
+                    cachedBytes = compressedStream;
                 }
                 else
                 {
-                    lengthData.LengthCompressed = lengthData.Length;
-                    entryData.FileData = memStream.ToArray();
+                    compressedLength = length;
+                    cachedBytes = memStream.ToArray();
                 }
 
                 // Set the file name of the entry and the length data
-                entryData.FileName = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
-                entryData.FileLengthData = lengthData;
+                string name = Path.GetRelativePath(baseFolder, file.FullName).Replace('\\', '/');
 
                 // Add the entry to the concurrent bag
-                fileBag.Add(entryData);
+                fileBag.Add(new ModFileEntry(name, -1, length, cachedBytes.Length, cachedBytes));
             }
         }
 
@@ -228,4 +240,4 @@ namespace TML.Patcher.Tasks
                                                                 extension != ".ogg" &&
                                                                 extension != ".mp3";
     }
-}*/
+}

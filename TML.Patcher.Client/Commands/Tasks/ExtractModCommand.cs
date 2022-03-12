@@ -60,7 +60,7 @@ namespace TML.Patcher.Client.Commands.Tasks
 
             if (outputDir.Exists)
             {
-                AnsiConsole.MarkupLine("[gray]Deleting previous files, this may take a moment.[/]");
+                AnsiConsole.MarkupLine("[gray]\nDeleting previous files, this may take a moment.[/]");
                 outputDir.Delete(true);
             }
 

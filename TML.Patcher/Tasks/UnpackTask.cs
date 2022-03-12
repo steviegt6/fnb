@@ -10,26 +10,21 @@ namespace TML.Patcher.Tasks
 {
     public class UnpackTask : ProgressTask
     {
+        public DirectoryInfo ExtractDirectory { get; }
+
+        public string FilePath { get; }
+
+        /// <summary>
+        ///     Amount of threads to use.
+        /// </summary>
+        public double Threads { get; set; }
+        
         public UnpackTask(DirectoryInfo extractDirectory, string path, double threads)
         {
             ExtractDirectory = extractDirectory;
             FilePath = path;
             Threads = threads;
         }
-
-        public DirectoryInfo ExtractDirectory { get; }
-
-        public string FilePath { get; }
-
-        /// <summary>
-        ///     <see cref="ModFile"/> instance of the file.
-        /// </summary>
-        public ModFile? ModFileInstance { get; private set; }
-
-        /// <summary>
-        ///     Amount of threads to use.
-        /// </summary>
-        public double Threads { get; set; }
 
         public override Task ExecuteAsync()
         {
