@@ -17,38 +17,84 @@ namespace TML.Patcher.Client.Commands.Informative
     )]
     public class EnabledModsCommand : ICommand
     {
-        [CommandOption("path-override", 'p', Description = "Manually specifies the input path to use.")]
-        public string? PathOverride { get; init; }
+        [CommandOption("path-override", Description = "Manually specifies the input path to use.")]
+        public string? PathOverride { get; set; }
+        
+        [CommandOption("workshop-override", Description = "Manually specifies the base workshop path to use.")]
+        public string? WorkshopOverride { get; set; }
 
-        [CommandOption(
-            "list-all",
-            'l',
-            Description = "List all resolved files. Unresolved files and enabled files will be annotated accordingly."
-        )]
+        [CommandOption("enabled-override", Description = "Manually specifies the path of the enabled.json file.")]
+        public string? EnabledOverride { get; set; }
+
+        [CommandOption("list-all", Description = "List all resolved mods.")]
         public bool ListAll { get; init; }
 
-        private readonly List<(string mod, bool enabled, bool unresolved)> ModList = new();
+        [CommandOption("descriptive", Description = "Adds additional annotations, indicating resolution status, etc.")]
+        public bool Descriptive { get; init; }
+        
+        [CommandOption("beta", Description = "Manually specifies whether this is for the tModLoader Alpha.")]
+        protected bool? Beta { get; set; }
+        
+        private readonly List<(string mod, bool enabled, bool unresolved, bool? local)> ModList = new();
 
         private int PrintCount;
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            string path = PathOverride ?? Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(), "Mods");
-
-            AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {path}");
+            PathOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(), "Mods");
+            EnabledOverride ??= Path.Combine(PathOverride, "enabled.json");
+            Beta ??= Program.Runtime!.ProgramConfig.UseBeta;
             
-            if (!File.Exists(Path.Combine(path, "enabled.json")))
-                throw new FileNotFoundException("Could not find enabled.json at: " + path);
+            // ../../workshop...
+            WorkshopOverride ??= Path.Combine(
+                Program.Runtime!.ProgramConfig.SteamPath,
+                "..",
+                "..",
+                "workshop",
+                "content",
+                "1281930"
+            );
+
+            AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {PathOverride}");
+            AnsiConsole.MarkupLine($"[gray]Using local mods folder at path:[/] {PathOverride}");
+            AnsiConsole.MarkupLine($"[gray]Using enabled.json path:[/] {EnabledOverride}");
+            
+            if (Beta.Value)
+                AnsiConsole.MarkupLine($"[gray]Using base workshop path:[/] {WorkshopOverride}");
+
+            AnsiConsole.MarkupLine($"[gray]Listing all resolved mods:[/] {ListAll}");
+            AnsiConsole.MarkupLine($"[gray]Descriptive mod annotations:[/] {Descriptive}");
+            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}\n");
+
+            if (!File.Exists(EnabledOverride))
+                throw new FileNotFoundException("Could not find enabled.json at: " + EnabledOverride);
 
             // Overridden paths are expected to be full paths, if they aren't then that's the user's problem.
             List<string> enabledJson = JsonConvert.DeserializeObject<List<string>>(
-                await File.ReadAllTextAsync(Path.Combine(path, "enabled.json"))
+                await File.ReadAllTextAsync(EnabledOverride)
             ) ?? throw new JsonReaderException(
                 "Failed to deserialize enabled.json as a list of strings!"
             );
 
+            if (Beta.Value && ListAll)
+            {
+                DirectoryInfo workshopDir = new(WorkshopOverride);
+
+                if (!workshopDir.Exists)
+                    throw new DirectoryNotFoundException($"Could not resolve workshop directory: {workshopDir}");
+                
+                foreach (DirectoryInfo modDir in workshopDir.EnumerateDirectories())
+                foreach (FileInfo modFile in modDir.EnumerateFiles("*.tmod"))
+                {
+                    string modName = Path.GetFileNameWithoutExtension(modFile.FullName);
+                    bool enabled = enabledJson.Contains(modName);
+                    
+                    ModList.Add((modName, enabled, false, false));
+                }
+            }
+
             if (ListAll)
-                foreach (string tmodFile in Directory.GetFiles(path))
+                foreach (string tmodFile in Directory.GetFiles(PathOverride))
                 {
                     if (Path.GetExtension(tmodFile) != ".tmod")
                         continue;
@@ -56,49 +102,52 @@ namespace TML.Patcher.Client.Commands.Informative
                     string modName = Path.GetFileNameWithoutExtension(tmodFile);
                     bool enabled = enabledJson.Contains(modName);
 
-                    ModList.Add((modName, enabled, false));
+                    ModList.Add((modName, enabled, false, true));
                 }
 
             foreach (string enabledMod in enabledJson)
             {
-                bool resolved = ModList.Any<(string, bool, bool)>(
-                    ((string mod, bool enabled, bool unresolved) listItem) => enabledMod == listItem.mod
+                bool resolved = ModList.Any<(string, bool, bool, bool?)>(
+                    ((string mod, bool enabled, bool unresolved, bool? local) listItem) => enabledMod == listItem.mod
                 );
 
                 if (!resolved)
-                    ModList.Add((enabledMod, true, true));
+                    ModList.Add((enabledMod, true, true, null));
             }
 
-            foreach ((string modName, bool enabled, bool resolved) in ModList)
-                PrintMod(console, modName, ListAll, enabled, resolved);
+            foreach ((string modName, bool enabled, bool resolved, bool? local) in ModList)
+                PrintMod(modName, Descriptive, ListAll, enabled, resolved, local);
         }
 
         private void PrintMod(
-            IConsole console,
             string modName,
             bool extra,
+            bool listAll,
             bool enabled = false,
-            bool unresolved = false
+            bool unresolved = false,
+            bool? local = null
         )
         {
             PrintCount++;
 
             AnsiConsole.Markup(" ");
-            console.ForegroundColor = ConsoleColor.Yellow;
 
             string numericExpression = $"{PrintCount}";
 
             AnsiConsole.Markup($"[yellow][[{PrintCount}]][/]");
 
-            for (int _ = 0; _ < 5 - numericExpression.Length; _++)
+            for (int _ = 0; _ < 3 - numericExpression.Length; _++)
                 AnsiConsole.Write(" ");
 
             AnsiConsole.Markup($" [white]{modName}[/]");
+            
+            if (local is not null)
+                AnsiConsole.Markup($" [gray][[{(local.Value ? "Local" : "Workshop")}]][/]");
 
             if (extra && enabled) 
                 AnsiConsole.Markup(" [green][[Enabled]][/]");
 
-            if (extra && unresolved)
+            if (extra && unresolved && listAll)
                 AnsiConsole.Markup(" [red][[Unresolved]][/]");
 
             AnsiConsole.WriteLine();
