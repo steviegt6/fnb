@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using CliFx;
+using Spectre.Console;
 using TML.Patcher.Client.Configuration;
 using TML.Patcher.Client.Utilities;
 
@@ -17,11 +18,13 @@ namespace TML.Patcher.Client
         /// </summary>
         public static Runtime? Runtime { get; private set; }
 
+        private static volatile bool Timeout;
+
         /// <summary>
         ///     The entrypoint method.
         /// </summary>
         /// <returns></returns>
-        public static async Task<int> Main()
+        public static async Task<int> Main(string[] args)
         {
             Runtime = new Runtime();
 
@@ -33,7 +36,12 @@ namespace TML.Patcher.Client
                 SetupConfig.SerializeConfig(Runtime.SetupConfig, Runtime.PlatformStorage);
             }
 
-            return await new CliApplicationBuilder().AddCommandsFromThisAssembly().Build().RunAsync();
+            DisplayStartupMessage();
+
+            if (args.Length == 0)
+                return await DispalyInstructions();
+
+            return await new CliApplicationBuilder().AddCommandsFromThisAssembly().Build().RunAsync(args);
         }
 
         private static void RunSetupProcess()
@@ -210,6 +218,55 @@ namespace TML.Patcher.Client
             Console.ResetColor();
             ConsoleUtilities.WriteMany(' '.ToString(), 10 - text.Length);
             Console.Write(' ');
+        }
+
+        private static void DisplayStartupMessage()
+        {
+            AnsiConsole.MarkupLine(@$"
+[gray]Running [silver]TML.Patcher[/] [yellow]{typeof(Program).Assembly.GetName().Version}[/]
+Get support on [#5865F2]Discord[/] at: [blue u]https://discord.gg/Y8bvvqyFQw[/]
+Report issues on [silver]GitHub[/] at: [blue u]https://github.com/Steviegt6/TML.Patcher[/][/]
+");
+        }
+
+        private static async Task<int> DispalyInstructions()
+        {
+            AnsiConsole.MarkupLine(@"
+[gray][silver]TML.Patcher[/] is a [u]console[/] application, and should be ran in a [u]console[/].
+It is not meant to be ran [b]without[/] any parameters, either.
+
+If you want to see the available commands, run [white]dotnet TML.Patcher.Client -h[/].
+To see how a command should be used, run [white]dotnet TML.Patcher.Client <command-name> -h[/].
+
+For any previous users who were familiar with the pre-release versions of TML.Patcher, you may be wondering why this is no longer fully interactive.
+That's because the interactive version sucked.
+
+You have been given [u]30 seconds[/] to read this. Wait for 30 seconds or press any key to exit.[/]
+");
+            
+#pragma warning disable CS4014
+            Task.Run(() =>
+            {
+                while (!Console.KeyAvailable)
+                {
+                }
+
+                Timeout = true;
+            });
+
+            Task.Run(async () =>
+#pragma warning restore CS4014
+            {
+                await Task.Delay(30000);
+
+                Timeout = true;
+            });
+
+            while (!Timeout)
+            {
+            }
+
+            return await Task.FromResult(0);
         }
     }
 }
