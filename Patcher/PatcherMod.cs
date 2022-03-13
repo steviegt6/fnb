@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using Patcher.IO;
+using Patcher.Loading;
 using Patcher.Logging;
 using Patcher.Patching;
 using Terraria;
@@ -38,6 +40,18 @@ namespace Patcher
 
 		public List<IPatchRepository.DetourPatch> DetourPatches { get; } = new();
 
+		private readonly AssemblyContentResolver ContentResolver = new();
+
+		public override void Load()
+		{
+			base.Load();
+			
+			ContentResolver.AddAssemblies(/* TODO: Resolve assemblies here. */);
+			ContentResolver.ResolveTypes();
+			
+			LoadPatches();
+		}
+
 		public override void Unload()
 		{
 			base.Unload();
@@ -47,6 +61,15 @@ namespace Patcher
 			
 			foreach (IPatchRepository.DetourPatch patch in DetourPatches)
 				patch.Unapply();
+		}
+
+		private void LoadPatches()
+		{
+			List<Patch> patches = ContentResolver.GetTypesAsInstances<Patch>().ToList();
+			
+			// TODO: Patch sorting.
+			// TODO: Later, add ways to apply patches to assemblies (I will do this).
+			// TODO: More stuff in the morning.
 		}
 	}
 }
