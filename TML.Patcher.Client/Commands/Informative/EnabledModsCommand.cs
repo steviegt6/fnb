@@ -7,6 +7,7 @@ using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
 using Newtonsoft.Json;
+using Spectre.Console;
 
 namespace TML.Patcher.Client.Commands.Informative
 {
@@ -16,11 +17,7 @@ namespace TML.Patcher.Client.Commands.Informative
     )]
     public class EnabledModsCommand : ICommand
     {
-        [CommandOption(
-            "path-override",
-            'p',
-            Description = "Overrides the default path used. Reads from the local directory."
-        )]
+        [CommandOption("path-override", 'p', Description = "Manually specifies the input path to use.")]
         public string? PathOverride { get; init; }
 
         [CommandOption(
@@ -38,18 +35,15 @@ namespace TML.Patcher.Client.Commands.Informative
         {
             string path = PathOverride ?? Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(), "Mods");
 
-            if (PathOverride is not null)
-                await console.Output.WriteLineAsync("Path overriden, using: " + path);
-            else
-                await console.Output.WriteLineAsync("Using default path: " + path);
-
+            AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {path}");
+            
             if (!File.Exists(Path.Combine(path, "enabled.json")))
-                throw new Exception("Could not find enabled.json at: " + path);
+                throw new FileNotFoundException("Could not find enabled.json at: " + path);
 
-            // Overridden paths are expected to be full paths, if they aren't then that's the end-user's problem.
+            // Overridden paths are expected to be full paths, if they aren't then that's the user's problem.
             List<string> enabledJson = JsonConvert.DeserializeObject<List<string>>(
                 await File.ReadAllTextAsync(Path.Combine(path, "enabled.json"))
-            ) ?? throw new Exception(
+            ) ?? throw new JsonReaderException(
                 "Failed to deserialize enabled.json as a list of strings!"
             );
 
@@ -76,10 +70,10 @@ namespace TML.Patcher.Client.Commands.Informative
             }
 
             foreach ((string modName, bool enabled, bool resolved) in ModList)
-                await PrintMod(console, modName, ListAll, enabled, resolved);
+                PrintMod(console, modName, ListAll, enabled, resolved);
         }
 
-        private async Task PrintMod(
+        private void PrintMod(
             IConsole console,
             string modName,
             bool extra,
@@ -89,34 +83,25 @@ namespace TML.Patcher.Client.Commands.Informative
         {
             PrintCount++;
 
-            await console.Output.WriteAsync(' ');
+            AnsiConsole.Markup(" ");
             console.ForegroundColor = ConsoleColor.Yellow;
 
-            string numericExpression = $"[{PrintCount}]";
+            string numericExpression = $"{PrintCount}";
 
-            await console.Output.WriteAsync(numericExpression);
-
-            console.ForegroundColor = ConsoleColor.White;
+            AnsiConsole.Markup($"[yellow][[{PrintCount}]][/]");
 
             for (int _ = 0; _ < 5 - numericExpression.Length; _++)
-                await console.Output.WriteAsync(' ');
+                AnsiConsole.Write(" ");
 
-            await console.Output.WriteAsync($" {modName}");
+            AnsiConsole.Markup($" [white]{modName}[/]");
 
-            if (extra && enabled)
-            {
-                console.ForegroundColor = ConsoleColor.Green;
-                await console.Output.WriteAsync(" [Enabled]");
-            }
+            if (extra && enabled) 
+                AnsiConsole.Markup(" [green][[Enabled]][/]");
 
             if (extra && unresolved)
-            {
-                console.ForegroundColor = ConsoleColor.Red;
-                await console.Output.WriteAsync(" [Unresolved]");
-            }
+                AnsiConsole.Markup(" [red][[Unresolved]][/]");
 
-            console.ForegroundColor = ConsoleColor.White;
-            await console.Output.WriteAsync('\n');
+            AnsiConsole.WriteLine();
         }
     }
 }
