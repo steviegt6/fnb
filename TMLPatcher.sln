@@ -18,6 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Patcher.Client", "TML.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TML.Patcher", "TML.Patcher\TML.Patcher.csproj", "{3780CF96-4901-4327-A70A-66CC9F3D02CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Patcher", "Patcher\Patcher.csproj", "{F5E1B17B-36FA-405D-9249-D3B0A5ACD469}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{3780CF96-4901-4327-A70A-66CC9F3D02CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3780CF96-4901-4327-A70A-66CC9F3D02CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3780CF96-4901-4327-A70A-66CC9F3D02CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E1B17B-36FA-405D-9249-D3B0A5ACD469}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E1B17B-36FA-405D-9249-D3B0A5ACD469}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E1B17B-36FA-405D-9249-D3B0A5ACD469}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E1B17B-36FA-405D-9249-D3B0A5ACD469}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
