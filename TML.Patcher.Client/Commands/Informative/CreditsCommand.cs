@@ -2,6 +2,7 @@
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using Spectre.Console;
 
 namespace TML.Patcher.Client.Commands.Informative
 {
@@ -12,16 +13,16 @@ namespace TML.Patcher.Client.Commands.Informative
     public class CreditsCommand : ICommand
     {
         /// <inheritdoc />
-        public async ValueTask ExecuteAsync(IConsole console)
+        public ValueTask ExecuteAsync(IConsole console)
         {
-            await console.Output.WriteLineAsync($@"
-TML.Patcher v{GetType().Assembly.GetName().Version}
-Developed by Tomat with the help of Chik3r.
+            AnsiConsole.MarkupLine($@"
+[lightgreen]TML[/][gray].[/][white]Patcher[/] [gray]v[/][yellow]{GetType().Assembly.GetName().Version}[/]
+Developed by [indianred1]Tomat[/] with the help of [white]Chik3r[/].
 
 Special thanks:
- - Trivaxy, for providing me with the original code for unpacking .tmod files.
- - Archanyhm, for assisting me with Linux and Mac support.
- - Chik3r, for tons of help with multithreading, unmanaged code, and more.
+ - [yellow]Trivaxy[/], for providing me with the original code for unpacking .tmod files. While it has since been rewritten, it is what prompted me to start this project in the first place.
+ - [yellow]Archanyhm[/], for assisting me with Linux and Mac support for the older implementation of IL Spy decompilation..
+ - [yellow]Chik3r[/], for tons of help with multithreading, unmanaged code, decompilation, maintenance, and more.
 
  * Release Notes *
 
@@ -31,6 +32,8 @@ Current - v1.0.0
  - Fixed issues with ILSpy references.
  - Finally implemented various mod patching methods.
 ");
+
+            return default;
         }
     }
 }
