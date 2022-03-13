@@ -13,19 +13,30 @@ namespace TML.Patcher.Client.Commands.Tasks
     {
         [CommandOption("threads", Description = "Specify the amount of threads to use.")]
         public double? Threads { get; set; }
+        
+        [CommandOption("mods-folder-override", Description = "Manually specifies the mods folder path to use.")]
+        public string? ModsFolderOverride { get; set; }
+        
+        [CommandOption("workshop-override", Description = "Manually specifies the base workshop path to use.")]
+        public string? WorkshopOverride { get; set; }
 
         protected override async ValueTask ExecuteAsync()
         {
             AnsiConsole.MarkupLine($"[gray]Using mod file at path:[/] {PathOverride}");
-            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta ??= Program.Runtime!.ProgramConfig.UseBeta}");
+            AnsiConsole.MarkupLine($"[gray]Using mods folder at path:[/] {ModsFolderOverride}");
+            
+            if (Beta!.Value)
+                AnsiConsole.MarkupLine($"[gray]Using base workshop at path:[/] {WorkshopOverride}");
+            
+            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}");
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
             AnsiConsole.MarkupLine($"[gray]Using threads:[/] {Threads ??= Program.Runtime!.ProgramConfig.Threads}");
 
-            if (Beta.Value)
-                AnsiConsole.WriteLine(
-                    "\n[yellow]WARNING: WORKSHOP MODS DO NOT APPEAR IN THE MOD SELECTION MENU, YOU WILL HAVE TO SPECIFY A PATH MANUALLY" +
-                    "\nANY DISPLAYED MODS ARE ONES BUILT OR DOWNLOADED LOCALLY"
-                );
+            // if (Beta.Value)
+            //     AnsiConsole.MarkupLine(
+            //         "\n[yellow]WARNING: WORKSHOP MODS DO NOT APPEAR IN THE MOD SELECTION MENU, YOU WILL HAVE TO SPECIFY A PATH MANUALLY" +
+            //         "\nANY DISPLAYED MODS ARE ONES BUILT OR DOWNLOADED LOCALLY[/]"
+            //     );
 
             DirectoryInfo outputDir = new(OutputOverride);
 
@@ -52,12 +63,35 @@ namespace TML.Patcher.Client.Commands.Tasks
 
         protected override void HandleNullPath()
         {
-            DirectoryInfo dir = new(Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(Beta), "Mods"));
+            ModsFolderOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(Beta), "Mods");
+
+            DirectoryInfo dir = new(ModsFolderOverride);
             Dictionary<string, string> resolvedMods = dir
                 .EnumerateFiles("*.tmod")
                 .ToDictionary(
-                    file => Path.GetFileNameWithoutExtension(file.Name), file => file.FullName
+                    file => Path.GetFileNameWithoutExtension(file.Name) + " (Local)", file => file.FullName
                 );
+            
+            if (Beta!.Value)
+            {
+                WorkshopOverride ??= Path.Combine(
+                    Program.Runtime!.ProgramConfig.SteamPath,
+                    "..",
+                    "..",
+                    "workshop",
+                    "content",
+                    "1281930"
+                );
+
+                DirectoryInfo workshopDir = new(WorkshopOverride);
+
+                if (!workshopDir.Exists)
+                    throw new DirectoryNotFoundException($"Could not resolve base workshop directory: {workshopDir}");
+                
+                foreach (DirectoryInfo modDir in workshopDir.EnumerateDirectories())
+                foreach (FileInfo modFile in modDir.EnumerateFiles("*.tmod"))
+                    resolvedMods.Add(Path.GetFileNameWithoutExtension(modFile.Name) + " (Workshop)", modFile.FullName);
+            }
                 
             AnsiConsole.MarkupLine($"Resolved [white]{resolvedMods.Count}[/] mod files.\n");
 
