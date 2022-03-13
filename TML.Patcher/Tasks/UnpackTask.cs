@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TML.Files;
 using TML.Files.Utilities;
@@ -84,12 +85,80 @@ namespace TML.Patcher.Tasks
 
                 string properPath = Path.Combine(mendedPath);
                 Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
+
+                if (file.Name == "Info") {
+                    ExtractInfoFile(properPath, data);
+                    continue;
+                }
                 
                 if (Path.GetExtension(properPath) == ".rawimg")
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
                     File.WriteAllBytes(properPath, data);
             }
+        }
+        
+        private static IEnumerable<string> ReadList(BinaryReader reader) {
+            List<string> list = new();
+            for (string item = reader.ReadString(); item.Length > 0; item = reader.ReadString())
+                list.Add(item);
+
+            return list;
+        }
+
+        protected virtual void ExtractInfoFile(string properPath, byte[] data) {
+            StringBuilder sb = new();
+
+            using MemoryStream memStream = new(data);
+            using BinaryReader reader = new(memStream);
+
+            // 'While the intended defaults for these are false, Info will only have !hideCode and !hideResources entries, so this is necessary.'
+            bool hideCode = true, hideResources = true;
+            
+            for (string tag = reader.ReadString(); tag.Length > 0; tag = reader.ReadString()) {
+                string? value = null;
+                switch (tag) {
+                    case "dllReferences" or "modReferences" or "weakReferences" or "sortAfter" or "sortBefore":
+                        value = string.Join(", ", ReadList(reader));
+                        break;
+                    case "noCompile" or "includeSource" or "includePDB" or "beta":
+                        value = "true";
+                        break;
+                    case "!hideCode":
+                        hideCode = false;
+                        break;
+                    case "!hideResources":
+                        hideResources = false;
+                        break;
+                    case "side":
+                        value = reader.ReadByte() switch {
+                            0 => "Both",
+                            1 => "Client",
+                            2 => "Server",
+                            3 => "NoSync",
+                            _ => value,
+                        };
+                        break;
+                    case "description":
+                        continue;
+                    default:
+                        value = reader.ReadString();
+                        break;
+                }
+                
+                if (value is not null)
+                    sb.AppendLine($"{tag} = {value}");
+            }
+
+            if (hideCode)
+                sb.AppendLine("hideCode = true");
+            if (hideResources)
+                sb.AppendLine("hideResources = true");
+
+            string parentPath = Path.GetDirectoryName(properPath)!;
+            string buildPath = Path.Combine(parentPath, "build.txt");
+            
+            File.WriteAllText(buildPath, sb.ToString());
         }
     }
 }
