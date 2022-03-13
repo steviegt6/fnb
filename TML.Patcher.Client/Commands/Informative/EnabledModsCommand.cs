@@ -21,18 +21,18 @@ namespace TML.Patcher.Client.Commands.Informative
             'p',
             Description = "Overrides the default path used. Reads from the local directory."
         )]
-        public string? PathOverride { get; init; } = null;
+        public string? PathOverride { get; init; }
 
         [CommandOption(
             "list-all",
             'l',
             Description = "List all resolved files. Unresolved files and enabled files will be annotated accordingly."
         )]
-        public bool ListAll { get; init; } = false;
+        public bool ListAll { get; init; }
 
-        private List<(string mod, bool enabled, bool unresolved)> ModList = new();
+        private readonly List<(string mod, bool enabled, bool unresolved)> ModList = new();
 
-        private int PrintCount = 0;
+        private int PrintCount;
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
@@ -65,24 +65,27 @@ namespace TML.Patcher.Client.Commands.Informative
                     ModList.Add((modName, enabled, false));
                 }
 
-            foreach (string enabledMod in from enabledMod in enabledJson
-                let resolved =
-                    ModList.Any<(string, bool, bool)>(((string mod, bool enabled, bool unresolved) listItem) =>
-                        enabledMod == listItem.mod)
-                where !resolved
-                select enabledMod)
+            foreach (string enabledMod in enabledJson)
             {
-                ModList.Add((enabledMod, true, true));
+                bool resolved = ModList.Any<(string, bool, bool)>(
+                    ((string mod, bool enabled, bool unresolved) listItem) => enabledMod == listItem.mod
+                );
+
+                if (!resolved)
+                    ModList.Add((enabledMod, true, true));
             }
 
             foreach ((string modName, bool enabled, bool resolved) in ModList)
-            {
                 await PrintMod(console, modName, ListAll, enabled, resolved);
-            }
         }
 
-        private async Task PrintMod(IConsole console, string modName, bool extra, bool enabled = false,
-            bool unresolved = false)
+        private async Task PrintMod(
+            IConsole console,
+            string modName,
+            bool extra,
+            bool enabled = false,
+            bool unresolved = false
+        )
         {
             PrintCount++;
 
@@ -92,7 +95,7 @@ namespace TML.Patcher.Client.Commands.Informative
             string numericExpression = $"[{PrintCount}]";
 
             await console.Output.WriteAsync(numericExpression);
-            
+
             console.ForegroundColor = ConsoleColor.White;
 
             for (int _ = 0; _ < 5 - numericExpression.Length; _++)

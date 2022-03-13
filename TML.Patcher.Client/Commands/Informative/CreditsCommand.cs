@@ -23,7 +23,9 @@ Special thanks:
  - Archanyhm, for assisting me with Linux and Mac support.
  - Chik3r, for tons of help with multithreading, unmanaged code, and more.
 
-Release Notes - v1.0.0
+ * Release Notes *
+
+Current - v1.0.0
  - Completely rewrote the original program.
  - Updated everything to .NET 6.0.
  - Fixed issues with ILSpy references.
