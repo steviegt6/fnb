@@ -33,12 +33,23 @@ namespace TML.Patcher.Client.Commands.Tasks
             
             AnsiConsole.MarkupLine("\n[gray]Beginning extraction process, this may take some time.\n[/]");
 
+            List<string> searchDirectories = new()
+            {
+                Program.Runtime!.ProgramConfig.SteamPath,
+                Program.Runtime.ProgramConfig.GetStoragePath(Beta),
+                Path.Combine(Program.Runtime.ProgramConfig.GetStoragePath(Beta), "references")
+            };
+
+            DirectoryInfo libDir = new(Path.Combine(Path.GetDirectoryName(PathOverride) ?? "", "lib"));
+            
+            if (libDir.Exists)
+                searchDirectories.Add(libDir.FullName);
+
             DecompilationTask task = new(
                 PathOverride,
                 outputDir.FullName,
                 Beta!.Value ? LanguageVersion.Latest : LanguageVersion.CSharp7_3,
-                Program.Runtime!.ProgramConfig.SteamPath,
-                Program.Runtime.ProgramConfig.GetStoragePath(Beta)
+                searchDirectories.ToArray()
             );
 
             task.ProgressReporter.OnReport += ListenToNotification;

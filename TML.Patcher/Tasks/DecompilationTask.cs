@@ -61,7 +61,7 @@ namespace TML.Patcher.Tasks
 
             DecompilerSettings decompilerSettings = new(Version)
             {
-                ThrowOnAssemblyResolveErrors = false
+                ThrowOnAssemblyResolveErrors = true
             };
             
             ProgressReporter.Report("Initializing decompiler.");
