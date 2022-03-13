@@ -19,7 +19,7 @@ namespace TML.Patcher.Tasks
         ///     Amount of threads to use.
         /// </summary>
         public double Threads { get; set; }
-        
+
         public UnpackTask(DirectoryInfo extractDirectory, string path, double threads)
         {
             ExtractDirectory = extractDirectory;
@@ -30,7 +30,7 @@ namespace TML.Patcher.Tasks
         public override Task ExecuteAsync()
         {
             ProgressReporter.Report("Reading the .tmod file.");
-            
+
             using ModFile modFile = new(FilePath);
 
             ExtractAllFiles(modFile, ExtractDirectory);
@@ -56,7 +56,7 @@ namespace TML.Patcher.Tasks
             // Split the files into chunks
             for (int i = 0; i < fileList.Count; i += chunkSize)
                 chunks.Add(fileList.GetRange(i, Math.Min(chunkSize, fileList.Count - i)));
-            
+
             ProgressReporter.Report($"Processing {chunks.Count} chunk(s).");
 
             // Run a task for each chunk
@@ -86,19 +86,21 @@ namespace TML.Patcher.Tasks
                 string properPath = Path.Combine(mendedPath);
                 Directory.CreateDirectory(Path.GetDirectoryName(properPath) ?? string.Empty);
 
-                if (file.Name == "Info") {
+                if (file.Name == "Info")
+                {
                     ExtractInfoFile(properPath, data);
                     continue;
                 }
-                
+
                 if (Path.GetExtension(properPath) == ".rawimg")
                     FileConversion.ConvertRawToPng(data, properPath);
                 else
                     File.WriteAllBytes(properPath, data);
             }
         }
-        
-        private static IEnumerable<string> ReadList(BinaryReader reader) {
+
+        private static IEnumerable<string> ReadList(BinaryReader reader)
+        {
             List<string> list = new();
             for (string item = reader.ReadString(); item.Length > 0; item = reader.ReadString())
                 list.Add(item);
@@ -106,32 +108,42 @@ namespace TML.Patcher.Tasks
             return list;
         }
 
-        protected virtual void ExtractInfoFile(string properPath, byte[] data) {
+        protected virtual void ExtractInfoFile(string properPath, byte[] data)
+        {
             StringBuilder sb = new();
 
             using MemoryStream memStream = new(data);
             using BinaryReader reader = new(memStream);
 
             // 'While the intended defaults for these are false, Info will only have !hideCode and !hideResources entries, so this is necessary.'
-            bool hideCode = true, hideResources = true;
-            
-            for (string tag = reader.ReadString(); tag.Length > 0; tag = reader.ReadString()) {
+            bool hideCode = true;
+            bool hideResources = true;
+
+            for (string tag = reader.ReadString(); tag.Length > 0; tag = reader.ReadString())
+            {
                 string? value = null;
-                switch (tag) {
+
+                switch (tag)
+                {
                     case "dllReferences" or "modReferences" or "weakReferences" or "sortAfter" or "sortBefore":
                         value = string.Join(", ", ReadList(reader));
                         break;
+
                     case "noCompile" or "includeSource" or "includePDB" or "beta":
                         value = "true";
                         break;
+
                     case "!hideCode":
                         hideCode = false;
                         break;
+
                     case "!hideResources":
                         hideResources = false;
                         break;
+
                     case "side":
-                        value = reader.ReadByte() switch {
+                        value = reader.ReadByte() switch
+                        {
                             0 => "Both",
                             1 => "Client",
                             2 => "Server",
@@ -139,25 +151,32 @@ namespace TML.Patcher.Tasks
                             _ => value,
                         };
                         break;
+
                     case "description":
-                        continue;
-                    default:
+                        break;
+
+                    case "displayName":
+                    case "author":
+                    case "version":
+                    case "homepage":
+                    case "languageVersion":
                         value = reader.ReadString();
                         break;
                 }
-                
+
                 if (value is not null)
                     sb.AppendLine($"{tag} = {value}");
             }
 
             if (hideCode)
                 sb.AppendLine("hideCode = true");
+            
             if (hideResources)
                 sb.AppendLine("hideResources = true");
 
             string parentPath = Path.GetDirectoryName(properPath)!;
             string buildPath = Path.Combine(parentPath, "build.txt");
-            
+
             File.WriteAllText(buildPath, sb.ToString());
         }
     }
