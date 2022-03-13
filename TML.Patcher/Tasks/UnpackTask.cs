@@ -114,7 +114,6 @@ namespace TML.Patcher.Tasks
 
             // 'While the intended defaults for these are false, Info will only have !hideCode and !hideResources entries, so this is necessary.'
             bool hideCode = true, hideResources = true;
-            string? description = null;
             
             for (string tag = reader.ReadString(); tag.Length > 0; tag = reader.ReadString()) {
                 string? value = null;
@@ -141,8 +140,7 @@ namespace TML.Patcher.Tasks
                         };
                         break;
                     case "description":
-                        description = reader.ReadString();
-                        break;
+                        continue;
                     default:
                         value = reader.ReadString();
                         break;
@@ -159,12 +157,8 @@ namespace TML.Patcher.Tasks
 
             string parentPath = Path.GetDirectoryName(properPath)!;
             string buildPath = Path.Combine(parentPath, "build.txt");
-            string descriptionPath = Path.Combine(parentPath, "description.txt");
             
             File.WriteAllText(buildPath, sb.ToString());
-            
-            if (description is not null)
-                File.WriteAllText(descriptionPath, description);
         }
     }
 }
