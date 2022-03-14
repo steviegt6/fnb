@@ -72,15 +72,9 @@ namespace Patcher.Patching
         // public abstract T PatchMethod { get; }
 
         /// <summary>
-        ///     A collection of depended patches.
+        ///     The patch this patch is dependent on.
         /// </summary>
-        public virtual IEnumerable<Type> Dependencies
-        {
-            get
-            {
-                yield break;
-            }
-        }
+        public virtual Type? Dependency => null;
 
         /// <summary>
         ///     The status of this patch.
