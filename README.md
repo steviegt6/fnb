@@ -42,7 +42,7 @@ Project | Purpose
 ------- | -------
 `TML.Files` | A simple library that provides both generic and tML-specific structures and and classes, along with helper/utility methods for handling files. Includes methods for converting `.rawimg`s (tML-specific) to `.png`s, simple decompression, etc. Heavily used by the TML.Patcher backend.
 `TML.Patcher` | The core library that provides methods for decompilation and unpacking `.tmod` files. Requires `TML.Files` to use.
-`TML.Patcher.CLI` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
+`TML.Patcher.Client` | Implementation of `TML.Patcher`. This is the program you launch when you use the `TML.Patcher` console interface. Also provides a few exclusive functions like listing extracted, installed, and enabled mods.
 
 ### Nuget
 You can get [`TML.Files`](https://www.nuget.org/packages/TML.Files/) and [`TML.Patcher`](https://www.nuget.org/packages/TML.Patcher/) on NuGet.
