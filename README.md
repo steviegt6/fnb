@@ -17,8 +17,7 @@ Installation is incredibly simple. Just ensure you meet the prerequisites before
 **Installation:**
 1. Grab the newest release from the Releases page.
 2. Extract it into an empty folder.
-3. Run `dotnet TML.Patcher.CLI.dll` for Unix/\*Nix in your favorite terminal (Windows users can directly execute the `TML.Patcher.CLI.exe` program).
-4. (If prompted:) Enter in your Mods folder directory. This is usually auto-detected if you have it on your main drive.
+3. Run `dotnet TML.Patcher.Client.dll -h` for Unix/\*Nix in your favorite terminal for commands and their instructions.
 
 ### Troubleshooting
 While this program is pretty basic in its operations, it does read and write files, including writing over files and deleting directories in the extraction and decompilation directories.
