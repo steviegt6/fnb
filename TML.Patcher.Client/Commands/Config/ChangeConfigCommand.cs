@@ -2,6 +2,7 @@
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using Spectre.Console;
 using TML.Patcher.Client.Configuration;
 
 namespace TML.Patcher.Client.Commands.Config
@@ -15,8 +16,8 @@ namespace TML.Patcher.Client.Commands.Config
         [CommandOption("steam-path", Description = "Sets the Steam/GOG game path.")]
         public string? NewSteamPath { get; init; } = null;
         
-        [CommandOption("toggle-beta", Description = "Switch to and from using tModLoader beta paths (for the alpha).")]
-        public bool ToggleBeta { get; init; }
+        [CommandOption("tml-version", Description = "Changes the default tModLoader version.")]
+        public string? LoaderVersion { get; init; }
 
         public async ValueTask ExecuteAsync(IConsole console)
         {
@@ -32,14 +33,20 @@ namespace TML.Patcher.Client.Commands.Config
                 await console.Output.WriteLineAsync("Set Steam path to: " + NewSteamPath);
             }
 
-            if (ToggleBeta)
+            if (LoaderVersion is not null)
             {
-                Program.Runtime!.ProgramConfig.UseBeta = !Program.Runtime.ProgramConfig.UseBeta;
-
-                if (Program.Runtime.ProgramConfig.UseBeta)
-                    await console.Output.WriteLineAsync("Now using the tModLoader beta.");
-                else
-                    await console.Output.WriteLineAsync("No longer using the tModLoader beta.");
+                ModLoaderVersion realVersion = ProgramConfig.GetVersionFromName(LoaderVersion, out bool valid);
+                Program.Runtime!.ProgramConfig.LoaderVersion = realVersion.VersionAliases[0];
+                
+                await console.Output.WriteLineAsync($"Using tModLoader version: {realVersion.VersionAliases[1]}");
+                
+                if (!valid)
+                {
+                    AnsiConsole.MarkupLine("[yellow]WARNING: The input used for the tModLoader version was not valid." +
+                                           "\nThe default version \"legacy\" (1.3) is being used." +
+                                           "\nBelow is a list of valid versions:\n[/]");
+                    ProgramConfig.PrintVersions();
+                }
             }
             
             ProgramConfig.SerializeConfig(Program.Runtime!.ProgramConfig, Program.Runtime.PlatformStorage);

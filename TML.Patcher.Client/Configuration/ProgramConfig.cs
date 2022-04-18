@@ -1,5 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 using Newtonsoft.Json;
+using Spectre.Console;
 
 // no xml comments
 #pragma warning disable 1591
@@ -18,20 +21,56 @@ namespace TML.Patcher.Client.Configuration
         [JsonProperty("steamPath")] [DefaultValue("undefined")]
         public string SteamPath = "undefined";
 
-        [JsonProperty("useModLoaderBeta")] [DefaultValue(false)]
-        public bool UseBeta;
+        [JsonProperty("loaderVersion")] [DefaultValue("legacy")]
+        public string LoaderVersion = "legacy";
 
         [JsonProperty("threads")] [DefaultValue(8D)]
         public double Threads = 8D;
 
-        public string GetStoragePath(bool? beta = null)
+        public string GetStoragePath(string version, out bool valid) =>
+            GetStoragePath(GetVersionFromName(version, out valid));
+
+        public string GetStoragePath(ModLoaderVersion version) =>
+            System.IO.Path.Combine(StoragePath, version.PathResolver.Invoke(StoragePath));
+
+        public static ModLoaderVersion GetVersionFromName(string version, out bool valid)
         {
-            string path = StoragePath;
+            valid = false;
+            
+            ModLoaderVersion? mlVer = null;
 
-            if (beta ?? UseBeta)
-                path = System.IO.Path.Combine(path, "Beta");
+            foreach (ModLoaderVersion ver in ModLoaderVersion.Versions)
+            {
+                if (!ver.VersionAliases.Contains(version.ToLower()))
+                    continue;
 
-            return path;
+                valid = true;
+                mlVer = ver;
+                break;
+            }
+
+            return mlVer ?? ModLoaderVersion.Legacy;
+        }
+
+        public static void PrintVersions()
+        {
+            foreach ((Func<string, string>? pathResolver, bool _, string[]? versionAliases) in ModLoaderVersion.Versions)
+            {
+                AnsiConsole.MarkupLine($"[gray]Version [white]\"{versionAliases[1]}\"[/] @ [silver]\"{pathResolver.Invoke("")}\"[/][/]");
+
+                for (int i = 0; i < versionAliases.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        AnsiConsole.MarkupLine($"[gray] * \"{versionAliases[i]}\"[/] [lightgoldenrod3](standard)[/]");
+                        continue;
+                    }
+                    
+                    AnsiConsole.MarkupLine($"[gray] * \"{versionAliases[i]}\"[/] [red](obsolete)[/]");
+                }
+                
+                AnsiConsole.MarkupLine("\n");
+            }
         }
     }
 }

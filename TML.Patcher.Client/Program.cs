@@ -32,9 +32,17 @@ namespace TML.Patcher.Client
             {
                 RunSetupProcess();
                 Runtime.SetupConfig.SetupCompleted = true;
-                ProgramConfig.SerializeConfig(Runtime.ProgramConfig, Runtime.PlatformStorage);
-                SetupConfig.SerializeConfig(Runtime.SetupConfig, Runtime.PlatformStorage);
+                Runtime.SetupConfig.MigrationCompleted = true;
             }
+            else if (!Runtime.SetupConfig.MigrationCompleted)
+            {
+                // Handles migrating from the old path system to the new path system used by tModLoader.
+                RunMigrationProcess();
+                Runtime.SetupConfig.MigrationCompleted = true;
+            }
+            
+            ProgramConfig.SerializeConfig(Runtime.ProgramConfig, Runtime.PlatformStorage);
+            SetupConfig.SerializeConfig(Runtime.SetupConfig, Runtime.PlatformStorage);
 
             DisplayStartupMessage();
 
@@ -52,62 +60,13 @@ namespace TML.Patcher.Client
 
             #region Storage Path
 
-            if (Runtime!.ProgramConfig.StoragePath == "undefined")
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    string start = Environment.GetEnvironmentVariable("UserProfile") ?? "";
-
-                    if (Directory.Exists(Path.Combine(start, "OneDrive")))
-                        start = Path.Combine(start, "OneDrive");
-                    
-                    Runtime.ProgramConfig.StoragePath = Path.Combine(
-                        start,
-                        "Documents",
-                        "My Games",
-                        "Terraria",
-                        "ModLoader"
-                    );
-                }
-                else if (OperatingSystem.IsMacOS())
-                {
-                    Runtime.ProgramConfig.StoragePath = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                        "Library",
-                        "Application Support",
-                        "Terraria",
-                        "ModLoader"
-                    );
-                }
-                else if (OperatingSystem.IsLinux())
-                {
-                    string? xdgHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
-
-                    if (!string.IsNullOrEmpty(xdgHome))
-                    {
-                        Runtime.ProgramConfig.StoragePath = Path.Combine(
-                            xdgHome,
-                            "Terraria",
-                            "ModLoader"
-                        );
-                    }
-                    else
-                    {
-                        Runtime.ProgramConfig.StoragePath = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                            ".local",
-                            "share",
-                            "Terraria",
-                            "ModLoader"
-                        );
-                    }
-                }
-            }
+            if (Runtime!.ProgramConfig.StoragePath == "undefined") 
+                VerifyGameStoragePath();
 
             DisplayVerify(
                 "Checking game storage path...",
                 "Checking game storage path... (Failed to validate)",
-                "Enter a valid game storage path (contains folders with Worlds, Players, etc.):",
+                "Enter a valid game storage path (your vanilla path, containing vanilla players, worlds, etc.):",
                 "Verified game storage path.",
                 Directory.Exists,
                 ref Runtime.ProgramConfig.StoragePath
@@ -166,6 +125,72 @@ namespace TML.Patcher.Client
             );
 
             #endregion
+        }
+
+        private static void RunMigrationProcess()
+        {
+            Console.WriteLine(
+                "Outdated paths are likely being used. tModLoader has overhauled their path system, initiating migration.\n"
+            ); // \n is intentional here to create some empty space
+            
+            VerifyGameStoragePath();
+            
+            DisplayVerify(
+                "Checking game storage path...",
+                "Checking game storage path... (Failed to validate)",
+                "Enter a valid game storage path (your vanilla path, containing vanilla players, worlds, etc.):",
+                "Verified game storage path.",
+                Directory.Exists,
+                ref Runtime!.ProgramConfig.StoragePath
+            );
+        }
+
+        private static void VerifyGameStoragePath()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                string start = Environment.GetEnvironmentVariable("UserProfile") ?? "";
+
+                if (Directory.Exists(Path.Combine(start, "OneDrive")))
+                    start = Path.Combine(start, "OneDrive");
+                    
+                Runtime!.ProgramConfig.StoragePath = Path.Combine(
+                    start,
+                    "Documents",
+                    "My Games",
+                    "Terraria"
+                );
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                Runtime!.ProgramConfig.StoragePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                    "Library",
+                    "Application Support",
+                    "Terraria"
+                );
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                string? xdgHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+
+                if (!string.IsNullOrEmpty(xdgHome))
+                {
+                    Runtime!.ProgramConfig.StoragePath = Path.Combine(
+                        xdgHome,
+                        "Terraria"
+                    );
+                }
+                else
+                {
+                    Runtime!.ProgramConfig.StoragePath = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                        ".local",
+                        "share",
+                        "Terraria"
+                    );
+                }
+            }
         }
 
         private static void DisplayVerify(

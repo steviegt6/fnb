@@ -18,7 +18,7 @@ namespace TML.Patcher.Client.Commands.Tasks
                 OutputOverride = OutputOverride[..^".XNA".Length];
             
             AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {PathOverride}");
-            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}");
+            AnsiConsole.MarkupLine($"[gray]Using tModLoader version:[/] {VersionToUse.VersionAliases[1]}");
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
 
             DirectoryInfo outputDir = new(OutputOverride);
@@ -36,8 +36,8 @@ namespace TML.Patcher.Client.Commands.Tasks
             List<string> searchDirectories = new()
             {
                 Program.Runtime!.ProgramConfig.SteamPath,
-                Program.Runtime.ProgramConfig.GetStoragePath(Beta),
-                Path.Combine(Program.Runtime.ProgramConfig.GetStoragePath(Beta), "references")
+                Program.Runtime.ProgramConfig.GetStoragePath(VersionToUse),
+                Path.Combine(Program.Runtime.ProgramConfig.GetStoragePath(VersionToUse), "references")
             };
 
             DirectoryInfo libDir = new(Path.Combine(Path.GetDirectoryName(PathOverride) ?? "", "lib"));
@@ -48,7 +48,7 @@ namespace TML.Patcher.Client.Commands.Tasks
             DecompilationTask task = new(
                 PathOverride,
                 outputDir.FullName,
-                Beta!.Value ? LanguageVersion.Latest : LanguageVersion.CSharp7_3,
+                VersionToUse.Workshop ? LanguageVersion.Latest : LanguageVersion.CSharp7_3,
                 searchDirectories.ToArray()
             );
 
@@ -78,7 +78,7 @@ namespace TML.Patcher.Client.Commands.Tasks
                 .MoreChoicesText("[gray]Scroll up/down with the arrow keys to view more folders![/]"));
             PathOverride = resolvedMods[PathOverride];
 
-            if (Beta!.Value)
+            if (VersionToUse.Workshop)
                 PathOverride = Path.Combine(PathOverride, Path.GetFileNameWithoutExtension(PathOverride) + ".dll");
             else
             {

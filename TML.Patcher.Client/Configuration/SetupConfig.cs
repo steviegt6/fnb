@@ -13,5 +13,6 @@ namespace TML.Patcher.Client.Configuration
     public sealed class SetupConfig : JsonConfig<SetupConfig>
     {
         [JsonProperty("setupCompleted")] public bool SetupCompleted;
+        [JsonProperty("migrationCompleted")] public bool MigrationCompleted;
     }
 }

@@ -43,7 +43,7 @@ namespace TML.Patcher.Client.Commands.Tasks
             RequestInput(ref modLoaderVersion, "Please enter the tModLoader version:");
             
             AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {PathOverride}");
-            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}");
+            AnsiConsole.MarkupLine($"[gray]Using tModLoader version:[/] {VersionToUse.VersionAliases[1]}");
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
             AnsiConsole.MarkupLine($"[gray]Using threads:[/] {Threads ??= Program.Runtime!.ProgramConfig.Threads}");
 

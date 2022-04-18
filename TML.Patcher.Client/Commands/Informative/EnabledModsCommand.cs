@@ -8,6 +8,7 @@ using CliFx.Attributes;
 using CliFx.Infrastructure;
 using Newtonsoft.Json;
 using Spectre.Console;
+using TML.Patcher.Client.Configuration;
 
 namespace TML.Patcher.Client.Commands.Informative
 {
@@ -32,18 +33,31 @@ namespace TML.Patcher.Client.Commands.Informative
         [CommandOption("descriptive", Description = "Adds additional annotations, indicating resolution status, etc.")]
         public bool Descriptive { get; init; }
         
-        [CommandOption("beta", Description = "Manually specifies whether this is for the tModLoader Alpha.")]
-        protected bool? Beta { get; set; }
+        [CommandOption("tml-version", Description = "Describes the tModLoader version.")]
+        public string? LoaderVersion { get; set; }
         
         private readonly List<(string mod, bool enabled, bool unresolved, bool? local)> ModList = new();
 
         private int PrintCount;
 
+        protected ModLoaderVersion VersionToUse;
+
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            PathOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(), "Mods");
+            LoaderVersion ??= Program.Runtime!.ProgramConfig.LoaderVersion;
+
+            VersionToUse = ProgramConfig.GetVersionFromName(LoaderVersion, out bool valid);
+
+            if (!valid)
+            {
+                AnsiConsole.MarkupLine("[yellow]WARNING: The input used for the tModLoader version was not valid." +
+                                       "\nThe default version \"legacy\" (1.3) is being used." +
+                                       "\nBelow is a list of valid versions:\n[/]");
+                ProgramConfig.PrintVersions();
+            }
+            
+            PathOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(VersionToUse), "Mods");
             EnabledOverride ??= Path.Combine(PathOverride, "enabled.json");
-            Beta ??= Program.Runtime!.ProgramConfig.UseBeta;
             
             // ../../workshop...
             WorkshopOverride ??= Path.Combine(
@@ -59,12 +73,12 @@ namespace TML.Patcher.Client.Commands.Informative
             AnsiConsole.MarkupLine($"[gray]Using local mods folder at path:[/] {PathOverride}");
             AnsiConsole.MarkupLine($"[gray]Using enabled.json path:[/] {EnabledOverride}");
             
-            if (Beta.Value)
+            if (VersionToUse.Workshop)
                 AnsiConsole.MarkupLine($"[gray]Using base workshop path:[/] {WorkshopOverride}");
 
             AnsiConsole.MarkupLine($"[gray]Listing all resolved mods:[/] {ListAll}");
             AnsiConsole.MarkupLine($"[gray]Descriptive mod annotations:[/] {Descriptive}");
-            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}\n");
+            AnsiConsole.MarkupLine($"[gray]Using tModLoader version:[/] {VersionToUse.VersionAliases[1]}\n");
 
             if (!File.Exists(EnabledOverride))
                 throw new FileNotFoundException("Could not find enabled.json at: " + EnabledOverride);
@@ -76,7 +90,7 @@ namespace TML.Patcher.Client.Commands.Informative
                 "Failed to deserialize enabled.json as a list of strings!"
             );
 
-            if (Beta.Value && ListAll)
+            if (VersionToUse.Workshop && ListAll)
             {
                 DirectoryInfo workshopDir = new(WorkshopOverride);
 

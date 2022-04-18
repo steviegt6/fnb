@@ -25,10 +25,10 @@ namespace TML.Patcher.Client.Commands.Tasks
             AnsiConsole.MarkupLine($"[gray]Using mod file at path:[/] {PathOverride}");
             AnsiConsole.MarkupLine($"[gray]Using mods folder at path:[/] {ModsFolderOverride}");
             
-            if (Beta!.Value)
+            if (VersionToUse.Workshop)
                 AnsiConsole.MarkupLine($"[gray]Using base workshop at path:[/] {WorkshopOverride}");
             
-            AnsiConsole.MarkupLine($"[gray]Using beta:[/] {Beta}");
+            AnsiConsole.MarkupLine($"[gray]Using tModLoader version:[/] {VersionToUse.VersionAliases[1]}");
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
             AnsiConsole.MarkupLine($"[gray]Using threads:[/] {Threads ??= Program.Runtime!.ProgramConfig.Threads}");
 
@@ -63,7 +63,7 @@ namespace TML.Patcher.Client.Commands.Tasks
 
         protected override void HandleNullPath()
         {
-            ModsFolderOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(Beta), "Mods");
+            ModsFolderOverride ??= Path.Combine(Program.Runtime!.ProgramConfig.GetStoragePath(VersionToUse), "Mods");
 
             DirectoryInfo dir = new(ModsFolderOverride);
             Dictionary<string, string> resolvedMods = dir
@@ -72,7 +72,7 @@ namespace TML.Patcher.Client.Commands.Tasks
                     file => Path.GetFileNameWithoutExtension(file.Name) + " (Local)", file => file.FullName
                 );
             
-            if (Beta!.Value)
+            if (VersionToUse.Workshop)
             {
                 WorkshopOverride ??= Path.Combine(
                     Program.Runtime!.ProgramConfig.SteamPath,
