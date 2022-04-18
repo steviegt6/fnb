@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Patcher.API;
+using Patcher.API.IO;
+using Patcher.API.Logging;
 using Patcher.IO;
-using Patcher.Loading;
 using Patcher.Logging;
 using Patcher.Patching;
+using Patcher.Patching.Loading;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -13,26 +16,31 @@ namespace Patcher
 	/// <summary>
 	///		Core entrypoint mod used for loading TML.Patcher mods.
 	/// </summary>
-	public sealed class PatcherMod : Mod, IPatchRepository
+	public sealed class PatcherMod : Mod, IPatcherMod
 	{
 		public const string PatcherFolderName = "Patcher";
 		public const string ModsFolderName = "Mods";
 		public const string ReadMeFileName = "README.txt";
+
+		#region IPatcherMod Impl
+
+		public IFileDirectory PatcherDir { get; } = new FileDirectory(Main.SavePath, PatcherFolderName);
 		
-		public readonly FileDirectory PatcherDir = new(Main.SavePath, PatcherFolderName);
-		public readonly FileDirectory ModsDir = new(Main.SavePath, PatcherFolderName, ModsFolderName);
+		public IFileDirectory ModsDir { get; } = new FileDirectory(Main.SavePath, PatcherFolderName, ModsFolderName);
 
 		/// <summary>
 		///		The backing field used for <see cref="WrappedLogger"/>.
 		/// </summary>
-		private LogWrapper? BackingWrappedLogger;
+		private ILogWrapper? BackingWrappedLogger;
 
-		// At early stages during mod loading, Logger may be null.
 		// It's pretty safe to instantiate a new instance every time this is called, not a big deal...
 		/// <summary>
 		///		A wrapped <see cref="ILog"/> instance. The instance is supplied by <see cref="Mod.Logger"/>.
 		/// </summary>
-		public LogWrapper WrappedLogger => Logger is null ?
+		/// <remarks>
+		///		At early stages during mod loading, <see cref="Mod.Logger"/> may be null.
+		/// </remarks>
+		public ILogWrapper WrappedLogger => Logger is null ?
 			new LogWrapper(LogManager.GetLogger(Name)) :
 			BackingWrappedLogger ??= new LogWrapper(Logger);
 
@@ -40,7 +48,9 @@ namespace Patcher
 
 		public List<IPatchRepository.DetourPatch> DetourPatches { get; } = new();
 
-		private readonly AssemblyContentResolver ContentResolver = new();
+		public AssemblyContentResolver ContentResolver { get; } = new();
+
+		#endregion
 
 		public override void Load()
 		{

@@ -1,17 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Patcher.API.IO;
 
 namespace Patcher.IO
 {
-    /// <summary>
-    ///     Wrapper around <see cref="Directory"/>. Automatically creates a directory if it does not exist.
-    /// </summary>
-    public sealed class FileDirectory
+    public sealed class FileDirectory : IFileDirectory
     {
-        /// <summary>
-        ///     The <see cref="DirectoryInfo"/> this <see cref="FileDirectory"/> instance wraps around.
-        /// </summary>
-        public readonly DirectoryInfo Info;
+        public DirectoryInfo Info { get; }
 
         /// <summary>
         ///     Constructs a new <see cref="FileDirectory"/> with a path specified by <paramref name="path"/>, also used in <see cref="Info"/>'s instantiation.
@@ -34,8 +29,11 @@ namespace Patcher.IO
         public override string ToString() => Info.FullName;
 
         public static implicit operator string(FileDirectory directory) => directory.ToString();
+        
         public static implicit operator FileDirectory(string path) => new(path);
+        
         public static implicit operator FileDirectory(string[] paths) => new(paths);
+        
         public static implicit operator FileDirectory(DirectoryInfo directory) => new(directory.FullName);
     }
 }
