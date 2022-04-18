@@ -19,6 +19,8 @@
     <LangVersion>default</LangVersion>
     <PackageVersion>1.0.0</PackageVersion>
     <PackageId>TML.Patcher.Client</PackageId>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

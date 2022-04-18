@@ -17,6 +17,8 @@ namespace TML.Patcher.Client.Commands.Tasks
             if (OutputOverride.EndsWith(".XNA"))
                 OutputOverride = OutputOverride[..^".XNA".Length];
             
+            AnsiConsole.MarkupLine("[yellow]\nWARNING: Decompilation is inconsistent. Use ILSpy for the best results!\n[/]");
+            
             AnsiConsole.MarkupLine($"[gray]Using folder at path:[/] {PathOverride}");
             AnsiConsole.MarkupLine($"[gray]Using tModLoader version:[/] {VersionToUse.VersionAliases[1]}");
             AnsiConsole.MarkupLine($"[gray]Using output path:[/] {OutputOverride}");
@@ -44,6 +46,12 @@ namespace TML.Patcher.Client.Commands.Tasks
             
             if (libDir.Exists)
                 searchDirectories.Add(libDir.FullName);
+
+            if (Path.GetExtension(PathOverride) == ".tmod")
+            {
+                AnsiConsole.MarkupLine("[red]ERROR: You are attempting to decompile a .tmod file. Please extract it.[/]");
+                return;
+            }
 
             DecompilationTask task = new(
                 PathOverride,

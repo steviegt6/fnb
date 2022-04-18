@@ -25,11 +25,17 @@ Special thanks:[white]
 
  * Release Notes *
 
-Current - v1.0.0
+[silver]
+Current - v1.0.1
+ - Updated path logic to support April 2022's re-standardization of paths.
+ - Added a big warning telling people to use ILSpy for decompiling.
+ - Some simple error handling for end-user mistakes.
+
+v1.0.0
  - Completely rewrote the original program.
  - Updated everything to .NET 6.0.
  - Fixed issues with ILSpy references.
- - Finally implemented various mod patching methods.[/]
+ - Finally implemented various mod patching methods.[/][/]
 ");
 
             return default;
