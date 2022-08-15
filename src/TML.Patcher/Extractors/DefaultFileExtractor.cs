@@ -1,6 +1,7 @@
-﻿using TML.Files.Abstractions;
+﻿using TML.Files;
+using TML.Files.Abstractions;
 
-namespace TML.Files.Extractors
+namespace TML.Patcher.Extractors
 {
     public class DefaultFileExtractor : IFileExtractor
     {

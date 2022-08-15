@@ -2,9 +2,10 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
+using TML.Files;
 using TML.Files.Abstractions;
 
-namespace TML.Files.Extractors
+namespace TML.Patcher.Extractors
 {
     public class RawImgFileExtractor : IFileExtractor
     {

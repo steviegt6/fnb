@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using TML.Files;
 using TML.Files.Abstractions;
-using TML.Files.Extractors;
+using TML.Patcher.Extractors;
+using TML.Patcher.Extractors.Info;
 
-namespace TML.Files.Tests
+namespace TML.Tests
 {
     public class ExtractingTest
     {
@@ -27,7 +29,7 @@ namespace TML.Files.Tests
         
         [Test]
         public static void ContainsExactlyTheExpectedFiles() {
-            using Stream tmodFile = typeof(ExtractingTest).Assembly.GetManifestResourceStream("TML.Files.Tests.GamerMod.tmod")!;
+            using Stream tmodFile = typeof(ExtractingTest).Assembly.GetManifestResourceStream("TML.Tests.GamerMod.tmod")!;
             IModFileReader reader = new ModFileReader();
             IModFileExtractor extractor = new ModFileExtractor();
             IModFile file = reader.Read(tmodFile);
@@ -40,7 +42,7 @@ namespace TML.Files.Tests
         [Test]
         // This is not a unit test.
         public static void ThisTestSucks() {
-            using Stream tmodFile = typeof(ExtractingTest).Assembly.GetManifestResourceStream("TML.Files.Tests.GamerMod.tmod")!;
+            using Stream tmodFile = typeof(ExtractingTest).Assembly.GetManifestResourceStream("TML.Tests.GamerMod.tmod")!;
             IModFileReader reader = new ModFileReader();
             IModFileExtractor extractor = new ModFileExtractor();
             IModFile file = reader.Read(tmodFile);

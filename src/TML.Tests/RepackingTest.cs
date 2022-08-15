@@ -1,14 +1,15 @@
 ﻿using System.IO;
 using NUnit.Framework;
+using TML.Files;
 using TML.Files.Abstractions;
 
-namespace TML.Files.Tests
+namespace TML.Tests
 {
     public class RepackingTest
     {
         [Test]
         public static void VerifyIdenticalBytes() {
-            using Stream tmodFile = typeof(RepackingTest).Assembly.GetManifestResourceStream("TML.Files.Tests.GamerMod.tmod")!;
+            using Stream tmodFile = typeof(RepackingTest).Assembly.GetManifestResourceStream("TML.Tests.GamerMod.tmod")!;
             MemoryStream unmodified = new();
             tmodFile.CopyTo(unmodified);
             tmodFile.Position = 0;
