@@ -15,10 +15,10 @@ namespace TML.Tests
             tmodFile.Position = 0;
             
             IModFileReader reader = new ModFileReader();
-            IModFileWriter<ModFileWriterSettings> writer = new ModFileWriter();
+            IModFileWriter writer = new ModFileWriter();
             IModFile file = reader.Read(tmodFile);
             MemoryStream repacked = new();
-            writer.Write(file, repacked, new ModFileWriterSettings(file.Header, file.ModLoaderVersion, file.Name, file.Version));
+            writer.Write(file, repacked);
 
             Assert.That(repacked.ToArray(), Is.EqualTo(unmodified.ToArray()));
         }

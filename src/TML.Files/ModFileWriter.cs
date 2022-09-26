@@ -7,17 +7,10 @@ using TML.Files.Abstractions;
 
 namespace TML.Files
 {
-    public readonly record struct ModFileWriterSettings(
-        string MagicHeader,
-        string ModLoaderVersion,
-        string ModName,
-        string ModVersion
-    ) : IModFileWriterSettings;
-
     /// <summary>
-    ///     Default, tModLoader-compliant <see cref="IModFileWriter{T}"/> implementation.
+    ///     Default, tModLoader-compliant <see cref="IModFileWriter"/> implementation.
     /// </summary>
-    public class ModFileWriter : IModFileWriter<ModFileWriterSettings>
+    public class ModFileWriter : IModFileWriter
     {
         protected class HashSerializer : IDisposable
         {
@@ -61,18 +54,18 @@ namespace TML.Files
 
         public const string MAGIC_HEADER = "TMOD";
 
-        public void Write(IModFile file, Stream stream, ModFileWriterSettings settings) {
+        public void Write(IModFile file, Stream stream) {
             using BinaryWriter writer = new(stream);
             IModFileEntry[] files = file.Files.ToArray();
 
-            writer.Write(Encoding.UTF8.GetBytes(settings.MagicHeader));
-            writer.Write(settings.ModLoaderVersion);
+            writer.Write(Encoding.UTF8.GetBytes(MAGIC_HEADER));
+            writer.Write(file.ModLoaderVersion);
 
             using HashSerializer hashSerializer = new(stream, writer);
             hashSerializer.MarkHash();
                 
-            writer.Write(settings.ModName);
-            writer.Write(settings.ModVersion);
+            writer.Write(file.Name);
+            writer.Write(file.Version);
             writer.Write(files.Length);
                 
             // Write data for every file entry:
