@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TML.Files.Abstractions;
 
 namespace TML.Files
@@ -11,21 +12,18 @@ namespace TML.Files
     /// </remarks>
     public class ModFile : IModFile
     {
-        // All properties are set to null initially because this class may not be directly instantiated.
-        // The only way to instantiate this class is through a ModFileReader (without the use of API-unsupported methods such as reflection, of course).
+        public virtual string Header { get; set; } = ModFileWriter.MAGIC_HEADER;
 
-        public virtual string Header { get; internal set; } = null!;
+        public virtual string ModLoaderVersion { get; set; } = "";
 
-        public virtual string ModLoaderVersion { get; internal set; } = null!;
+        public virtual byte[] Hash { get; set; } = Array.Empty<byte>();
 
-        public virtual byte[] Hash { get; internal set; } = null!;
+        public virtual byte[] Signature { get; set; } = Array.Empty<byte>();
 
-        public virtual byte[] Signature { get; internal set; } = null!;
+        public virtual string Name { get; set; } = "";
 
-        public virtual string Name { get; internal set; } = null!;
+        public virtual string Version { get; set; } = "0.0.0.0";
 
-        public virtual string Version { get; internal set; } = null!;
-
-        public virtual IEnumerable<IModFileEntry> Files { get; internal set; } = null!;
+        public virtual IEnumerable<IModFileEntry> Files { get; set; } = new List<IModFileEntry>();
     }
 }
