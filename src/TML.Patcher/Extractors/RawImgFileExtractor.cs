@@ -15,9 +15,9 @@ namespace TML.Patcher.Extractors
 
         public unsafe IExtractedModFile Extract(IModFileEntry fileEntry, byte[] data) {
             ReadOnlySpan<byte> dataSpan = data;
-            int width = MemoryMarshal.Read<int>(dataSpan[4..8]);
-            int height = MemoryMarshal.Read<int>(dataSpan[8..12]);
-            ReadOnlySpan<byte> oldPixels = dataSpan[12..];
+            int width = MemoryMarshal.Read<int>(dataSpan.Slice(4, 8));
+            int height = MemoryMarshal.Read<int>(dataSpan.Slice(8, 12));
+            ReadOnlySpan<byte> oldPixels = dataSpan.Slice(12);
 
             SKImageInfo info = new(width, height, SKColorType.Rgba8888);
             using SKBitmap imageMap = new(info);

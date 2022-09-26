@@ -5,6 +5,10 @@ namespace TML.Patcher.Extractors.Info
 {
     public readonly record struct InfoKey(string Key, ReadInfoValue Reader)
     {
+        public string Key { get; } = Key;
+
+        public ReadInfoValue Reader { get; } = Reader;
+
         public static InfoKey List(string key) {
             static IEnumerable<string> ReadList(BinaryReader reader) {
                 for (string item = reader.ReadString(); item.Length > 0; item = reader.ReadString()) yield return item;
@@ -28,7 +32,7 @@ namespace TML.Patcher.Extractors.Info
                 key,
                 (BinaryReader reader, ref string tag, out string? value) =>
                 {
-                    tag = tag[1..];
+                    tag = tag.Substring(1);
                     value = "false";
                 }
             );
