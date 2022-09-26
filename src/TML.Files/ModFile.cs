@@ -27,7 +27,5 @@ namespace TML.Files
         public virtual string Version { get; internal set; } = null!;
 
         public virtual IEnumerable<IModFileEntry> Files { get; internal set; } = null!;
-
-        internal ModFile() { }
     }
 }
