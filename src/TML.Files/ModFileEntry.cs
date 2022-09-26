@@ -7,14 +7,14 @@ namespace TML.Files
     /// </summary>
     public class ModFileEntry : IModFileEntry
     {
-        public string Name { get; set; } = "";
+        public virtual string Name { get; set; } = "";
 
-        public int Offset { get; set; }
+        public virtual int Offset { get; set; }
 
-        public int Length { get; set; }
+        public virtual int Length { get; set; }
 
-        public int CompressedLength { get; set; }
+        public virtual int CompressedLength { get; set; }
 
-        public byte[]? CachedBytes { get; set; }
+        public virtual byte[]? CachedBytes { get; set; }
     }
 }
