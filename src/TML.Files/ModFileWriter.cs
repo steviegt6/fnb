@@ -52,13 +52,11 @@ namespace TML.Files
             }
         }
 
-        public const string MAGIC_HEADER = "TMOD";
-
         public void Write(IModFile file, Stream stream) {
             using BinaryWriter writer = new(stream);
             IModFileEntry[] files = file.Files.ToArray();
 
-            writer.Write(Encoding.UTF8.GetBytes(MAGIC_HEADER));
+            writer.Write(Encoding.UTF8.GetBytes(ModFile.HEADER));
             writer.Write(file.ModLoaderVersion);
 
             using HashSerializer hashSerializer = new(stream, writer);

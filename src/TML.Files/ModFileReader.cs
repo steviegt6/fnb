@@ -22,14 +22,7 @@ namespace TML.Files
             int offset = 0;
             ModFileEntry[] files = new ModFileEntry[reader.ReadInt32()];
             for (int i = 0; i < files.Length; i++) {
-                ModFileEntry entry = new()
-                {
-                    Name = reader.ReadString(),
-                    Offset = offset,
-                    Length = reader.ReadInt32(),
-                    CompressedLength = reader.ReadInt32(),
-                };
-
+                ModFileEntry entry = new(reader.ReadString(), offset, reader.ReadInt32(), reader.ReadInt32(), null);
                 files[i] = entry;
                 offset += entry.CompressedLength;
             }

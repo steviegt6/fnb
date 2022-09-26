@@ -7,7 +7,7 @@ namespace TML.Files
     /// </summary>
     public class ModFileEntry : IModFileEntry
     {
-        public virtual string Name { get; set; } = "";
+        public virtual string Name { get; set; }
 
         public virtual int Offset { get; set; }
 
@@ -16,5 +16,14 @@ namespace TML.Files
         public virtual int CompressedLength { get; set; }
 
         public virtual byte[]? CachedBytes { get; set; }
+        
+        public ModFileEntry(string name, int offset, int length, int compressedLength, byte[]? cachedBytes) {
+            // ReSharper disable VirtualMemberCallInConstructor
+            Name = name;
+            Offset = offset;
+            Length = length;
+            CompressedLength = compressedLength;
+            CachedBytes = cachedBytes;
+        }
     }
 }

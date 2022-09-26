@@ -40,6 +40,20 @@ namespace TML.Files.Abstractions
         /// <summary>
         ///     A collection of each file stored within this <c>.tmod</c> file.
         /// </summary>
-        IEnumerable<IModFileEntry> Files { get; }
+        IList<IModFileEntry> Files { get; }
+
+        /// <summary>
+        ///     Adds a file to this <see cref="IModFile"/>.
+        /// </summary>
+        /// <param name="fileName">The local path at which file should reside.</param>
+        /// <param name="data">The file data.</param>
+        void AddFile(string fileName, byte[] data);
+
+        /// <summary>
+        ///     Whether this file should be compressed.
+        /// </summary>
+        /// <param name="fileName">The local path at which file should reside.</param>
+        /// <param name="data">The file data.</param>
+        bool ShouldCompress(string fileName, byte[] data);
     }
 }

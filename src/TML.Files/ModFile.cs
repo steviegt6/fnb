@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using TML.Files.Abstractions;
 
 namespace TML.Files
@@ -12,7 +15,12 @@ namespace TML.Files
     /// </remarks>
     public class ModFile : IModFile
     {
-        public virtual string Header { get; set; } = ModFileWriter.MAGIC_HEADER;
+        // TODO: Make these configurable? tModLoader shouldn't care, but parity is important.
+        public const uint MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 kb
+        public const float COMPRESSION_TRADEOFF = 0.9f;
+        public const string HEADER = "TMOD";
+
+        public virtual string Header { get; set; } = HEADER;
 
         public virtual string ModLoaderVersion { get; set; } = "";
 
@@ -24,6 +32,25 @@ namespace TML.Files
 
         public virtual string Version { get; set; } = "0.0.0.0";
 
-        public virtual IEnumerable<IModFileEntry> Files { get; set; } = new List<IModFileEntry>();
+        public virtual IList<IModFileEntry> Files { get; set; } = new List<IModFileEntry>();
+
+        public void AddFile(string fileName, byte[] data) {
+            fileName = fileName.Trim().Replace('\\', '/'); // basic sanitization
+
+            int size = data.Length;
+            if (size > MINIMUM_COMPRESSION_SIZE && ShouldCompress(fileName, data)) {
+                using MemoryStream mem = new(data.Length);
+                using (DeflateStream def = new(mem, CompressionMode.Compress)) def.Write(data, 0, data.Length);
+
+                byte[] compressed = mem.ToArray();
+                if (compressed.Length < size * COMPRESSION_TRADEOFF) data = compressed;
+            }
+
+            Files.Add(new ModFileEntry(fileName, -1, size, data.Length, data));
+        }
+
+        public bool ShouldCompress(string fileName, byte[] data) {
+            return !new[] {".png", ".mp3", ".ogg", ".rawimg"}.Contains(Path.GetExtension(fileName));
+        }
     }
 }
