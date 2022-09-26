@@ -14,19 +14,19 @@ namespace TML.Files
         // All properties are set to null initially because this class may not be directly instantiated.
         // The only way to instantiate this class is through a ModFileReader (without the use of API-unsupported methods such as reflection, of course).
 
-        public string Header { get; internal set; } = null!;
+        public virtual string Header { get; internal set; } = null!;
 
-        public string ModLoaderVersion { get; internal set; } = null!;
+        public virtual string ModLoaderVersion { get; internal set; } = null!;
 
-        public byte[] Hash { get; internal set; } = null!;
+        public virtual byte[] Hash { get; internal set; } = null!;
 
-        public byte[] Signature { get; internal set; } = null!;
+        public virtual byte[] Signature { get; internal set; } = null!;
 
-        public string Name { get; internal set; } = null!;
+        public virtual string Name { get; internal set; } = null!;
 
-        public string Version { get; internal set; } = null!;
+        public virtual string Version { get; internal set; } = null!;
 
-        public IEnumerable<IModFileEntry> Files { get; internal set; } = null!;
+        public virtual IEnumerable<IModFileEntry> Files { get; internal set; } = null!;
 
         internal ModFile() { }
     }
