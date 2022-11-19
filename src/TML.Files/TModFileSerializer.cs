@@ -44,7 +44,7 @@ public static class TModFileSerializer
 
     public static void Serialize(TModFile file, string filePath) {
         if (Directory.Exists(filePath)) throw new TModFileDirectoryAlreadyExistsException("Attempted to write .tmod file to directory: " + filePath);
-        using var fs = File.OpenWrite(filePath);
+        using var fs = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Write);
         Serialize(file, fs);
     }
 
@@ -86,7 +86,8 @@ public static class TModFileSerializer
 
     public static TModFile Deserialize(string filePath) {
         if (!File.Exists(filePath)) throw new TModFileNotFoundException("Cannot deserialize .tmod file as file does not exist:" + filePath);
-        return Deserialize(File.OpenRead(filePath));
+        using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return Deserialize(fs);
     }
 
     public static TModFile Deserialize(byte[] data) {
