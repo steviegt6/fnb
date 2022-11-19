@@ -3,17 +3,17 @@ using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
 using TML.Files;
-using TML.Files.Abstractions;
+using TML.Files.Extraction;
 
 namespace TML.Patcher.Extractors
 {
     public class RawImgFileExtractor : IFileExtractor
     {
-        public bool ShouldExtract(ITModEntry fileEntry) {
-            return Path.GetExtension(fileEntry.Name) == ".rawimg";
+        public bool ShouldExtract(TModFileEntry entry) {
+            return Path.GetExtension(entry.Path) == ".rawimg";
         }
 
-        public unsafe IExtractedModFile Extract(ITModEntry fileEntry, byte[] data) {
+        public unsafe TModFileData Extract(TModFileEntry entry, byte[] data) {
             ReadOnlySpan<byte> dataSpan = data;
             int width = MemoryMarshal.Read<int>(dataSpan.Slice(4, 8));
             int height = MemoryMarshal.Read<int>(dataSpan.Slice(8, 12));
@@ -30,7 +30,7 @@ namespace TML.Patcher.Extractors
             using SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100);
             using MemoryStream stream = new();
             encodedImage.SaveTo(stream);
-            return new ExtractedModFile(Path.ChangeExtension(fileEntry.Name, ".png"), stream.ToArray());
+            return new TModFileData(Path.ChangeExtension(entry.Path, ".png"), stream.ToArray());
         }
     }
 }
