@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -9,6 +10,9 @@
         <Version>1.0.0</Version>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
+        
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>tmlpatcher</ToolCommandName>
     </PropertyGroup>
 
     <PropertyGroup>
