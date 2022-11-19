@@ -10,5 +10,5 @@ public class TModFileEntry
 
     public virtual int CompressedLength { get; set; }
 
-    public virtual byte[]? Bytes { get; set; }
+    public virtual byte[]? Data { get; set; }
 }

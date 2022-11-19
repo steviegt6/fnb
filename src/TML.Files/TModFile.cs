@@ -30,7 +30,7 @@ public class TModFile
 
     public virtual string Version { get; set; } = "";
 
-    public virtual IList<TModFileEntry> Files { get; set; } = new List<TModFileEntry>();
+    public virtual IList<TModFileEntry> Entries { get; set; } = new List<TModFileEntry>();
 
     #endregion
 
@@ -41,21 +41,21 @@ public class TModFile
 
         int size = file.Data.Length;
         if (size > minCompSize && ShouldCompress(file)) Compress(file, size, compTradeoff);
-        
-        Files.Add(new TModFileEntry
+
+        Entries.Add(new TModFileEntry
         {
             Path = file.Path,
             Offset = -1,
             Length = size,
             CompressedLength = file.Data.Length,
-            Bytes = file.Data
+            Data = file.Data
         });
     }
 
     protected virtual bool ShouldCompress(TModFileData fileData) {
         return new[] {".png", ".mp3", ".ogg"}.Contains(Path.GetExtension(fileData.Path));
     }
-    
+
     protected virtual void Compress(TModFileData file, int realSize, float tradeoff) {
         using MemoryStream ms = new(file.Data.Length);
         using (DeflateStream ds = new(ms, CompressionMode.Compress)) ds.Write(file.Data, 0, file.Data.Length);
