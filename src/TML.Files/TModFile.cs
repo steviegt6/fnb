@@ -30,7 +30,7 @@ public class TModFile
 
     public virtual string Version { get; set; } = "";
 
-    public virtual IList<TModFileEntry> Entries { get; set; } = new List<TModFileEntry>();
+    public virtual List<TModFileEntry> Entries { get; set; } = new();
 
     #endregion
 
