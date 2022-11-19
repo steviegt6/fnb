@@ -5,15 +5,35 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Version>1.0.0</Version>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>Tomat.TML.Patcher</PackageId>
+        <Title>TML.Patcher</Title>
+        <Description>.tmod patching CLI tool.</Description>
+        <Authors>Tomat</Authors>
+
+        <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/steviegt6/tml-patcher</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryUrl>https://github.com/steviegt6/tml-patcher</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TML.Files\TML.Files.csproj" />
+        <ProjectReference Include="..\TML.Files\TML.Files.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.88.2" />
-      <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.2" />
+        <PackageReference Include="SkiaSharp" Version="2.88.2"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.2"/>
     </ItemGroup>
 
 </Project>

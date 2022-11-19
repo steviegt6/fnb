@@ -5,33 +5,33 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        
+
         <Version>1.0.0</Version>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
     </PropertyGroup>
-    
+
     <PropertyGroup>
         <PackageId>Tomat.TML.Files</PackageId>
         <Title>TML.Files</Title>
         <Description>.tmod serializer, deserializer, and extractor.</Description>
         <Authors>Tomat</Authors>
-        
+
         <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/steviegt6/tml-patcher</PackageProjectUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <RepositoryUrl>https://github.com/steviegt6/tml-patcher</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
-        
+
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="IsExternalInit" Version="1.0.3">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="IsExternalInit" Version="1.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
