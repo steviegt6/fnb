@@ -22,11 +22,14 @@ public static class TModFileExtractor
         for (int i = 0; i < file.Entries.Count; i += chunkSize) chunks.Add(file.Entries.GetRange(i, Math.Min(chunkSize, file.Entries.Count - i)));
 
         List<TModFileData> extractedFiles = new();
-        Task.WaitAll(chunks.Select(chunk => Task.Run(() =>
-        {
-            IEnumerable<TModFileData> extracted = ExtractChunk(chunk, extractors);
-            lock (extractedFiles) extractedFiles.AddRange(extracted);
-        })).ToArray());
+        Task.WaitAll(
+            chunks.Select(chunk => Task.Run(() =>
+                   {
+                       IEnumerable<TModFileData> extracted = ExtractChunk(chunk, extractors);
+                       lock (extractedFiles) extractedFiles.AddRange(extracted);
+                   }))
+                  .ToArray()
+        );
 
         return extractedFiles;
     }
@@ -34,19 +37,32 @@ public static class TModFileExtractor
     private static IEnumerable<TModFileData> ExtractChunk(List<TModFileEntry> entries, IFileExtractor[] extractors) {
         foreach (var entry in entries) {
             byte[] data = entry.Data ?? throw new TModFileInvalidFileEntryException("Attempted to serialize a TModFileEntry with no data: " + entry.Path);
-            if (entry.IsCompressed()) data = Deflate(data, CompressionMode.Decompress);
-            
-            foreach (var extractor in extractors) {
-                if (extractor.ShouldExtract(entry)) yield return extractor.Extract(entry, data);
-                throw new TModFileInvalidFileEntryException("No extractor found for file: " + entry.Path);
-            }
+            if (entry.IsCompressed()) data = Decompress(data);
+
+            foreach (var extractor in extractors)
+                if (extractor.ShouldExtract(entry)) {
+                    yield return extractor.Extract(entry, data);
+                    goto Continue;
+                }
+
+            throw new TModFileInvalidFileEntryException("No extractor found for file: " + entry.Path);
+
+        Continue: ;
         }
     }
 
-    private static byte[] Deflate(byte[] data, CompressionMode mode) {
+    private static byte[] Decompress(byte[] data) {
+        using MemoryStream ms = new();
+        using MemoryStream cs = new(data);
+        using DeflateStream ds = new(cs, CompressionMode.Decompress);
+        ds.CopyTo(ms);
+        return ms.ToArray();
+    }
+
+    private static byte[] Compress(byte[] data) {
         using MemoryStream ms = new(data);
         using MemoryStream cs = new();
-        using DeflateStream ds = new(cs, mode);
+        using DeflateStream ds = new(cs, CompressionMode.Compress);
         ms.CopyTo(ds);
         return cs.ToArray();
     }

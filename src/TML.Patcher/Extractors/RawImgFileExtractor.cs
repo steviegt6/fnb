@@ -27,7 +27,7 @@ namespace TML.Patcher.Extractors
                 imageMap.InstallPixels(oldInfo, (IntPtr) ptr);
             }
 
-            using SKData encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100);
+            using var encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100);
             using MemoryStream stream = new();
             encodedImage.SaveTo(stream);
             return new TModFileData(Path.ChangeExtension(entry.Path, ".png"), stream.ToArray());
