@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TML.Files.Abstractions\TML.Files.Abstractions.csproj" />
       <ProjectReference Include="..\TML.Files\TML.Files.csproj" />
       <ProjectReference Include="..\TML.Patcher\TML.Patcher.csproj" />
     </ItemGroup>

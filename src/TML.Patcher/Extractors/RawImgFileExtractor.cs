@@ -9,11 +9,11 @@ namespace TML.Patcher.Extractors
 {
     public class RawImgFileExtractor : IFileExtractor
     {
-        public bool ShouldExtract(IModFileEntry fileEntry) {
+        public bool ShouldExtract(ITModEntry fileEntry) {
             return Path.GetExtension(fileEntry.Name) == ".rawimg";
         }
 
-        public unsafe IExtractedModFile Extract(IModFileEntry fileEntry, byte[] data) {
+        public unsafe IExtractedModFile Extract(ITModEntry fileEntry, byte[] data) {
             ReadOnlySpan<byte> dataSpan = data;
             int width = MemoryMarshal.Read<int>(dataSpan.Slice(4, 8));
             int height = MemoryMarshal.Read<int>(dataSpan.Slice(8, 12));

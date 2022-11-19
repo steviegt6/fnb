@@ -41,12 +41,12 @@ namespace TML.Patcher.Extractors.Info
             InfoKey.String("languageVersion"),
         };
 
-        public bool ShouldExtract(IModFileEntry fileEntry) {
+        public bool ShouldExtract(ITModEntry fileEntry) {
             // build.txt is turned into the "Info" file in the root directory.
             return fileEntry.Name == "Info";
         }
 
-        public IExtractedModFile Extract(IModFileEntry fileEntry, byte[] data) {
+        public IExtractedModFile Extract(ITModEntry fileEntry, byte[] data) {
             StringBuilder sb = new();
             using MemoryStream stream = new(data);
             using BinaryReader reader = new(stream);

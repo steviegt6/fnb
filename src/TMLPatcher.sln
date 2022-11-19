@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TML.Files.Abstractions", "TML.Files.Abstractions\TML.Files.Abstractions.csproj", "{82C1881D-5CCD-4D35-A59E-8006ADD926C7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TML.Files", "TML.Files\TML.Files.csproj", "{DCFCCDA1-8560-4871-86D5-B4B55A695BEE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TML.Tests", "TML.Tests\TML.Tests.csproj", "{C15B0F5E-41EB-4F7F-95BE-D4F6ED2D90D3}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{82C1881D-5CCD-4D35-A59E-8006ADD926C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82C1881D-5CCD-4D35-A59E-8006ADD926C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82C1881D-5CCD-4D35-A59E-8006ADD926C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82C1881D-5CCD-4D35-A59E-8006ADD926C7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCFCCDA1-8560-4871-86D5-B4B55A695BEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DCFCCDA1-8560-4871-86D5-B4B55A695BEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCFCCDA1-8560-4871-86D5-B4B55A695BEE}.Release|Any CPU.ActiveCfg = Release|Any CPU

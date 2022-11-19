@@ -5,11 +5,11 @@ namespace TML.Patcher.Extractors
 {
     public class DefaultFileExtractor : IFileExtractor
     {
-        public bool ShouldExtract(IModFileEntry fileEntry) {
+        public bool ShouldExtract(ITModEntry fileEntry) {
             return true;
         }
 
-        public IExtractedModFile Extract(IModFileEntry fileEntry, byte[] data) {
+        public IExtractedModFile Extract(ITModEntry fileEntry, byte[] data) {
             return new ExtractedModFile(fileEntry.Name, data);
         }
     }
