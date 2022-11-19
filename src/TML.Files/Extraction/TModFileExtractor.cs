@@ -53,7 +53,28 @@ public static class TModFileExtractor
 
     #endregion
 
-    #region Packing
+    /*#region Packing
 
-    #endregion
+    public static TModFile Pack(string directory, string modLoaderVersion, string name, string version, params IFilePacker[] packers) {
+        if (!Directory.Exists(directory)) throw new TModFileDirectoryNotFoundException("Directory not found: " + directory);
+        
+    }
+
+    public static TModFile Pack(IEnumerable<TModFileData> files, string modLoaderVersion, string name, string version, params IFilePacker[] packers) {
+        var modFile = new TModFile
+        {
+            ModLoaderVersion = modLoaderVersion,
+            Name = name,
+            Version = version
+        };
+        
+        foreach (var data in files) {
+        }
+    }
+
+    private static void AddResource(TModFile file, string path) {
+        
+    }
+
+    #endregion*/
 }

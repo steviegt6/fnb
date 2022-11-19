@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -134,7 +135,7 @@ public static class TModFileSerializer
             Signature = signature,
             Name = name,
             Version = version,
-            Entries = entries
+            Entries = entries.ToList()
         };
     }
 

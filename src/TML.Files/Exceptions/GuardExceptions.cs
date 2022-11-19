@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.Serialization;
 
 namespace TML.Files.Exceptions;
 
 [Serializable]
-public class TModFileNotFoundException : Exception
+public class TModFileNotFoundException : FileNotFoundException
 {
     public TModFileNotFoundException() { }
     public TModFileNotFoundException(string message) : base(message) { }
@@ -17,7 +18,7 @@ public class TModFileNotFoundException : Exception
 }
 
 [Serializable]
-public class TModFileInvalidHeaderException : Exception
+public class TModFileInvalidHeaderException : IOException
 {
     public TModFileInvalidHeaderException() { }
     public TModFileInvalidHeaderException(string message) : base(message) { }
@@ -30,7 +31,7 @@ public class TModFileInvalidHeaderException : Exception
 }
 
 [Serializable]
-public class TModFileInvalidFileEntryException : Exception
+public class TModFileInvalidFileEntryException : IOException
 {
     public TModFileInvalidFileEntryException() { }
     public TModFileInvalidFileEntryException(string message) : base(message) { }
@@ -43,13 +44,26 @@ public class TModFileInvalidFileEntryException : Exception
 }
 
 [Serializable]
-public class TModFileDirectoryAlreadyExistsException : Exception
+public class TModFileDirectoryAlreadyExistsException : IOException
 {
     public TModFileDirectoryAlreadyExistsException() { }
     public TModFileDirectoryAlreadyExistsException(string message) : base(message) { }
     public TModFileDirectoryAlreadyExistsException(string message, Exception inner) : base(message, inner) { }
 
     protected TModFileDirectoryAlreadyExistsException(
+        SerializationInfo info,
+        StreamingContext context
+    ) : base(info, context) { }
+}
+
+[Serializable]
+public class TModFileDirectoryNotFoundException : DirectoryNotFoundException
+{
+    public TModFileDirectoryNotFoundException() { }
+    public TModFileDirectoryNotFoundException(string message) : base(message) { }
+    public TModFileDirectoryNotFoundException(string message, Exception inner) : base(message, inner) { }
+
+    protected TModFileDirectoryNotFoundException(
         SerializationInfo info,
         StreamingContext context
     ) : base(info, context) { }
