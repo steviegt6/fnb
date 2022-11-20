@@ -41,4 +41,8 @@
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Commands" />
+    </ItemGroup>
+
 </Project>
