@@ -7,12 +7,17 @@ using TML.Files.Extraction;
 
 namespace TML.Patcher.Extractors
 {
+    /// <summary>
+    ///     Extracts a .tmod <c>.rawimg</c> file to a <c>.png</c> file.
+    /// </summary>
     public class RawImgFileExtractor : IFileExtractor
     {
+        /// <inheritdoc cref="IFileExtractor.ShouldExtract"/>
         public bool ShouldExtract(TModFileEntry entry) {
             return Path.GetExtension(entry.Path) == ".rawimg";
         }
 
+        /// <inheritdoc cref="IFileExtractor.Extract"/>
         public unsafe TModFileData Extract(TModFileEntry entry, byte[] data) {
             ReadOnlySpan<byte> dataSpan = data;
             int width = MemoryMarshal.Read<int>(dataSpan.Slice(4, 8));
