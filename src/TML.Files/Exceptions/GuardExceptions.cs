@@ -4,6 +4,9 @@ using System.Runtime.Serialization;
 
 namespace TML.Files.Exceptions;
 
+/// <summary>
+///     The exception that is thrown when an attempt to access a file that does not exist on disk fails in a <c>TML.Files</c> callsite. 
+/// </summary>
 [Serializable]
 public class TModFileNotFoundException : FileNotFoundException
 {
@@ -17,6 +20,9 @@ public class TModFileNotFoundException : FileNotFoundException
     ) : base(info, context) { }
 }
 
+/// <summary>
+///     The exception that is thrown when a <see cref="TModFile"/> has an invalid header.
+/// </summary>
 [Serializable]
 public class TModFileInvalidHeaderException : IOException
 {
@@ -30,6 +36,9 @@ public class TModFileInvalidHeaderException : IOException
     ) : base(info, context) { }
 }
 
+/// <summary>
+///     The exception that is thrown when a <see cref="TModFileEntry"/> is invalid in some form.
+/// </summary>
 [Serializable]
 public class TModFileInvalidFileEntryException : IOException
 {
@@ -43,6 +52,9 @@ public class TModFileInvalidFileEntryException : IOException
     ) : base(info, context) { }
 }
 
+/// <summary>
+///     The exception that is thrown when a directory already exists in a <c>TML.Files</c> callsite.
+/// </summary>
 [Serializable]
 public class TModFileDirectoryAlreadyExistsException : IOException
 {
@@ -56,6 +68,9 @@ public class TModFileDirectoryAlreadyExistsException : IOException
     ) : base(info, context) { }
 }
 
+/// <summary>
+///     The exception that is thrown when part of a file or directory cannot be found in a <c>TML.Files</c> callsite.
+/// </summary>
 [Serializable]
 public class TModFileDirectoryNotFoundException : DirectoryNotFoundException
 {

@@ -7,12 +7,26 @@ using TML.Files.Exceptions;
 
 namespace TML.Files;
 
+/// <summary>
+///     Handle the serialization and deserialization of .tmod files.
+/// </summary>
 public static class TModFileSerializer
 {
     #region Serialization
 
+    /// <summary>
+    ///     The length of the byte array storing the hash of a <see cref="TModFile"/>.
+    /// </summary>
     public const int HASH_LENGTH = 20;
+
+    /// <summary>
+    ///     The length of the byte array storing the mod browser signature of a <see cref="TModFile"/>.
+    /// </summary>
     public const int MOD_BROWSER_SIGNATURE_LENGTH = 256;
+
+    /// <summary>
+    ///     The length of the byte array storing the length of the file data of a <see cref="TModFile"/>.
+    /// </summary>
     public const int FILE_DATA_LENGTH = 4;
 
     private class HashSerializer
@@ -43,12 +57,24 @@ public static class TModFileSerializer
         }
     }
 
+    /// <summary>
+    ///     Serializes a <paramref name="file"/> to the <paramref name="filePath"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="TModFile"/> to serialize.</param>
+    /// <param name="filePath">The path to serialize the <paramref name="file"/> to.</param>
+    /// <exception cref="TModFileDirectoryAlreadyExistsException">Thrown if the file path points to an existing directory.</exception>
     public static void Serialize(TModFile file, string filePath) {
         if (Directory.Exists(filePath)) throw new TModFileDirectoryAlreadyExistsException("Attempted to write .tmod file to directory: " + filePath);
         using var fs = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Write);
         Serialize(file, fs);
     }
 
+    /// <summary>
+    ///     Serializes a <paramref name="file"/> to the <paramref name="stream"/>.
+    /// </summary>
+    /// <param name="file">The <see cref="TModFile"/> to serialize.</param>
+    /// <param name="stream">The stream to serialize the <paramref name="file"/> to.</param>
+    /// <exception cref="TModFileInvalidFileEntryException"></exception>
     public static void Serialize(TModFile file, Stream stream) {
         TModFileEntry[] entries = file.Entries.ToArray();
         using BinaryWriter w = new(stream);
@@ -85,16 +111,32 @@ public static class TModFileSerializer
 
     #region Deserialization
 
+    /// <summary>
+    ///     Deserializes the file located at the <paramref name="filePath"/> to a <see cref="TModFile"/> instance.
+    /// </summary>
+    /// <param name="filePath">The file path to deserialize from.</param>
+    /// <returns>A <see cref="TModFile"/> instance.</returns>
+    /// <exception cref="TModFileNotFoundException">Thrown if the file at the <paramref name="filePath"/> does not exist.</exception>
     public static TModFile Deserialize(string filePath) {
         if (!File.Exists(filePath)) throw new TModFileNotFoundException("Cannot deserialize .tmod file as file does not exist:" + filePath);
         using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         return Deserialize(fs);
     }
 
+    /// <summary>
+    ///     Deserializes the <paramref name="data"/> to a <see cref="TModFile"/> instance.
+    /// </summary>
+    /// <param name="data">The .tmod archive data to deserialize.</param>
+    /// <returns>A <see cref="TModFile"/> instance.</returns>
     public static TModFile Deserialize(byte[] data) {
         return Deserialize(new MemoryStream(data));
     }
 
+    /// <summary>
+    ///     Deserializes the <paramref name="stream"/> to a <see cref="TModFile"/> instance.
+    /// </summary>
+    /// <param name="stream">The .tmod archive stream to deserialize.</param>
+    /// <returns>A <see cref="TModFile"/> instance.</returns>
     public static TModFile Deserialize(Stream stream) {
         using BinaryReader r = new(stream);
 

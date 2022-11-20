@@ -9,10 +9,20 @@ using TML.Files.Extensions;
 
 namespace TML.Files.Extraction;
 
+/// <summary>
+///     Handles .tmod archive file extraction.
+/// </summary>
 public static class TModFileExtractor
 {
     #region Extraction
 
+    /// <summary>
+    ///     Extracts the file entries within the given <paramref name="file"/> into a list of <see cref="TModFileData"/> records.
+    /// </summary>
+    /// <param name="file">The <see cref="TModFile"/> to extract.</param>
+    /// <param name="threads">The amount of threads to use during extraction.</param>
+    /// <param name="extractors">The <see cref="IFileExtractor"/>s to use for extraction.</param>
+    /// <returns>A collection of extracted <see cref="TModFileData"/> records.</returns>
     public static List<TModFileData> Extract(TModFile file, int threads, params IFileExtractor[] extractors) {
         if (threads <= 0) threads = 1;
 
