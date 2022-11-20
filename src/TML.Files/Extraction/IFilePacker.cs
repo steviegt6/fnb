@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace TML.Files.Extraction;
+﻿namespace TML.Files.Extraction;
 
 /*public interface IFilePacker
 {
