@@ -111,7 +111,7 @@ public class TModFile
     /// <param name="fileData">The file data to check for compression.</param>
     /// <returns>Whether compression should occur.</returns>
     protected virtual bool ShouldCompress(TModFileData fileData) {
-        return new[] {".png", ".mp3", ".ogg"}.Contains(Path.GetExtension(fileData.Path));
+        return !new[] {".png", ".mp3", ".ogg"}.Contains(Path.GetExtension(fileData.Path));
     }
 
     /// <summary>
