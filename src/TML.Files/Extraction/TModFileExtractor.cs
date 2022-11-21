@@ -79,28 +79,68 @@ public static class TModFileExtractor
 
     #endregion
 
-    /*#region Packing
+    #region Packing
 
-    public static TModFile Pack(string directory, string modLoaderVersion, string name, string version, params IFilePacker[] packers) {
+    public static TModFile Pack(
+        string directory,
+        string modLoaderVersion,
+        string modName,
+        BuildProperties properties,
+        uint minCompSize = TModFile.DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float minCompTradeoff = TModFile.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF,
+        params IFilePacker[] packers
+    ) {
+        directory = Path.GetFullPath(directory); // Ensure directory path is absolute since we shave it off to create a relative path later.
+
         if (!Directory.Exists(directory)) throw new TModFileDirectoryNotFoundException("Directory not found: " + directory);
-        
+
+        // Collect collection of paths (files) to pack.
+        IEnumerable<string> resources = Directory.GetFiles(directory, "*", SearchOption.AllDirectories).Where(x => !properties.IsFileIgnored(x));
+
+        // Read from absolute path but use relative path (shave off directory from absolute path) for the file data record, since it needs to be made relative to the .tmod archive.
+        return Pack(
+            resources.Select(x => new TModFileData(x.Substring(directory.Length + 1), File.ReadAllBytes(x))),
+            modLoaderVersion,
+            modName,
+            properties,
+            minCompSize,
+            minCompTradeoff,
+            packers
+        );
     }
 
-    public static TModFile Pack(IEnumerable<TModFileData> files, string modLoaderVersion, string name, string version, params IFilePacker[] packers) {
+    public static TModFile Pack(
+        IEnumerable<TModFileData> files,
+        string modLoaderVersion,
+        string modName,
+        BuildProperties properties,
+        uint minCompSize = TModFile.DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float minCompTradeoff = TModFile.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF,
+        params IFilePacker[] packers
+    ) {
         var modFile = new TModFile
         {
             ModLoaderVersion = modLoaderVersion,
-            Name = name,
-            Version = version
+            Name = modName,
+            Version = properties.Version.ToString()
         };
-        
-        foreach (var data in files) {
+
+        foreach (var file in files) {
+            var data = file;
+            foreach (var packer in packers) {
+                if (!packer.ShouldPack(data)) continue;
+                data = packer.Pack(data);
+                break;
+            }
+
+            modFile.AddFile(data, minCompSize, minCompTradeoff);
         }
+
+        modFile.AddFile(new TModFileData("Info", properties.ToBytes(modLoaderVersion)), uint.MaxValue, 1f);
+        return modFile;
     }
 
-    private static void AddResource(TModFile file, string path) {
-        
-    }
+    private static void AddResource(TModFile file, string path) { }
 
-    #endregion*/
+    #endregion
 }
