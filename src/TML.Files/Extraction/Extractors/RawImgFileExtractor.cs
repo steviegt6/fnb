@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using SkiaSharp;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace TML.Files.Extraction.Extractors
 {
@@ -16,23 +18,28 @@ namespace TML.Files.Extraction.Extractors
         }
 
         /// <inheritdoc cref="IFileExtractor.Extract"/>
-        public unsafe TModFileData Extract(TModFileEntry entry, byte[] data) {
-            ReadOnlySpan<byte> dataSpan = data;
-            int width = MemoryMarshal.Read<int>(dataSpan.Slice(4, 8));
-            int height = MemoryMarshal.Read<int>(dataSpan.Slice(8, 12));
-            ReadOnlySpan<byte> oldPixels = dataSpan.Slice(12);
+        public TModFileData Extract(TModFileEntry entry, byte[] data) {
+            // TODO: optimize this a ton
+            ReadOnlySpan<byte> span = data;
+            int width = MemoryMarshal.Read<int>(span.Slice(4, 8));
+            int height = MemoryMarshal.Read<int>(span.Slice(8, 12));
+            ReadOnlySpan<byte> rgbaValues = span.Slice(12);
 
-            SKImageInfo info = new(width, height, SKColorType.Rgba8888);
-            using SKBitmap imageMap = new(info);
+            Image<Rgba32> image = new(width, height);
 
-            fixed (byte* ptr = oldPixels) {
-                SKImageInfo oldInfo = new(width, height, SKColorType.Rgba8888);
-                imageMap.InstallPixels(oldInfo, (IntPtr) ptr);
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int index = (y * width + x) * 4;
+                    byte r = rgbaValues[index];
+                    byte g = rgbaValues[index + 1];
+                    byte b = rgbaValues[index + 2];
+                    byte a = rgbaValues[index + 3];
+                    image[x, y] = new Rgba32(r, g, b, a);
+                }
             }
 
-            using var encodedImage = imageMap.Encode(SKEncodedImageFormat.Png, 100);
             using MemoryStream stream = new();
-            encodedImage.SaveTo(stream);
+            image.SaveAsPng(stream);
             return new TModFileData(Path.ChangeExtension(entry.Path, ".png"), stream.ToArray());
         }
     }
