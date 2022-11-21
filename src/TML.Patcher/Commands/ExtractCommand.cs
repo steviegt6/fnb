@@ -25,7 +25,7 @@ public class ExtractCommand : ICommand
 
     public async ValueTask ExecuteAsync(IConsole console) {
         TModPath = Path.GetFullPath(TModPath);
-        OutputDirectory ??= Path.GetDirectoryName(TModPath) ?? "";
+        OutputDirectory ??= Path.GetFileNameWithoutExtension(TModPath);
 
         await console.Output.WriteLineAsync($"Extracting \"{TModPath}\" to \"{OutputDirectory}\"...");
 
@@ -38,7 +38,7 @@ public class ExtractCommand : ICommand
         );
         files.ForEach(x =>
         {
-            var path = Path.Combine(OutputDirectory, x.Path);
+            string path = Path.Combine(OutputDirectory, x.Path);
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
             File.WriteAllBytes(path, x.Data);
         });
