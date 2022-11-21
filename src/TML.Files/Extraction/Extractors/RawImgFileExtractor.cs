@@ -2,10 +2,8 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using SkiaSharp;
-using TML.Files;
-using TML.Files.Extraction;
 
-namespace TML.Patcher.Extractors
+namespace TML.Files.Extraction.Extractors
 {
     /// <summary>
     ///     Extracts a .tmod <c>.rawimg</c> file to a <c>.png</c> file.

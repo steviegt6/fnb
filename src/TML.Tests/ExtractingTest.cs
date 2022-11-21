@@ -5,7 +5,6 @@ using NUnit.Framework;
 using TML.Files;
 using TML.Files.Extraction;
 using TML.Files.Extraction.Extractors;
-using TML.Patcher.Extractors;
 
 namespace TML.Tests
 {
