@@ -1,8 +1,10 @@
-﻿namespace TML.Files.Extraction;
+﻿using System.IO;
 
-/*public interface IFilePacker
+namespace TML.Files.Extraction;
+
+public interface IFilePacker
 {
     bool ShouldPack(TModFileData data);
     
-    TModFileData Pack(TModFileData data, MemoryStream to);
-}*/
+    TModFileData Pack(TModFileData data);
+}
