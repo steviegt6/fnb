@@ -39,8 +39,4 @@
         <PackageReference Include="CliFx" Version="2.3.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Commands" />
-    </ItemGroup>
-
 </Project>

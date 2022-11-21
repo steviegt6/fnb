@@ -64,7 +64,7 @@ public static class TModFileSerializer
     /// <exception cref="TModFileDirectoryAlreadyExistsException">Thrown if the file path points to an existing directory.</exception>
     public static void Serialize(TModFile file, string filePath) {
         if (Directory.Exists(filePath)) throw new TModFileDirectoryAlreadyExistsException("Attempted to write .tmod file to directory: " + filePath);
-        using var fs = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.Write);
+        using var fs = File.Open(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
         Serialize(file, fs);
     }
 
