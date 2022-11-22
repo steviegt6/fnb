@@ -19,7 +19,6 @@ namespace TML.Files.Extraction.Extractors
 
         /// <inheritdoc cref="IFileExtractor.Extract"/>
         public TModFileData Extract(TModFileEntry entry, byte[] data) {
-            // TODO: optimize this a ton
             ReadOnlySpan<byte> span = data;
             int width = MemoryMarshal.Read<int>(span.Slice(4, 8));
             int height = MemoryMarshal.Read<int>(span.Slice(8, 12));
