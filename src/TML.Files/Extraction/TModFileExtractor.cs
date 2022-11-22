@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -31,17 +32,19 @@ public static class TModFileExtractor
         int chunkSize = (int) Math.Round(file.Entries.Count / numThreads, MidpointRounding.AwayFromZero);
         for (int i = 0; i < file.Entries.Count; i += chunkSize) chunks.Add(file.Entries.GetRange(i, Math.Min(chunkSize, file.Entries.Count - i)));
 
-        List<TModFileData> extractedFiles = new();
+        ConcurrentBag<TModFileData> extractedFiles = new();
         Task.WaitAll(
             chunks.Select(chunk => Task.Run(() =>
                    {
                        IEnumerable<TModFileData> extracted = ExtractChunk(chunk, extractors);
-                       lock (extractedFiles) extractedFiles.AddRange(extracted);
+                       foreach (TModFileData fileData in extracted) {
+                            extractedFiles.Add(fileData);
+                       }
                    }))
                   .ToArray()
         );
 
-        return extractedFiles;
+        return extractedFiles.ToList();
     }
 
     private static IEnumerable<TModFileData> ExtractChunk(List<TModFileEntry> entries, IFileExtractor[] extractors) {
