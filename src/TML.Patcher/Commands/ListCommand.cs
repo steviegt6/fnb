@@ -31,6 +31,5 @@ public class ListCommand : ICommand
             logBlock,
             new RawByteFileExtractor()
         );
-        // foreach (var file in files) await console.Output.WriteLineAsync(file.Path);
     }
 }
