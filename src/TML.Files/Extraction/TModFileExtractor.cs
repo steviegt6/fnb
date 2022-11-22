@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using TML.Files.Exceptions;
 using TML.Files.Extensions;
 
@@ -22,46 +23,37 @@ public static class TModFileExtractor
     /// </summary>
     /// <param name="file">The <see cref="TModFile"/> to extract.</param>
     /// <param name="threads">The amount of threads to use during extraction.</param>
+    /// <param name="finalBlock">The final dataflow block to process a file with.</param>
     /// <param name="extractors">The <see cref="IFileExtractor"/>s to use for extraction.</param>
     /// <returns>A collection of extracted <see cref="TModFileData"/> records.</returns>
-    public static List<TModFileData> Extract(TModFile file, int threads, params IFileExtractor[] extractors) {
+    public static void Extract(TModFile file, int threads, ActionBlock<TModFileData> finalBlock, params IFileExtractor[] extractors) {
         if (threads <= 0) threads = 1;
 
-        List<List<TModFileEntry>> chunks = new();
-        double numThreads = Math.Min(file.Entries.Count, threads);
-        int chunkSize = (int) Math.Round(file.Entries.Count / numThreads, MidpointRounding.AwayFromZero);
-        for (int i = 0; i < file.Entries.Count; i += chunkSize) chunks.Add(file.Entries.GetRange(i, Math.Min(chunkSize, file.Entries.Count - i)));
+        TransformBlock<TModFileEntry, TModFileData> transformBlock = new(entry => ProcessModEntry(entry, extractors), new ExecutionDataflowBlockOptions {
+            MaxDegreeOfParallelism = threads,
+        });
 
-        ConcurrentBag<TModFileData> extractedFiles = new();
-        Task.WaitAll(
-            chunks.Select(chunk => Task.Run(() =>
-                   {
-                       IEnumerable<TModFileData> extracted = ExtractChunk(chunk, extractors);
-                       foreach (TModFileData fileData in extracted) {
-                            extractedFiles.Add(fileData);
-                       }
-                   }))
-                  .ToArray()
-        );
+        transformBlock.LinkTo(finalBlock);
 
-        return extractedFiles.ToList();
+        foreach (TModFileEntry entry in file.Entries) {
+            transformBlock.Post(entry);
+        }
+
+        transformBlock.Complete();
+        transformBlock.Completion.Wait();
     }
 
-    private static IEnumerable<TModFileData> ExtractChunk(List<TModFileEntry> entries, IFileExtractor[] extractors) {
-        foreach (var entry in entries) {
-            byte[] data = entry.Data ?? throw new TModFileInvalidFileEntryException("Attempted to serialize a TModFileEntry with no data: " + entry.Path);
-            if (entry.IsCompressed()) data = Decompress(data);
+    private static TModFileData ProcessModEntry(TModFileEntry entry, IFileExtractor[] extractors) {
+        byte[] data = entry.Data ?? throw new TModFileInvalidFileEntryException("Attempted to serialize a TModFileEntry with no data: " + entry.Path);
+        if (entry.IsCompressed()) data = Decompress(data);
 
-            foreach (var extractor in extractors)
-                if (extractor.ShouldExtract(entry)) {
-                    yield return extractor.Extract(entry, data);
-                    goto Continue;
-                }
-
-            throw new TModFileInvalidFileEntryException("No extractor found for file: " + entry.Path);
-
-        Continue: ;
+        foreach (IFileExtractor extractor in extractors) {
+            if (extractor.ShouldExtract(entry)) {
+                return extractor.Extract(entry, data);
+            }
         }
+
+        throw new TModFileInvalidFileEntryException("No extractor found for file: " + entry.Path);
     }
 
     private static byte[] Decompress(byte[] data) {
