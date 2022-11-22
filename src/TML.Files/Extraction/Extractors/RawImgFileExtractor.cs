@@ -21,8 +21,8 @@ namespace TML.Files.Extraction.Extractors
         public TModFileData Extract(TModFileEntry entry, byte[] data) {
             // TODO: optimize this a ton
             ReadOnlySpan<byte> span = data;
-            int width = MemoryMarshal.Read<int>(span.Slice(4, 8));
-            int height = MemoryMarshal.Read<int>(span.Slice(8, 12));
+            int width = MemoryMarshal.Read<int>(span.Slice(4, 4));
+            int height = MemoryMarshal.Read<int>(span.Slice(8, 4));
             ReadOnlySpan<byte> rgbaValues = span.Slice(12);
 
             Image<Rgba32> image = new(width, height);
