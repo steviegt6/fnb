@@ -34,7 +34,7 @@ namespace TML.Tests
             var file = TModFileSerializer.Deserialize(tmodFile);
             IFileExtractor[] extractors = {new InfoFileExtractor(), new RawImgFileExtractor(), new RawByteFileExtractor()};
 
-            ConcurrentBag<string> paths = new();
+            List<string> paths = new();
             TModFileExtractor.Extract(file, 8, new ActionBlock<TModFileData>(data => paths.Add(data.Path)), extractors);
             CollectionAssert.AreEquivalent(paths, Files);
         }
