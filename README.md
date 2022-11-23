@@ -8,4 +8,10 @@
 
 ## Changelog
 
+### TML.Patcher
+
 See [CHANGELOG.md](CHANGELOG.md).
+
+### TML.Files
+
+See [CHANGELOG-TML.Files.md](CHANGELOG-TML.Files.md).
