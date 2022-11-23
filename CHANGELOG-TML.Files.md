@@ -2,9 +2,11 @@
 
 Changelog for the `TML.Files` library.
 
-## Unreleased
+<!-- ## Unreleased
 
-> **Warning** | This version has not yet been released, and does not reflect the final product nor the current released version.
+> **Warning** | This version has not yet been released, and does not reflect the final product nor the current released version. -->
+
+## 2.1.0 - 22 November 2022
 
 ### Additions
 
