@@ -1,3 +1,0 @@
-displayName = TML.Patcher - Arbitrary Mod Tweaker
-author = Tomat
-version = 0.1
