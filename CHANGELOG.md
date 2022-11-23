@@ -10,8 +10,8 @@ User-facing changes are documented here, per version.
 
 ### Changes
 
-- Updated `TML.Files` version to 2.1.0 (relevant: (GH-29)[https://github.com/steviegt6/tml-patcher/pull/29]).
-  - Noticeable speed improvements as a result ((GH-29)[https://github.com/steviegt6/tml-patcher/pull/29], (@Chik3r)[https://github.com/Chik3r]).
+- Updated `TML.Files` version to 2.1.0 (relevant: [GH-29](https://github.com/steviegt6/tml-patcher/pull/29)).
+  - Noticeable speed improvements as a result ([GH-29](https://github.com/steviegt6/tml-patcher/pull/29), [@Chik3r](https://github.com/Chik3r)).
 
 ## 2.0.0 - 20 November 2022
 
