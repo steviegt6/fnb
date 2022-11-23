@@ -10,19 +10,19 @@ Changelog for the `TML.Files` library.
 
 ### Additions
 
-- Added `System.Threading.Tasks.Dataflow` as a dependency ((GH-29)[https://github.com/steviegt6/tml-patcher/pull/29], (@Chik3r)[https://github.com/Chik3r]).
+- Added `System.Threading.Tasks.Dataflow` as a dependency ([GH-29](https://github.com/steviegt6/tml-patcher/pull/29), [@Chik3r](https://github.com/Chik3r)).
 - Added `void TML.Files.Extraction::Extract(TML.Files.TModFile,int,System.Threading.Tasks.Dataflow.ActionBlock<TML.Files.TModFileData>,TML.Files.Extraction.IFileExtractor)`.
   - See Changes for more information.
 
 ### Changes
 
-- Changed `TML.Files.Extraction.TModFileExtractor::Extract` API; you should now interface with extraction using an `System.Threading.Tasks.Dataflow.ActionBlock<TML.Files.TModFileData>` object, allowing you to act immediately when a file is extracted ((GH-29)[https://github.com/steviegt6/tml-patcher/pull/29], (@Chik3r)[https://github.com/Chik3r]).
+- Changed `TML.Files.Extraction.TModFileExtractor::Extract` API; you should now interface with extraction using an `System.Threading.Tasks.Dataflow.ActionBlock<TML.Files.TModFileData>` object, allowing you to act immediately when a file is extracted ([GH-29](https://github.com/steviegt6/tml-patcher/pull/29), [@Chik3r](https://github.com/Chik3r)).
   - In turn, `System.Collections.Generic.List<TML.Files.TModFileData> TML.Files.Extraction.TModFileExtractor::Extract(TML.Files.TModFile,int,TML.Files.Extraction.IFileExtractor[])` has been made obsolete.
     - In favor of a new method (see Additions).
 
 ### Fixes
 
-- Fixed `span.Slice` having the wrong `length` value ((GH-28)[https://github.com/steviegt6/tml-patcher/pull/28], (@Chik3r)[https://github.com/Chik3r]).
+- Fixed `span.Slice` having the wrong `length` value ([GH-28](https://github.com/steviegt6/tml-patcher/pull/28), [@Chik3r](https://github.com/Chik3r)).
 
 ## 2.0.0 - 20 November 2022
 
