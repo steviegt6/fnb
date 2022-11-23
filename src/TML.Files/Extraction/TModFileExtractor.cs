@@ -25,7 +25,6 @@ public static class TModFileExtractor
     /// <param name="threads">The amount of threads to use during extraction.</param>
     /// <param name="finalBlock">The final dataflow block to process a file with.</param>
     /// <param name="extractors">The <see cref="IFileExtractor"/>s to use for extraction.</param>
-    /// <returns>A collection of extracted <see cref="TModFileData"/> records.</returns>
     public static void Extract(TModFile file, int threads, ActionBlock<TModFileData> finalBlock, params IFileExtractor[] extractors) {
         if (threads <= 0) threads = 1;
 
@@ -41,6 +40,20 @@ public static class TModFileExtractor
 
         transformBlock.Complete();
         transformBlock.Completion.Wait();
+    }
+
+    /// <summary>
+    ///     Extracts the file entries within the given <paramref name="file"/> into a list of <see cref="TModFileData"/> records.
+    /// </summary>
+    /// <param name="file">The <see cref="TModFile"/> to extract.</param>
+    /// <param name="threads">The amount of threads to use during extraction.</param>
+    /// <param name="extractors">The <see cref="IFileExtractor"/>s to use for extraction.</param>
+    /// <returns>A collection of extracted <see cref="TModFileData"/> records.</returns>
+    [Obsolete("Use Extract(TModFile, int, ActionBlock<TModFileData>, params IFileExtractor[]) instead.")]
+    public static List<TModFileData> Extract(TModFile file, int threads, params IFileExtractor[] extractors) {
+        List<TModFileData> files = new();
+        Extract(file, threads, new ActionBlock<TModFileData>(files.Add), extractors);
+        return files;
     }
 
     private static TModFileData ProcessModEntry(TModFileEntry entry, IFileExtractor[] extractors) {
