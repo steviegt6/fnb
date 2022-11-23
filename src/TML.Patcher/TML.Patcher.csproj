@@ -13,6 +13,7 @@
         
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>tmlpatcher</ToolCommandName>
+        <ApplicationIcon>..\..\assets\icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -37,6 +38,12 @@
 
     <ItemGroup>
         <PackageReference Include="CliFx" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\..\assets\icon.ico">
+        <Link>icon.ico</Link>
+      </None>
     </ItemGroup>
 
 </Project>
