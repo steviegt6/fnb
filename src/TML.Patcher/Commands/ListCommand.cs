@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
@@ -22,11 +23,13 @@ public class ListCommand : ICommand
 
         await console.Output.WriteLineAsync($"Listing files within \"{TModPath}\"...");
 
-        List<TModFileData> files = TModFileExtractor.Extract(
+        ActionBlock<TModFileData> logBlock = new(data => console.Output.WriteLine(data.Path));
+
+        TModFileExtractor.Extract(
             TModFileSerializer.Deserialize(TModPath),
             8,
+            logBlock,
             new RawByteFileExtractor()
         );
-        foreach (var file in files) await console.Output.WriteLineAsync(file.Path);
     }
 }

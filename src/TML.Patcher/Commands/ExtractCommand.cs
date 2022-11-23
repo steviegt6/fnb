@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
@@ -29,18 +30,19 @@ public class ExtractCommand : ICommand
 
         await console.Output.WriteLineAsync($"Extracting \"{TModPath}\" to \"{OutputDirectory}\"...");
 
-        List<TModFileData> files = TModFileExtractor.Extract(
+        ActionBlock<TModFileData> writeBlock = new(data => {
+            string path = Path.Combine(OutputDirectory, data.Path);
+            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
+            File.WriteAllBytes(path, data.Data);
+        });
+
+        TModFileExtractor.Extract(
             TModFileSerializer.Deserialize(TModPath),
             Threads,
+            writeBlock,
             new InfoFileExtractor(),
             new RawImgFileExtractor(),
             new RawByteFileExtractor()
         );
-        files.ForEach(x =>
-        {
-            string path = Path.Combine(OutputDirectory, x.Path);
-            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
-            File.WriteAllBytes(path, x.Data);
-        });
     }
 }

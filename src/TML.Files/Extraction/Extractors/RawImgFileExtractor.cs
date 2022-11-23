@@ -19,24 +19,12 @@ namespace TML.Files.Extraction.Extractors
 
         /// <inheritdoc cref="IFileExtractor.Extract"/>
         public TModFileData Extract(TModFileEntry entry, byte[] data) {
-            // TODO: optimize this a ton
             ReadOnlySpan<byte> span = data;
             int width = MemoryMarshal.Read<int>(span.Slice(4, 4));
             int height = MemoryMarshal.Read<int>(span.Slice(8, 4));
-            ReadOnlySpan<byte> rgbaValues = span.Slice(12);
+            Memory<byte> rgbaValues = data.AsMemory(12);
 
-            Image<Rgba32> image = new(width, height);
-
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int index = (y * width + x) * 4;
-                    byte r = rgbaValues[index];
-                    byte g = rgbaValues[index + 1];
-                    byte b = rgbaValues[index + 2];
-                    byte a = rgbaValues[index + 3];
-                    image[x, y] = new Rgba32(r, g, b, a);
-                }
-            }
+            using Image<Rgba32> image = Image.WrapMemory<Rgba32>(Configuration.Default, rgbaValues, width, height);
 
             using MemoryStream stream = new();
             image.SaveAsPng(stream);

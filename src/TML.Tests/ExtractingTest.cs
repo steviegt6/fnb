@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 using NUnit.Framework;
 using TML.Files;
 using TML.Files.Extraction;
@@ -32,8 +34,9 @@ namespace TML.Tests
             var file = TModFileSerializer.Deserialize(tmodFile);
             IFileExtractor[] extractors = {new InfoFileExtractor(), new RawImgFileExtractor(), new RawByteFileExtractor()};
 
-            IEnumerable<string> extractedFiles = TModFileExtractor.Extract(file, 8, extractors).Select(x => x.Path);
-            CollectionAssert.AreEquivalent(extractedFiles, Files);
+            List<string> paths = new();
+            TModFileExtractor.Extract(file, 8, new ActionBlock<TModFileData>(data => paths.Add(data.Path)), extractors);
+            CollectionAssert.AreEquivalent(paths, Files);
         }
 
         [Test]
@@ -45,12 +48,13 @@ namespace TML.Tests
 
             if (Directory.Exists("GamerMod")) Directory.Delete("GamerMod", true);
 
-            IEnumerable<TModFileData> extractedFiles = TModFileExtractor.Extract(file, 8, extractors);
-            foreach (var extractedFile in extractedFiles) {
-                string path = Path.Combine("GamerMod", extractedFile.Path);
-                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                File.WriteAllBytes(path, extractedFile.Data);
-            }
+            ActionBlock<TModFileData> writeBlock = new(data => {
+                string path = Path.Combine("GamerMod", data.Path);
+                Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
+                File.WriteAllBytes(path, data.Data);
+            });
+            
+            TModFileExtractor.Extract(file, 8, writeBlock, extractors);
         }
     }
 }
