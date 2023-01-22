@@ -6,6 +6,12 @@ Changelog for the `TML.Files` library.
 
 > **Warning** | This version has not yet been released, and does not reflect the final product nor the current released version. -->
 
+## 2.1.1 - 22 January 2023
+
+### Fixes
+
+- Fixed race condition where only some files would be properly extracted ([GH-33](https://github.com/steviegt6/tml-patcher/pull/33), [@Chik3r](https://github.com/Chik3r) & [@steviegt6](https://github.com/steviegt6)).
+
 ## 2.1.0 - 22 November 2022
 
 ### Additions

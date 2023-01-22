@@ -6,6 +6,13 @@ User-facing changes are documented here, per version.
 
 > **Warning** | This version has not yet been released, and does not reflect the final product nor the current released version. -->
 
+## 2.0.2 - 22 January 2023
+
+### Changes
+
+- Updated `TML.Files` version to 2.1.1.
+  - Resolves issues with not all files being extracted.
+
 ## 2.0.1 - 22 November 2022
 
 ### Changes
