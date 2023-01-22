@@ -40,6 +40,8 @@ public static class TModFileExtractor
 
         transformBlock.Complete();
         transformBlock.Completion.Wait();
+        finalBlock.Complete();
+        finalBlock.Completion.Wait();
     }
 
     /// <summary>
