@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -12,15 +13,42 @@ public class PngFilePacker : BaseFilePacker
         return data.Path != "icon.png" && Path.GetExtension(data.Path) == ".png";
     }
 
-    protected override void Pack(ref string resName, byte[] from, MemoryStream to) {
+    private  static Configuration configuration;
+    static PngFilePacker()
+    {
+        configuration = Configuration.Default.Clone();
+        configuration.PreferContiguousImageBuffers = true;
+    }
+
+    protected override unsafe void Pack(ref string resName, byte[] from, MemoryStream to) {
         resName = Path.ChangeExtension(resName, ".rawimg");
 
-        using Image<Rgba32> image = Image.Load<Rgba32>(from);
+        using Image<Rgba32> image = Image.Load<Rgba32>(configuration, from);
         using BinaryWriter writer = new(to);
 
         writer.Write(RAWIMG_FORMAT_VERSION);
         writer.Write(image.Width);
         writer.Write(image.Height);
+        int totalPixels = image.Width * image.Height;
+
+        if (to.Length < from.Length) {
+            to.SetLength(from.Length);
+        }
+
+        if (to.TryGetBuffer(out ArraySegment<byte> buffer) && buffer.Count >= totalPixels && image.DangerousTryGetSinglePixelMemory(out var memory)) {
+            fixed (byte* _ptr = buffer.Array!)
+            fixed (Rgba32* _colorPtr = memory.Span)
+            {
+                int* dst = (int*)(_ptr + buffer.Offset);
+                int* src = (int*)_colorPtr;
+                for (nint i = 0, c = totalPixels / 4; i < c; i++) {
+                    int col = src[i];
+                    dst[i] = col == 0 ? 0 : col;
+                }
+            }
+            GC.KeepAlive(image);
+            return;
+        }
 
         for (int y = 0; y < image.Height; y++)
         for (int x = 0; x < image.Width; x++) {
