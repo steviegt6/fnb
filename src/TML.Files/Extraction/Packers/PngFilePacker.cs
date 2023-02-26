@@ -31,8 +31,8 @@ public class PngFilePacker : BaseFilePacker
         writer.Write(image.Height);
         int totalPixels = image.Width * image.Height;
 
-        if (to.Length < totalPixels) {
-            to.SetLength(totalPixels);
+        if (to.Capacity < totalPixels) {
+            to.Capacity = totalPixels;
         }
 
         if (to.TryGetBuffer(out ArraySegment<byte> buffer) && buffer.Count >= totalPixels && image.DangerousTryGetSinglePixelMemory(out var memory)) {
