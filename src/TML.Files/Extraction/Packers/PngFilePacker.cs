@@ -39,11 +39,11 @@ public class PngFilePacker : BaseFilePacker
             fixed (byte* _ptr = buffer.Array!)
             fixed (Rgba32* _colorPtr = memory.Span)
             {
-                int* dst = (int*)(_ptr + buffer.Offset);
-                int* src = (int*)_colorPtr;
+                uint* dst = (uint*)(_ptr + buffer.Offset);
+                uint* src = (uint*)_colorPtr;
                 for (nint i = 0, c = totalPixels / 4; i < c; i++) {
-                    int col = src[i];
-                    dst[i] = col == 0 ? 0 : col;
+                    uint col = src[i];
+                    dst[i] = (col & 0xFF) == 0 ? 0 : col;
                 }
             }
             GC.KeepAlive(image);
