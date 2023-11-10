@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using LibDeflate;
 using Tomat.FNB.TMOD.Extractors;
@@ -204,30 +205,19 @@ public sealed class TmodFile {
         }
     }
 
-    public List<TmodFileData> Extract() {
+    /*public List<TmodFileData> Extract() {
         var files = new List<TmodFileData>();
-        Extract(new ActionBlock<TmodFileData>(files.Add));
+        Extract(files.Add);
         return files;
-    }
+    }*/
 
-    public void Extract(ActionBlock<TmodFileData> finalBlock, int degreesOfParallelism = -1) {
-        var transformBlock = new TransformBlock<TmodFileEntry, TmodFileData>(
-            ProcessModEntry,
-            new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = degreesOfParallelism == -1 ? Environment.ProcessorCount : degreesOfParallelism,
+    public async Task ExtractAsync(Func<TmodFileData, ValueTask> extractCallback) {
+        await Parallel.ForEachAsync(
+            Entries,
+            async (entry, _) => {
+                await extractCallback(ProcessModEntry(entry));
             }
         );
-
-        var linkOptions = new DataflowLinkOptions {
-            PropagateCompletion = true,
-        };
-        transformBlock.LinkTo(finalBlock, linkOptions);
-
-        foreach (var entry in Entries)
-            transformBlock.Post(entry);
-
-        transformBlock.Complete();
-        finalBlock.Completion.Wait();
     }
 
     private static TmodFileData ProcessModEntry(TmodFileEntry entry) {
