@@ -212,12 +212,37 @@ public sealed class TmodFile {
     }*/
 
     public async Task ExtractAsync(Func<TmodFileData, ValueTask> extractCallback) {
+        // use Parallel.ForAsync
+
+        var entriesPerThread = MathF.Ceiling((float)Entries.Count / Environment.ProcessorCount);
+        var entriesPerThreadArray = new TmodFileEntry[(int)MathF.Ceiling(Entries.Count / entriesPerThread)][];
+
+        var total = 0;
+
+        for (var i = 0; i < entriesPerThreadArray.Length; i++) {
+            var entryCountForThread = (int)Math.Min(Entries.Count - total, entriesPerThread);
+            entriesPerThreadArray[i] = new TmodFileEntry[entryCountForThread];
+
+            for (var j = 0; j < entryCountForThread; j++) {
+                entriesPerThreadArray[i][j] = Entries[total];
+                total++;
+            }
+        }
+
         await Parallel.ForEachAsync(
+            entriesPerThreadArray,
+            async (entries, _) => {
+                foreach (var entry in entries)
+                    await extractCallback(ProcessModEntry(entry));
+            }
+        );
+
+        /*await Parallel.ForEachAsync(
             Entries,
             async (entry, _) => {
                 await extractCallback(ProcessModEntry(entry));
             }
-        );
+        );*/
     }
 
     private static TmodFileData ProcessModEntry(TmodFileEntry entry) {
