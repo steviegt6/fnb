@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CliFx.Infrastructure;
 using Microsoft.Win32;
+using Tomat.FNB.TMOD;
 
 namespace Tomat.FNB.Commands;
 
@@ -17,7 +18,22 @@ internal static class CommandUtil {
         destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
         await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
 
-        // TODO: extract
+        if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
+            await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
+            return;
+        }
+
+        var files = tmodFile.Extract();
+        
+        foreach (var file in files) {
+            var path = Path.Combine(destinationPath, file.Path);
+            var dir = Path.GetDirectoryName(path);
+
+            if (dir is not null)
+                Directory.CreateDirectory(dir);
+
+            await File.WriteAllBytesAsync(path, file.Data);
+        }
     }
 
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
