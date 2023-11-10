@@ -8,6 +8,8 @@
 
         <AssemblyName>fnb</AssemblyName>
         <RootNamespace>Tomat.FNB</RootNamespace>
+
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
