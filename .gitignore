@@ -1,4 +1,8 @@
+.vs/
+.vscode/
+.idea/
+
 bin/
 obj/
-.vs/
-.idea/
+
+*.user
