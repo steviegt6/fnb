@@ -30,7 +30,7 @@ internal static class CommandUtil {
             return;
         }
 
-        await tmodFile.ExtractAsync(
+        ActionBlock<TmodFileData> finalBlock = new(
             async data => {
                 var path = Path.Combine(destinationPath, data.Path);
                 var dir = Path.GetDirectoryName(path);
@@ -39,8 +39,12 @@ internal static class CommandUtil {
                     Directory.CreateDirectory(dir);
 
                 await File.WriteAllBytesAsync(path, data.Data);
+            },
+            new ExecutionDataflowBlockOptions {
+                MaxDegreeOfParallelism = 1,
             }
         );
+        tmodFile.Extract(finalBlock, Environment.ProcessorCount - 1);
 
         watch.Stop();
         await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
