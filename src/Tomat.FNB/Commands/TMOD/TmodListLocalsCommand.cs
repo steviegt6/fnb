@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using JetBrains.Annotations;
 
 namespace Tomat.FNB.Commands.TMOD;
 
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod list-locals", Description = "Lists known, locally-installed .tmod files")]
 public class TmodListLocalsCommand : ICommand {
     public async ValueTask ExecuteAsync(IConsole console) {

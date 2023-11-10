@@ -3,9 +3,11 @@ using System.Threading.Tasks;
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+using JetBrains.Annotations;
 
 namespace Tomat.FNB.Commands.TMOD;
 
+[UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod list-workshop", Description = "Lists .tmod files installed through the Steam Workshop")]
 public class TmodListWorkshopCommand : ICommand {
     public async ValueTask ExecuteAsync(IConsole console) {
