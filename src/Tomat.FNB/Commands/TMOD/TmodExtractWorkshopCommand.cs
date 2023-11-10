@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CliFx;
@@ -54,20 +53,20 @@ public class TmodExtractWorkshopCommand : ICommand {
                     return;
                 }
 
-                await ExtractArchive(console, unversioned.FullPath, OutputDirectory);
+                await CommandUtil.ExtractArchive(console, unversioned.FullPath, OutputDirectory);
                 break;
             }
 
             case "earliest": {
                 if (record.Items.Count == 1) {
-                    await ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
+                    await CommandUtil.ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
                     break;
                 }
 
                 var unversioned = record.Items.FirstOrDefault(x => x.Version is null);
 
                 if (unversioned is not null) {
-                    await ExtractArchive(console, unversioned.FullPath, OutputDirectory);
+                    await CommandUtil.ExtractArchive(console, unversioned.FullPath, OutputDirectory);
                     break;
                 }
 
@@ -75,13 +74,13 @@ public class TmodExtractWorkshopCommand : ICommand {
                 var earliest = versions.Min();
 
                 var earliestVersion = record.Items.First(x => new Version(x.Version!) == earliest);
-                await ExtractArchive(console, earliestVersion.FullPath, OutputDirectory);
+                await CommandUtil.ExtractArchive(console, earliestVersion.FullPath, OutputDirectory);
                 break;
             }
 
             case "latest": {
                 if (record.Items.Count == 1) {
-                    await ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
+                    await CommandUtil.ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
                     break;
                 }
 
@@ -89,7 +88,7 @@ public class TmodExtractWorkshopCommand : ICommand {
                 var latest = versions.Max();
 
                 var latestVersion = record.Items.First(x => new Version(x.Version!) == latest);
-                await ExtractArchive(console, latestVersion.FullPath, OutputDirectory);
+                await CommandUtil.ExtractArchive(console, latestVersion.FullPath, OutputDirectory);
                 break;
             }
 
@@ -103,14 +102,9 @@ public class TmodExtractWorkshopCommand : ICommand {
                     return;
                 }
 
-                await ExtractArchive(console, versioned.FullPath, OutputDirectory);
+                await CommandUtil.ExtractArchive(console, versioned.FullPath, OutputDirectory);
                 break;
             }
         }
-    }
-
-    private static async ValueTask ExtractArchive(IConsole console, string archivePath, string? outputDirectory) {
-        outputDirectory ??= Path.GetFileNameWithoutExtension(archivePath);
-        await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{outputDirectory}\"...");
     }
 }

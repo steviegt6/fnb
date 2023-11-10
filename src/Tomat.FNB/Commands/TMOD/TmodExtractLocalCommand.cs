@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CliFx;
@@ -45,7 +44,7 @@ public class TmodExtractLocalCommand : ICommand {
                 return;
 
             case 1:
-                await ExtractArchive(console, archives.Values.Single(), OutputDirectory);
+                await CommandUtil.ExtractArchive(console, archives.Values.Single(), OutputDirectory);
                 return;
 
             default:
@@ -59,15 +58,8 @@ public class TmodExtractLocalCommand : ICommand {
                     return;
                 }
 
-                await ExtractArchive(console, archivePath, OutputDirectory);
+                await CommandUtil.ExtractArchive(console, archivePath, OutputDirectory);
                 return;
         }
-    }
-
-    private static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
-        destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
-        await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
-
-        // TODO: extract
     }
 }

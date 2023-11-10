@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
+using CliFx.Infrastructure;
 using Microsoft.Win32;
 
 namespace Tomat.FNB.Commands;
@@ -10,6 +12,13 @@ internal static class CommandUtil {
     private static readonly string[] mod_loader_dir_candidates = { "tModLoader", "tModLoader-1.4.3", "tModLoader-preview", "tModLoader-dev", "ModLoader" };
 
     public const int TMODLOADER_APPID = 1281930;
+
+    public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
+        destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
+        await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
+
+        // TODO: extract
+    }
 
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
         if (!TryGetTerrariaStoragePath(out var storageDir)) {
