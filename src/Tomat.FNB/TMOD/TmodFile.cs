@@ -19,7 +19,7 @@ public sealed class TmodFile {
     private const int signature_length = 256;
     private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
-    private static readonly FileExtractor[] extractors = { new InfoFileExtractor(), new RawImgFileExtractor(), new RawByteFileExtractor() };
+    private static readonly FileExtractor[] extractors = { new InfoFileExtractor(), new RawImgFileExtractor() };
 
     public string ModLoaderVersion { get; }
 
@@ -238,7 +238,7 @@ public sealed class TmodFile {
                 return extractor.Extract(entry, data);
         }
 
-        throw new Exception($"No extractor found for {entry.Path}");
+        return new TmodFileData(entry.Path, data);
     }
 
     private static byte[] Decompress(byte[] data) {
