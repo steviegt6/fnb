@@ -7,7 +7,7 @@ using Microsoft.Win32;
 namespace Tomat.FNB.Commands;
 
 internal static class CommandUtil {
-    private static readonly string[] mod_loader_dir_candidates = { "ModLoader", "tModLoader", "tModLoader-1.4.3", "tModLoader-dev", "tModLoader-preview" };
+    private static readonly string[] mod_loader_dir_candidates = { "tModLoader", "tModLoader-1.4.3", "tModLoader-preview", "tModLoader-dev", "ModLoader" };
 
     public const int TMODLOADER_APPID = 1281930;
 
