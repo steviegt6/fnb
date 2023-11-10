@@ -91,7 +91,7 @@ public class TModFile
     ) {
         file.Path = file.Path.Trim().Replace('\\', '/');
 
-        int size = file.Data.Length;
+        var size = file.Data.Length;
         if (size > minCompSize && ShouldCompress(file)) Compress(file, size, inCompTradeoff);
 
         Entries.Add(new TModFileEntry
@@ -123,7 +123,7 @@ public class TModFile
     protected virtual void Compress(TModFileData file, int realSize, float tradeoff) {
         using MemoryStream ms = new(file.Data.Length);
         using (DeflateStream ds = new(ms, CompressionMode.Compress)) ds.Write(file.Data, 0, file.Data.Length);
-        byte[] com = ms.ToArray();
+        var com = ms.ToArray();
         if (com.Length < realSize * tradeoff) file.Data = com;
     }
 

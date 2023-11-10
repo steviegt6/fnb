@@ -37,7 +37,7 @@ public class PackCommand : ICommand
         OutputFile ??= Path.ChangeExtension(ModName ?? new DirectoryInfo(Directory).Name, ".tmod");
 
         await console.Output.WriteLineAsync($"Packing \"{Directory}\" to \"{OutputFile}\"...");
-        string buildTxtPath = Path.Combine(Directory, "build.txt");
+        var buildTxtPath = Path.Combine(Directory, "build.txt");
         BuildProperties props;
         if (File.Exists(buildTxtPath))
             props = BuildProperties.ReadBuildInfo(File.Open(buildTxtPath, FileMode.Open, FileAccess.Read, FileShare.Read));

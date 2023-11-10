@@ -49,7 +49,7 @@ namespace TML.Tests
             if (Directory.Exists("GamerMod")) Directory.Delete("GamerMod", true);
 
             ActionBlock<TModFileData> writeBlock = new(data => {
-                string path = Path.Combine("GamerMod", data.Path);
+                var path = Path.Combine("GamerMod", data.Path);
                 Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
                 File.WriteAllBytes(path, data.Data);
             });

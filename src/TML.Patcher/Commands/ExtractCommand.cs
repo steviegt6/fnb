@@ -31,7 +31,7 @@ public class ExtractCommand : ICommand
         await console.Output.WriteLineAsync($"Extracting \"{TModPath}\" to \"{OutputDirectory}\"...");
 
         ActionBlock<TModFileData> writeBlock = new(data => {
-            string path = Path.Combine(OutputDirectory, data.Path);
+            var path = Path.Combine(OutputDirectory, data.Path);
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
             File.WriteAllBytes(path, data.Data);
         });

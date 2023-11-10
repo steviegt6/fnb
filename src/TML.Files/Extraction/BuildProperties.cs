@@ -155,12 +155,12 @@ public sealed class BuildProperties
     }
 
     public static bool FitsMask(string fileName, string fileMask) {
-        string escape = Regex.Escape(
+        var escape = Regex.Escape(
             fileMask.Replace(".", "__DOT__")
                     .Replace("*", "__STAR__")
                     .Replace("?", "__QM__")
         );
-        string pattern =
+        var pattern =
             '^'
             + escape
              .Replace("__DOT__", "[.]")
@@ -197,12 +197,12 @@ public sealed class BuildProperties
         var props = new BuildProperties();
         var reader = new StreamReader(buildFile);
 
-        for (string? line = reader.ReadLine(); line is not null; line = reader.ReadLine()) {
+        for (var line = reader.ReadLine(); line is not null; line = reader.ReadLine()) {
             if (string.IsNullOrWhiteSpace(line)) continue;
 
-            int split = line.IndexOf('=');
-            string prop = line.Substring(0, split).Trim();
-            string val = line.Substring(split + 1).Trim();
+            var split = line.IndexOf('=');
+            var prop = line.Substring(0, split).Trim();
+            var val = line.Substring(split + 1).Trim();
             if (val.Length == 0) continue;
 
             ProcessProperty(props, prop, val);

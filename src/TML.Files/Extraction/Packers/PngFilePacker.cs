@@ -15,15 +15,15 @@ public class PngFilePacker : BaseFilePacker
     protected override void Pack(ref string resName, byte[] from, MemoryStream to) {
         resName = Path.ChangeExtension(resName, ".rawimg");
 
-        using Image<Rgba32> image = Image.Load<Rgba32>(from);
+        using var image = Image.Load<Rgba32>(from);
         using BinaryWriter writer = new(to);
 
         writer.Write(RAWIMG_FORMAT_VERSION);
         writer.Write(image.Width);
         writer.Write(image.Height);
 
-        for (int y = 0; y < image.Height; y++)
-        for (int x = 0; x < image.Width; x++) {
+        for (var y = 0; y < image.Height; y++)
+        for (var x = 0; x < image.Width; x++) {
             var color = image[x, y];
 
             if (color.A == 0) color = new Rgba32(0, 0, 0, 0);

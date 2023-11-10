@@ -34,7 +34,7 @@ public static class TModFileExtractor
 
         transformBlock.LinkTo(finalBlock);
 
-        foreach (TModFileEntry entry in file.Entries) {
+        foreach (var entry in file.Entries) {
             transformBlock.Post(entry);
         }
 
@@ -59,10 +59,10 @@ public static class TModFileExtractor
     }
 
     private static TModFileData ProcessModEntry(TModFileEntry entry, IFileExtractor[] extractors) {
-        byte[] data = entry.Data ?? throw new TModFileInvalidFileEntryException("Attempted to serialize a TModFileEntry with no data: " + entry.Path);
+        var data = entry.Data ?? throw new TModFileInvalidFileEntryException("Attempted to serialize a TModFileEntry with no data: " + entry.Path);
         if (entry.IsCompressed()) data = Decompress(data);
 
-        foreach (IFileExtractor extractor in extractors) {
+        foreach (var extractor in extractors) {
             if (extractor.ShouldExtract(entry)) {
                 return extractor.Extract(entry, data);
             }

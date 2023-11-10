@@ -22,7 +22,7 @@ public class InfoFileExtractor : IFileExtractor
     public static readonly KvpReader LIST_READER = (BinaryReader r, ref string _, out string? v) =>
     {
         static IEnumerable<string> ReadList(BinaryReader r) {
-            for (string item = r.ReadString(); item.Length > 0; item = r.ReadString()) yield return item;
+            for (var item = r.ReadString(); item.Length > 0; item = r.ReadString()) yield return item;
         }
 
         v = string.Join(", ", ReadList(r));
@@ -115,7 +115,7 @@ public class InfoFileExtractor : IFileExtractor
         using MemoryStream ms = new(data);
         using BinaryReader r = new(ms);
 
-        for (string key = r.ReadString(); key.Length > 0; key = r.ReadString()) {
+        for (var key = r.ReadString(); key.Length > 0; key = r.ReadString()) {
             string? value;
             if (!KVP_READERS.TryGetValue(key, out var reader))
                 value = null;
