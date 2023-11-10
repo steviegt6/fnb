@@ -152,8 +152,7 @@ public static class TModFileSerializer {
             var legacy = new Version(modLoaderVersion) < upgrade_version;
 
             if (legacy) {
-                using var ds = new DeflateStream(stream, CompressionMode.Decompress, true);
-                r.Dispose();
+                var ds = new DeflateStream(stream, CompressionMode.Decompress, true);
                 r = new BinaryReader(ds);
             }
 
