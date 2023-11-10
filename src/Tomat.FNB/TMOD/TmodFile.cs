@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -247,7 +246,7 @@ public sealed class TmodFile {
         using MemoryStream cs = new(data);
 
         using DeflateDecompressor ds = new();
-        ds.Decompress(data, uncompressedLength, out IMemoryOwner<byte>? ownedMemory);
+        ds.Decompress(data, uncompressedLength, out var ownedMemory);
         return ownedMemory!.Memory.ToArray();
     }
 
