@@ -1,7 +1,3 @@
-# TML.Patcher
+# tml-patcher
 
-> CLI tool for extracting and packing `.tmod` archive files.
-
----
-
-**TML.Patcher** is a command-line tool for manipulating the `.tmod` archive format used by _tModLoader_.
+.tmod archive packer and unpacker.
