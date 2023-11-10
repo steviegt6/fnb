@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using CliFx.Infrastructure;
 using Microsoft.Win32;
 using Tomat.FNB.TMOD;
@@ -17,23 +19,32 @@ internal static class CommandUtil {
     public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
         destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
         await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
+        
+        if (Directory.Exists(destinationPath))
+            Directory.Delete(destinationPath, true);
+
+        Stopwatch watch = Stopwatch.StartNew();
 
         if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
             await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
             return;
         }
 
-        var files = tmodFile.Extract();
-        
-        foreach (var file in files) {
-            var path = Path.Combine(destinationPath, file.Path);
+        ActionBlock<TmodFileData> finalBlock = new(async data => {
+            var path = Path.Combine(destinationPath, data.Path);
             var dir = Path.GetDirectoryName(path);
 
             if (dir is not null)
                 Directory.CreateDirectory(dir);
 
-            await File.WriteAllBytesAsync(path, file.Data);
-        }
+            await File.WriteAllBytesAsync(path, data.Data);
+        }, new ExecutionDataflowBlockOptions {
+            MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 3 / 8),
+        });
+        tmodFile.Extract(finalBlock);
+        
+        watch.Stop();
+        await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
     }
 
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
