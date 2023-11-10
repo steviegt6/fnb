@@ -79,7 +79,7 @@ internal static class CommandUtil {
 
             foreach (var rootTmod in rootTmods) {
                 var tmodName = Path.GetFileName(rootTmod);
-                items.Add(new TmodWorkshopItem(null, tmodName));
+                items.Add(new TmodWorkshopItem(null, tmodName, rootTmod));
             }
 
             foreach (var version in Directory.EnumerateDirectories(dir)) {
@@ -89,7 +89,7 @@ internal static class CommandUtil {
 
                 foreach (var tmod in tmods) {
                     var tmodName = Path.GetFileName(tmod);
-                    items.Add(new TmodWorkshopItem(versionName, tmodName));
+                    items.Add(new TmodWorkshopItem(versionName, tmodName, tmod));
                 }
             }
 
