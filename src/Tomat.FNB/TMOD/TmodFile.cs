@@ -20,7 +20,16 @@ public sealed class TmodFile {
     private const int signature_length = 256;
     private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
-    private static readonly FileExtractor[] extractors = { new FpngExtractor(), new InfoFileExtractor() };
+    private static readonly FileExtractor[] extractors;
+
+    static TmodFile() {
+        FileExtractor rawimgExtractor;
+        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess)
+            rawimgExtractor = new FpngExtractor();
+        else
+            rawimgExtractor = new RawImgFileExtractor();
+        extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
+    }
 
     public string ModLoaderVersion { get; }
 
