@@ -210,11 +210,11 @@ public sealed class TmodFile {
         return files;
     }
 
-    public void Extract(ActionBlock<TmodFileData> finalBlock, int degreesOfParallelism = -1) {
+    public void Extract(ActionBlock<TmodFileData> finalBlock) {
         var transformBlock = new TransformBlock<TmodFileEntry, TmodFileData>(
             ProcessModEntry,
             new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = degreesOfParallelism == -1 ? Environment.ProcessorCount : degreesOfParallelism,
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
             }
         );
 
