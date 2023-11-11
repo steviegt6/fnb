@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ internal static class CommandUtil {
         if (Directory.Exists(destinationPath))
             Directory.Delete(destinationPath, true);
 
-        var watch = Stopwatch.StartNew();
+        // var watch = Stopwatch.StartNew();
 
         if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
             await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
@@ -46,8 +45,8 @@ internal static class CommandUtil {
         );
         tmodFile.Extract(finalBlock);
 
-        watch.Stop();
-        await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
+        // watch.Stop();
+        // await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
     }
 
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
