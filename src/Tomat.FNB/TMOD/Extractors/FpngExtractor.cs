@@ -6,7 +6,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
-public partial class FpngExtractor : FileExtractor {
+public unsafe partial class FpngExtractor : FileExtractor {
     private class BufSafeHandle : SafeHandleZeroOrMinusOneIsInvalid {
         public BufSafeHandle() : base(true) { }
 
@@ -27,13 +27,14 @@ public partial class FpngExtractor : FileExtractor {
             fpng_init();
         }
 
-        ReadOnlySpan<byte> span = data;
-        var width = MemoryMarshal.Read<int>(span.Slice(4, 4));
-        var height = MemoryMarshal.Read<int>(span.Slice(8, 4));
-        var rgbaValues = data.AsMemory(12);
+        fixed (byte* pData = data) {
+            var width = Unsafe.ReadUnaligned<int>(pData + 4);
+            var height = Unsafe.ReadUnaligned<int>(pData + 8);
+            var rgbaValues = pData + 12;
 
-        EncodeImageWrapper(rgbaValues, width, height, out var image).Dispose();
-        return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), image);
+            EncodeImageWrapper(rgbaValues, width, height, out var image).Dispose();
+            return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), image);   
+        }
     }
 
     [LibraryImport("fpng.dll")]
@@ -59,10 +60,8 @@ public partial class FpngExtractor : FileExtractor {
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static partial void fpng_init();
 
-    private static unsafe BufSafeHandle EncodeImageWrapper(Memory<byte> image, int w, int h, out byte[] memImage) {
-        var pinnedImage = image.Pin();
-
-        if (!fpng_encode_image_to_memory_wrapper(pinnedImage.Pointer, w, h, 4, 0, out var bufHandle, out var imageData, out var length))
+    private static unsafe BufSafeHandle EncodeImageWrapper(byte* image, int w, int h, out byte[] memImage) {
+        if (!fpng_encode_image_to_memory_wrapper(image, w, h, 4, 0, out var bufHandle, out var imageData, out var length))
             throw new InvalidOperationException();
 
         memImage = new byte[length];
