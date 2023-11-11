@@ -48,11 +48,13 @@ public sealed class TmodFile {
     }
 
     public void AddFile(TmodFileData fileData, uint minCompSize = DEFAULT_MINIMUM_COMPRESSION_SIZE, float minCompTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF) {
-        fileData.Path = fileData.Path.Trim().Replace('\\', '/');
+        fileData = fileData with {
+            Path = fileData.Path.Trim().Replace('\\', '/')
+        };
 
         var size = fileData.Data.Length;
         if (size > minCompSize && ShouldCompress(fileData))
-            Compress(fileData, size, minCompTradeoff);
+            Compress(ref fileData, size, minCompTradeoff);
 
         Entries.Add(
             new TmodFileEntry(
@@ -135,13 +137,17 @@ public sealed class TmodFile {
         return !extensions_to_not_compress.Contains(Path.GetExtension(fileData.Path));
     }
 
-    private static void Compress(TmodFileData fileData, int realSize, float tradeoff) {
+    private static void Compress(ref TmodFileData fileData, int realSize, float tradeoff) {
         using var ms = new MemoryStream(fileData.Data);
         using (var ds = new DeflateStream(ms, CompressionMode.Compress))
             ds.Write(fileData.Data, 0, fileData.Data.Length);
         var compressed = ms.GetBuffer();
-        if (compressed.Length < realSize * tradeoff)
-            fileData.Data = compressed;
+
+        if (compressed.Length < realSize * tradeoff) {
+            fileData = fileData with {
+                Data = compressed,
+            };
+        }
     }
 
     public static bool TryReadFromPath(string path, [NotNullWhen(returnValue: true)] out TmodFile? tmodFile) {
@@ -200,9 +206,12 @@ public sealed class TmodFile {
 
                 var fileStartPos = (int) stream.Position;
 
-                foreach (var entry in entries) {
-                    entry.Offset += fileStartPos;
-                    entry.Data = reader.ReadBytes(entry.CompressedLength);
+                for (var i = 0; i < entries.Length; i++) {
+                    var entry = entries[i];
+                    entries[i] = entries[i] with {
+                        Offset = entry.Offset + fileStartPos,
+                        Data = reader.ReadBytes(entry.CompressedLength),
+                    };
                 }
             }
 
