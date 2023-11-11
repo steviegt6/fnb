@@ -4,8 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
+using LibDeflate;
 using Tomat.FNB.TMOD.Extractors;
 
 namespace Tomat.FNB.TMOD;
@@ -19,7 +21,16 @@ public sealed class TmodFile {
     private const int signature_length = 256;
     private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
-    private static readonly FileExtractor[] extractors = { new InfoFileExtractor(), new RawImgFileExtractor() };
+    private static readonly FileExtractor[] extractors;
+
+    static TmodFile() {
+        FileExtractor rawimgExtractor;
+        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            rawimgExtractor = new FpngExtractor();
+        else
+            rawimgExtractor = new RawImgFileExtractor();
+        extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
+    }
 
     public string ModLoaderVersion { get; }
 
@@ -213,25 +224,26 @@ public sealed class TmodFile {
         var transformBlock = new TransformBlock<TmodFileEntry, TmodFileData>(
             ProcessModEntry,
             new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = Environment.ProcessorCount,
+                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 5 / 8),
             }
         );
 
-        transformBlock.LinkTo(finalBlock);
+        var linkOptions = new DataflowLinkOptions {
+            PropagateCompletion = true
+        };
+        transformBlock.LinkTo(finalBlock, linkOptions);
 
         foreach (var entry in Entries)
             transformBlock.Post(entry);
 
         transformBlock.Complete();
-        transformBlock.Completion.Wait();
-        finalBlock.Complete();
         finalBlock.Completion.Wait();
     }
 
     private static TmodFileData ProcessModEntry(TmodFileEntry entry) {
         var data = entry.Data!;
         if (data.Length != entry.Length)
-            data = Decompress(data);
+            data = Decompress(data, entry.Length);
 
         foreach (var extractor in extractors) {
             if (extractor.ShouldExtract(entry))
@@ -241,12 +253,13 @@ public sealed class TmodFile {
         return new TmodFileData(entry.Path, data);
     }
 
-    private static byte[] Decompress(byte[] data) {
+    private static byte[] Decompress(byte[] data, int uncompressedLength) {
         using MemoryStream ms = new();
         using MemoryStream cs = new(data);
-        using DeflateStream ds = new(cs, CompressionMode.Decompress);
-        ds.CopyTo(ms);
-        return ms.ToArray();
+
+        using DeflateDecompressor ds = new();
+        ds.Decompress(data, uncompressedLength, out var ownedMemory);
+        return ownedMemory!.Memory.ToArray();
     }
 
     private static byte[] Compress(byte[] data) {
