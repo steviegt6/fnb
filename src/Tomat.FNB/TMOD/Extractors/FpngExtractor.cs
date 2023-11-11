@@ -33,7 +33,7 @@ public unsafe partial class FpngExtractor : FileExtractor {
             var rgbaValues = pData + 12;
 
             EncodeImageWrapper(rgbaValues, width, height, out var image).Dispose();
-            return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), image);   
+            return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), image);
         }
     }
 
@@ -60,7 +60,7 @@ public unsafe partial class FpngExtractor : FileExtractor {
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
     private static partial void fpng_init();
 
-    private static unsafe BufSafeHandle EncodeImageWrapper(byte* image, int w, int h, out byte[] memImage) {
+    private static BufSafeHandle EncodeImageWrapper(byte* image, int w, int h, out byte[] memImage) {
         if (!fpng_encode_image_to_memory_wrapper(image, w, h, 4, 0, out var bufHandle, out var imageData, out var length))
             throw new InvalidOperationException();
 
