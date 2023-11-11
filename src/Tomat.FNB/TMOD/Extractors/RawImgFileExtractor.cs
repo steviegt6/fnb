@@ -21,6 +21,6 @@ public sealed class RawImgFileExtractor : FileExtractor {
 
         using var ms = new MemoryStream();
         image.SaveAsPng(ms);
-        return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), ms.ToArray());
+        return new TmodFileData(Path.ChangeExtension(entry.Path, ".png"), ms.GetBuffer());
     }
 }

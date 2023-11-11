@@ -110,7 +110,7 @@ public sealed class TmodFile {
             }
 
             if (legacy) {
-                var compressed = ((MemoryStream) writer.BaseStream).ToArray();
+                var compressed = ((MemoryStream) writer.BaseStream).GetBuffer();
                 writer.Dispose();
                 writer = new BinaryWriter(stream);
                 writer.Write(compressed);
@@ -139,7 +139,7 @@ public sealed class TmodFile {
         using var ms = new MemoryStream(fileData.Data);
         using (var ds = new DeflateStream(ms, CompressionMode.Compress))
             ds.Write(fileData.Data, 0, fileData.Data.Length);
-        var compressed = ms.ToArray();
+        var compressed = ms.GetBuffer();
         if (compressed.Length < realSize * tradeoff)
             fileData.Data = compressed;
     }
@@ -267,6 +267,6 @@ public sealed class TmodFile {
         using MemoryStream cs = new();
         using DeflateStream ds = new(cs, CompressionMode.Compress);
         ms.CopyTo(ds);
-        return cs.ToArray();
+        return cs.GetBuffer();
     }
 }
