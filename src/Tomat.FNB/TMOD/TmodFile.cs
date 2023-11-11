@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 using LibDeflate;
@@ -24,7 +25,7 @@ public sealed class TmodFile {
 
     static TmodFile() {
         FileExtractor rawimgExtractor;
-        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess)
+        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
             rawimgExtractor = new FpngExtractor();
         else
             rawimgExtractor = new RawImgFileExtractor();
