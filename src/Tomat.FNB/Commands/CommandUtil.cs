@@ -41,10 +41,10 @@ internal static class CommandUtil {
                 await File.WriteAllBytesAsync(path, data.Data);
             },
             new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 3 / 8),
+                MaxDegreeOfParallelism = 1,
             }
         );
-        tmodFile.Extract(finalBlock);
+        tmodFile.Extract(finalBlock, Environment.ProcessorCount - 1);
 
         watch.Stop();
         await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
