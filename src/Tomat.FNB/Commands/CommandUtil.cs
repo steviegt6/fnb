@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,9 +11,9 @@ using Tomat.FNB.TMOD;
 namespace Tomat.FNB.Commands;
 
 internal static class CommandUtil {
-    private static readonly string[] mod_loader_dir_candidates = { "tModLoader", "tModLoader-1.4.3", "tModLoader-preview", "tModLoader-dev", "ModLoader" };
-
     public const int TMODLOADER_APPID = 1281930;
+
+    private static readonly string[] mod_loader_dir_candidates = { "tModLoader", "tModLoader-1.4.3", "tModLoader-preview", "tModLoader-dev", "ModLoader" };
 
     public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
         destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
@@ -23,7 +22,9 @@ internal static class CommandUtil {
         if (Directory.Exists(destinationPath))
             Directory.Delete(destinationPath, true);
 
-        var watch = Stopwatch.StartNew();
+#if DEBUG
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+#endif
 
         if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
             await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
@@ -44,10 +45,13 @@ internal static class CommandUtil {
                 MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 3 / 8),
             }
         );
+
         tmodFile.Extract(finalBlock);
 
+#if DEBUG
         watch.Stop();
-        await console.Output.WriteLineAsync($"Took {watch.ElapsedMilliseconds}ms");
+        await console.Output.WriteLineAsync($"DEBUG: Took {watch.ElapsedMilliseconds}ms");
+#endif
     }
 
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {

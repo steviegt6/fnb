@@ -8,7 +8,7 @@ namespace Tomat.FNB.Commands.TMOD;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod pack", Description = "Packs a directory into a .tmod file archive")]
-public class TmodPackCommand : ICommand {
+public sealed class TmodPackCommand : ICommand {
     public ValueTask ExecuteAsync(IConsole console) {
         throw new System.NotImplementedException();
     }

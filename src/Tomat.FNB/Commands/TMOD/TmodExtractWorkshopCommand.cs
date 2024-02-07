@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
 using JetBrains.Annotations;
@@ -14,7 +13,7 @@ namespace Tomat.FNB.Commands.TMOD;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod extract-workshop", Description = "Extracts a mod installed through the Steam Workshop")]
-public class TmodExtractWorkshopCommand : ICommand {
+public sealed class TmodExtractWorkshopCommand : TmodAbstractExtractCommand {
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandParameter(0, Name = "name", Description = "The .tmod file name, with or without the .tmod extension", IsRequired = true)]
     public string TmodName { get; set; } = null!;
@@ -22,12 +21,8 @@ public class TmodExtractWorkshopCommand : ICommand {
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandParameter(1, Name = "version", Description = "The tModLoader major version, latest, earliest, or unversioned (ex.: 2022.4, latest, earliest, unversioned)", IsRequired = false)]
     public string? TmodVersion { get; set; }
-
-    [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
-    [CommandOption("out-dir", 'o', Description = "The directory to extract the mod to. If not specified, it will be extracted to ./<mod name>", IsRequired = false)]
-    public string? OutputDirectory { get; set; }
-
-    public async ValueTask ExecuteAsync(IConsole console) {
+    
+    public override async ValueTask ExecuteAsync(IConsole console) {
         if (!CommandUtil.TryGetWorkshopDirectory(CommandUtil.TMODLOADER_APPID, out var workshopDir)) {
             await console.Output.WriteLineAsync($"Could not locate the Steam Workshop directory for tModLoader (appId: {CommandUtil.TMODLOADER_APPID})");
             return;
@@ -53,20 +48,20 @@ public class TmodExtractWorkshopCommand : ICommand {
                     return;
                 }
 
-                await CommandUtil.ExtractArchive(console, unversioned.FullPath, OutputDirectory);
+                await ExtractArchive(console, unversioned.FullPath, OutputDirectory);
                 break;
             }
 
             case "earliest": {
                 if (record.Items.Count == 1) {
-                    await CommandUtil.ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
+                    await ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
                     break;
                 }
 
                 var unversioned = record.Items.FirstOrDefault(x => x.Version is null);
 
                 if (unversioned is not null) {
-                    await CommandUtil.ExtractArchive(console, unversioned.FullPath, OutputDirectory);
+                    await ExtractArchive(console, unversioned.FullPath, OutputDirectory);
                     break;
                 }
 
@@ -74,13 +69,13 @@ public class TmodExtractWorkshopCommand : ICommand {
                 var earliest = versions.Min();
 
                 var earliestVersion = record.Items.First(x => new Version(x.Version!) == earliest);
-                await CommandUtil.ExtractArchive(console, earliestVersion.FullPath, OutputDirectory);
+                await ExtractArchive(console, earliestVersion.FullPath, OutputDirectory);
                 break;
             }
 
             case "latest": {
                 if (record.Items.Count == 1) {
-                    await CommandUtil.ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
+                    await ExtractArchive(console, record.Items[0].FullPath, OutputDirectory);
                     break;
                 }
 
@@ -88,7 +83,7 @@ public class TmodExtractWorkshopCommand : ICommand {
                 var latest = versions.Max();
 
                 var latestVersion = record.Items.First(x => new Version(x.Version!) == latest);
-                await CommandUtil.ExtractArchive(console, latestVersion.FullPath, OutputDirectory);
+                await ExtractArchive(console, latestVersion.FullPath, OutputDirectory);
                 break;
             }
 
@@ -102,7 +97,7 @@ public class TmodExtractWorkshopCommand : ICommand {
                     return;
                 }
 
-                await CommandUtil.ExtractArchive(console, versioned.FullPath, OutputDirectory);
+                await ExtractArchive(console, versioned.FullPath, OutputDirectory);
                 break;
             }
         }

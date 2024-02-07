@@ -10,7 +10,7 @@ namespace Tomat.FNB.Commands.TMOD;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod list-locals", Description = "Lists known, locally-installed .tmod files")]
-public class TmodListLocalsCommand : ICommand {
+public sealed class TmodListLocalsCommand : ICommand {
     public async ValueTask ExecuteAsync(IConsole console) {
         if (!CommandUtil.TryGetLocalTmodArchives(out var localMods)) {
             await console.Output.WriteLineAsync("No local mods found or local installation directory could not be resolved.");

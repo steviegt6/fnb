@@ -9,7 +9,7 @@ namespace Tomat.FNB.Commands.TMOD;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("tmod list-workshop", Description = "Lists .tmod files installed through the Steam Workshop")]
-public class TmodListWorkshopCommand : ICommand {
+public sealed class TmodListWorkshopCommand : ICommand {
     public async ValueTask ExecuteAsync(IConsole console) {
         if (!CommandUtil.TryGetWorkshopDirectory(CommandUtil.TMODLOADER_APPID, out var workshopDir)) {
             await console.Output.WriteLineAsync($"Could not locate the Steam Workshop directory for tModLoader (appId: {CommandUtil.TMODLOADER_APPID})");

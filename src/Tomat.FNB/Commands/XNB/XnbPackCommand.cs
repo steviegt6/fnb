@@ -8,7 +8,7 @@ namespace Tomat.FNB.Commands.XNB;
 
 [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
 [Command("xnb pack", Description = "Packs a file or directory of files into XNB files")]
-public class XnbPackCommand : ICommand {
+public sealed class XnbPackCommand : ICommand {
     public ValueTask ExecuteAsync(IConsole console) {
         throw new System.NotImplementedException();
     }
