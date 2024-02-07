@@ -8,12 +8,13 @@ public sealed class InfoFileExtractor : FileExtractor {
     public delegate void Reader(BinaryReader reader, ref string key, out string? value);
 
     private static readonly Reader list_reader = (BinaryReader reader, ref string _, out string? value) => {
+        value = string.Join(", ", readList(reader));
+        return;
+
         static IEnumerable<string> readList(BinaryReader r) {
             for (var item = r.ReadString(); item.Length > 0; item = r.ReadString())
                 yield return item;
         }
-
-        value = string.Join(", ", readList(reader));
     };
 
     private static readonly Reader true_reader = (BinaryReader _, ref string _, out string? value) => {

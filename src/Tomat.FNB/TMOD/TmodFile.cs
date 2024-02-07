@@ -12,7 +12,7 @@ using Tomat.FNB.TMOD.Extractors;
 
 namespace Tomat.FNB.TMOD;
 
-public sealed class TmodFile {
+public sealed class TmodFile (string modLoaderVersion, string name, string version, List<TmodFileEntry> entries) {
     public const uint DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 KiB
     public const float DEFAULT_MINIMUM_COMPRESSION_TRADEOFF = 0.9f;
     public const uint TMOD_HEADER = 0x444F4D54; // 0x544D4F44; // "TMOD"
@@ -23,33 +23,33 @@ public sealed class TmodFile {
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
     private static readonly FileExtractor[] extractors;
 
+    // ReSharper disable once ConvertToConstant.Local - avoid allocations.
+    private static readonly char dirty_separator = '\\';
+
+    // ReSharper disable once ConvertToConstant.Local - avoid allocations.
+    private static readonly char clean_separator = '/';
+
     static TmodFile() {
         FileExtractor rawimgExtractor;
         if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
             rawimgExtractor = new FpngExtractor();
         else
             rawimgExtractor = new RawImgFileExtractor();
+
         extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
     }
 
-    public string ModLoaderVersion { get; }
+    public string ModLoaderVersion { get; } = modLoaderVersion;
 
-    public string Name { get; }
+    public string Name { get; } = name;
 
-    public string Version { get; }
+    public string Version { get; } = version;
 
-    public List<TmodFileEntry> Entries { get; }
-
-    public TmodFile(string modLoaderVersion, string name, string version, List<TmodFileEntry> entries) {
-        ModLoaderVersion = modLoaderVersion;
-        Name = name;
-        Version = version;
-        Entries = entries;
-    }
+    public List<TmodFileEntry> Entries { get; } = entries;
 
     public void AddFile(TmodFileData fileData, uint minCompSize = DEFAULT_MINIMUM_COMPRESSION_SIZE, float minCompTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF) {
         fileData = fileData with {
-            Path = fileData.Path.Trim().Replace('\\', '/')
+            Path = fileData.Path.Trim().Replace(dirty_separator, clean_separator),
         };
 
         var size = fileData.Data.Length;
@@ -141,6 +141,7 @@ public sealed class TmodFile {
         using var ms = new MemoryStream(fileData.Data);
         using (var ds = new DeflateStream(ms, CompressionMode.Compress))
             ds.Write(fileData.Data, 0, fileData.Data.Length);
+
         var compressed = ms.GetBuffer();
 
         if (compressed.Length < realSize * tradeoff) {
@@ -169,9 +170,15 @@ public sealed class TmodFile {
                 return false;
 
             var modLoaderVersion = reader.ReadString();
+
+            /*
             _ = reader.ReadBytes(hash_length);
             _ = reader.ReadBytes(signature_length);
             _ = reader.ReadUInt32();
+            */
+            stream.Position += hash_length;
+            stream.Position += signature_length;
+            stream.Position += sizeof(uint);
 
             var legacy = new Version(modLoaderVersion) < upgrade_version;
 
@@ -238,8 +245,9 @@ public sealed class TmodFile {
         );
 
         var linkOptions = new DataflowLinkOptions {
-            PropagateCompletion = true
+            PropagateCompletion = true,
         };
+
         transformBlock.LinkTo(finalBlock, linkOptions);
 
         foreach (var entry in Entries)
@@ -264,8 +272,6 @@ public sealed class TmodFile {
 
     private static byte[] Decompress(byte[] data, int uncompressedLength) {
         using MemoryStream ms = new();
-        using MemoryStream cs = new(data);
-
         using DeflateDecompressor ds = new();
         ds.Decompress(data, uncompressedLength, out var ownedMemory);
         return ownedMemory!.Memory.ToArray();

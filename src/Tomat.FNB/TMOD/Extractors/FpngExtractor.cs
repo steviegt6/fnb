@@ -7,9 +7,7 @@ using Microsoft.Win32.SafeHandles;
 namespace Tomat.FNB.TMOD.Extractors;
 
 public unsafe partial class FpngExtractor : FileExtractor {
-    private class BufSafeHandle : SafeHandleZeroOrMinusOneIsInvalid {
-        public BufSafeHandle() : base(true) { }
-
+    private class BufSafeHandle() : SafeHandleZeroOrMinusOneIsInvalid(true) {
         protected override bool ReleaseHandle() {
             return fpng_release_image(handle);
         }
@@ -54,7 +52,7 @@ public unsafe partial class FpngExtractor : FileExtractor {
     [LibraryImport("fpng.dll")]
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool fpng_release_image(IntPtr bufSafeHandle);
+    private static partial bool fpng_release_image(nint bufSafeHandle);
 
     [LibraryImport("fpng.dll")]
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
