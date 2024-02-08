@@ -2,7 +2,7 @@
 .vscode/
 .idea/
 
-bin/
-obj/
+/target
 
 *.user
+old/
