@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 using LibDeflate;
 using Tomat.FNB.TMOD.Extractors;
-using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD;
 
@@ -98,7 +97,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
                 foreach (var entry in Entries) {
                     writer.Write(entry.Path);
                     writer.Write(entry.Length);
-                    writer.WriteAmbiguousData(entry.Data!);
+                    writer.Write(entry.Data!);
                 }
             }
             else {
@@ -109,7 +108,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
                 }
 
                 foreach (var entry in Entries)
-                    writer.WriteAmbiguousData(entry.Data!);
+                    writer.Write(entry.Data!);
             }
 
             if (legacy) {
@@ -148,7 +147,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
 
         if (compressed.Length < realSize * tradeoff) {
             fileData = fileData with {
-                Data = new AmbiguousData<byte>(compressed),
+                Data = compressed,
             };
         }
     }
@@ -201,7 +200,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
                     var entrySize = reader.ReadInt32();
                     var entryData = reader.ReadBytes(entrySize);
 
-                    entries[i] = new TmodFileEntry(entryName, offset, entrySize, entrySize, new AmbiguousData<byte>(entryData));
+                    entries[i] = new TmodFileEntry(entryName, offset, entrySize, entrySize, entryData);
                 }
             }
             else {
@@ -219,7 +218,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
                     var entry = entries[i];
                     entries[i] = entries[i] with {
                         Offset = entry.Offset + fileStartPos,
-                        Data = new AmbiguousData<byte>(reader.ReadBytes(entry.CompressedLength)),
+                        Data = reader.ReadBytes(entry.CompressedLength),
                     };
                 }
             }
@@ -272,11 +271,11 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         return new TmodFileData(entry.Path, data);
     }
 
-    private static AmbiguousData<byte> Decompress(AmbiguousData<byte> data, int uncompressedLength) {
+    private static byte[] Decompress(byte[] data, int uncompressedLength) {
         using MemoryStream ms = new();
         using DeflateDecompressor ds = new();
         ds.Decompress(data.ToArray(), uncompressedLength, out var ownedMemory);
-        return new AmbiguousData<byte>(ownedMemory!.Memory);
+        return ownedMemory!.Memory.ToArray();
     }
 
     private static byte[] Compress(byte[] data) {

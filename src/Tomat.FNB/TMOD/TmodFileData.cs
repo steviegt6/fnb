@@ -1,5 +1,3 @@
-﻿using Tomat.FNB.Util;
+﻿namespace Tomat.FNB.TMOD;
 
-namespace Tomat.FNB.TMOD;
-
-public readonly record struct TmodFileData(string Path, AmbiguousData<byte> Data);
+public readonly record struct TmodFileData(string Path, byte[] Data);

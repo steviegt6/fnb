@@ -12,7 +12,7 @@ public sealed class RawImgFileExtractor : FileExtractor {
         return Path.GetExtension(entry.Path) == ".rawimg";
     }
 
-    public override unsafe TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+    public override unsafe TmodFileData Extract(TmodFileEntry entry, byte[] data) {
         var pData = data.Reference;
         var width = *(int*)(pData + 4);
         var height = *(int*)(pData + 8);
