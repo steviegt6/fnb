@@ -39,7 +39,7 @@ internal static class CommandUtil {
                 if (dir is not null)
                     Directory.CreateDirectory(dir);
 
-                await File.WriteAllBytesAsync(path, data.Data);
+                await File.WriteAllBytesAsync(path, data.Data.ToArray());
             },
             new ExecutionDataflowBlockOptions {
                 MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 3 / 8),

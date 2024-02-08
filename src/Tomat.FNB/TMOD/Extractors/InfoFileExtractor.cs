@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
@@ -79,10 +80,10 @@ public sealed class InfoFileExtractor : FileExtractor {
         return entry.Path == "Info";
     }
 
-    public override TmodFileData Extract(TmodFileEntry entry, byte[] data) {
+    public override TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
         var sb = new StringBuilder();
 
-        using var reader = new BinaryReader(new MemoryStream(data));
+        using var reader = new BinaryReader(new MemoryStream(data.ToArray()));
 
         for (var key = reader.ReadString(); key.Length > 0; key = reader.ReadString()) {
             string? value;
@@ -95,6 +96,6 @@ public sealed class InfoFileExtractor : FileExtractor {
                 sb.AppendLine($"{key} = {value}");
         }
 
-        return new TmodFileData("build.txt", Encoding.UTF8.GetBytes(sb.ToString()));
+        return new TmodFileData("build.txt", new AmbiguousData<byte>(Encoding.UTF8.GetBytes(sb.ToString())));
     }
 }
