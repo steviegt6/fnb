@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using Tomat.FNB.Util;
@@ -12,8 +10,8 @@ public sealed class RawImgFileExtractor : FileExtractor {
         return Path.GetExtension(entry.Path) == ".rawimg";
     }
 
-    public override unsafe TmodFileData Extract(TmodFileEntry entry, byte[] data) {
-        var pData = data.Reference;
+    public override unsafe TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+        var pData = data.Pointer;
         var width = *(int*)(pData + 4);
         var height = *(int*)(pData + 8);
 

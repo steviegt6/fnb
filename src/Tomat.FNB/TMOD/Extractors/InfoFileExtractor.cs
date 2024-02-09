@@ -83,7 +83,7 @@ public sealed class InfoFileExtractor : FileExtractor {
     public override TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
         var sb = new StringBuilder();
 
-        using var reader = new BinaryReader(new MemoryStream(data.ToArray()));
+        using var reader = new BinaryReader(new MemoryStream(data.Array));
 
         for (var key = reader.ReadString(); key.Length > 0; key = reader.ReadString()) {
             string? value;

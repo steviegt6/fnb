@@ -87,7 +87,8 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                 }
 
                 await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
-                await System.IO.File.WriteAllBytesAsync(destinationPath, entry.Data.ToArray());
+                await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write); 
+                fs.Write(entry.Data.Span);
             }
             else {
                 var found = false;
@@ -97,7 +98,8 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                         if (data.Path == File) {
                             found = true;
                             await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
-                            await System.IO.File.WriteAllBytesAsync(destinationPath, data.Data.ToArray());
+                            await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write); 
+                            fs.Write(data.Data.Span);
                         }
                     },
                     new ExecutionDataflowBlockOptions {
