@@ -57,7 +57,7 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                 );
 
                 await console.Output.WriteLineAsync($"Files in \"{archivePath}\":");
-                tmodFile.Extract(finalBlock);
+                tmodFile.Extract(finalBlock, -1);
             }
 
             return;
@@ -111,7 +111,7 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                     }
                 );
 
-                tmodFile.Extract(finalBlock);
+                tmodFile.Extract(finalBlock, -1);
 
                 if (!found) {
                     await console.Error.WriteLineAsync($"No file found in \"{archivePath}\" with the name \"{File}\".");

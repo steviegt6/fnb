@@ -232,17 +232,17 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         }
     }
 
-    public List<TmodFileData> Extract() {
+    public List<TmodFileData> Extract(int maxDegreesOfParallelism) {
         var files = new List<TmodFileData>();
-        Extract(new ActionBlock<TmodFileData>(files.Add));
+        Extract(new ActionBlock<TmodFileData>(files.Add), maxDegreesOfParallelism);
         return files;
     }
 
-    public void Extract(ActionBlock<TmodFileData> finalBlock) {
+    public void Extract(ActionBlock<TmodFileData> finalBlock, int maxDegreeOfParallelism) {
         var transformBlock = new TransformBlock<TmodFileEntry, TmodFileData>(
             ProcessModEntry,
             new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 5 / 8),
+                MaxDegreeOfParallelism = maxDegreeOfParallelism == -1 ? Environment.ProcessorCount : maxDegreeOfParallelism,
             }
         );
 

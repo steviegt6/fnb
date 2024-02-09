@@ -31,6 +31,9 @@ internal static class CommandUtil {
             return;
         }
 
+        const int numerator = 6;
+        const int denominator = 8;
+
         ActionBlock<TmodFileData> finalBlock = new(
             async data => {
                 var path = Path.Combine(destinationPath, data.Path);
@@ -44,11 +47,11 @@ internal static class CommandUtil {
                 fs.Write(data.Data.Span);
             },
             new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * 3 / 8),
+                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * numerator / denominator),
             }
         );
 
-        tmodFile.Extract(finalBlock);
+        tmodFile.Extract(finalBlock, Math.Max(1, Environment.ProcessorCount * (denominator - numerator) / denominator));
 
 #if DEBUG || true
         watch.Stop();
