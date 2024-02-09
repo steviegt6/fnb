@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,7 +7,7 @@ using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
-public unsafe partial class FpngExtractor : FileExtractor {
+public static unsafe partial class FpngExtractor {
     private class BufSafeHandle() : SafeHandleZeroOrMinusOneIsInvalid(true) {
         protected override bool ReleaseHandle() {
             // return fpng_release_image(handle);
@@ -18,11 +17,11 @@ public unsafe partial class FpngExtractor : FileExtractor {
 
     private static bool fpngInitialized;
 
-    public override bool ShouldExtract(TmodFileEntry entry) {
+    public static bool ShouldExtract(TmodFileEntry entry) {
         return Path.GetExtension(entry.Path) == ".rawimg";
     }
 
-    public override TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+    public static TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
         if (!fpngInitialized) {
             fpngInitialized = true;
             fpng_init();

@@ -5,7 +5,7 @@ using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
-public sealed class InfoFileExtractor : FileExtractor {
+public static class InfoFileExtractor {
     public delegate void Reader(BinaryReader reader, ref string key, out string? value);
 
     private static readonly Reader list_reader = (BinaryReader reader, ref string _, out string? value) => {
@@ -76,11 +76,11 @@ public sealed class InfoFileExtractor : FileExtractor {
         { "languageVersion", string_reader },
     };
 
-    public override bool ShouldExtract(TmodFileEntry entry) {
+    public static bool ShouldExtract(TmodFileEntry entry) {
         return entry.Path == "Info";
     }
 
-    public override TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+    public static TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
         var sb = new StringBuilder();
 
         using var reader = new BinaryReader(new MemoryStream(data.Array));

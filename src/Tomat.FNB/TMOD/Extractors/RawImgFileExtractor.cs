@@ -5,12 +5,12 @@ using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
-public sealed class RawImgFileExtractor : FileExtractor {
-    public override bool ShouldExtract(TmodFileEntry entry) {
+public static class RawImgFileExtractor {
+    public static bool ShouldExtract(TmodFileEntry entry) {
         return Path.GetExtension(entry.Path) == ".rawimg";
     }
 
-    public override unsafe TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+    public static unsafe TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
         var pData = data.Pointer;
         var width = *(int*)(pData + 4);
         var height = *(int*)(pData + 8);
