@@ -6,3 +6,4 @@ repository = "https://github.com/steviegt6/fnb"
 edition = "2021"
 
 [dependencies]
+clap = { version = "4.4", features = ["derive"] }
