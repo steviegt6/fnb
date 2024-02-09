@@ -22,13 +22,23 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
     private const int signature_length = 256;
     private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
-    private static readonly bool useFpng = OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64;
+    private static readonly FileExtractor[] extractors;
 
     // ReSharper disable once ConvertToConstant.Local - avoid allocations.
     private static readonly char dirty_separator = '\\';
 
     // ReSharper disable once ConvertToConstant.Local - avoid allocations.
     private static readonly char clean_separator = '/';
+
+    static TmodFile() {
+        FileExtractor rawimgExtractor;
+        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            rawimgExtractor = new FpngExtractor();
+        else
+            rawimgExtractor = new RawImgFileExtractor();
+
+        extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
+    }
 
     public string ModLoaderVersion { get; } = modLoaderVersion;
 
@@ -254,14 +264,10 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         if (data.Length != entry.Length)
             data = Decompress(data, entry.Length);
 
-        if (useFpng && FpngExtractor.ShouldExtract(entry))
-            return FpngExtractor.Extract(entry, data);
-
-        if (RawImgFileExtractor.ShouldExtract(entry))
-            return RawImgFileExtractor.Extract(entry, data);
-
-        if (InfoFileExtractor.ShouldExtract(entry))
-            return InfoFileExtractor.Extract(entry, data);
+        foreach (var extractor in extractors) {
+            if (extractor.ShouldExtract(entry))
+                return extractor.Extract(entry, data);
+        }
 
         return new TmodFileData(entry.Path, data);
     }
