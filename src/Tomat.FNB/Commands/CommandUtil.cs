@@ -22,7 +22,7 @@ internal static class CommandUtil {
         if (Directory.Exists(destinationPath))
             Directory.Delete(destinationPath, true);
 
-#if DEBUG
+#if DEBUG || true
         var watch = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
@@ -39,6 +39,7 @@ internal static class CommandUtil {
                 if (dir is not null)
                     Directory.CreateDirectory(dir);
 
+                // await File.WriteAllBytesAsync(path, data.Data.Array);
                 await using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write); 
                 fs.Write(data.Data.Span);
             },
@@ -49,7 +50,7 @@ internal static class CommandUtil {
 
         tmodFile.Extract(finalBlock);
 
-#if DEBUG
+#if DEBUG || true
         watch.Stop();
         await console.Output.WriteLineAsync($"DEBUG: Took {watch.ElapsedMilliseconds}ms");
 #endif
