@@ -273,10 +273,10 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
     }
 
     private static AmbiguousData<byte> Decompress(AmbiguousData<byte> data, int uncompressedLength) {
-        using MemoryStream ms = new();
+        var array = GC.AllocateUninitializedArray<byte>(uncompressedLength);
         using DeflateDecompressor ds = new();
-        ds.Decompress(data.Array, uncompressedLength, out var ownedMemory);
-        return new AmbiguousData<byte>(ownedMemory!.Memory);
+        ds.Decompress(data.Array, new Span<byte>(array), out _);
+        return new AmbiguousData<byte>(array);
     }
 
     private static byte[] Compress(byte[] data) {
