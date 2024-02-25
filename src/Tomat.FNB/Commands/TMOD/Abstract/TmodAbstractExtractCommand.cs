@@ -8,34 +8,51 @@ using CliFx.Infrastructure;
 using JetBrains.Annotations;
 using Tomat.FNB.TMOD;
 
-namespace Tomat.FNB.Commands.TMOD;
+namespace Tomat.FNB.Commands.TMOD.Abstract;
 
 public abstract class TmodAbstractExtractCommand : ICommand {
+    #region Options
+    /// <summary>
+    ///     The directory to extract the mod to. If not specified, it will be
+    ///     extracted to <c>./&lt;mod name&gt;</c>.
+    /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandOption("out-dir", 'o', Description = "The directory to extract the mod to. If not specified, it will be extracted to ./<mod name>", IsRequired = false)]
-    public string? OutputDirectory { get; set; }
+    public string? OutDir { get; set; }
 
+    /// <summary>
+    ///     The file to extract from the .tmod archive, if a single file is
+    ///     requested.
+    /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
-    [CommandOption("file", 'f', Description = "The file to extract from the .tmod archive, if a single one is requested", IsRequired = false)]
+    [CommandOption("file", 'f', Description = "The file to extract from the .tmod archive, if a single file is requested", IsRequired = false)]
     public string? File { get; set; }
 
+    /// <summary>
+    ///     List the files in the .tmod archive instead of extracting.
+    /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandOption("list", 'l', Description = "List the files in the .tmod archive instead of extracting", IsRequired = false)]
-    public bool ListFiles { get; set; }
+    public bool List { get; set; }
 
+    /// <summary>
+    ///     Whether to use pure file representations (no conversions, i.e. no
+    ///     <c>.rawimg</c> -> <c>.png</c>).
+    /// </summary>
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandOption("pure", 'p', Description = "Whether to use pure file representations (no conversions, i.e. no .rawimg -> .png)", IsRequired = false)]
     public bool Pure { get; set; }
+    #endregion
 
     public abstract ValueTask ExecuteAsync(IConsole console);
 
     protected async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
-        if (File is null && !ListFiles) {
+        if (File is null && !List) {
             await CommandUtil.ExtractArchive(console, archivePath, destinationPath);
             return;
         }
 
-        if (ListFiles) {
+        if (List) {
             if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
                 await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
                 return;
@@ -89,7 +106,7 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                 await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
 
                 // await System.IO.File.WriteAllBytesAsync(destinationPath, entry.Data.Array);
-                await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write); 
+                await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Write(entry.Data.Span);
             }
             else {
@@ -100,9 +117,9 @@ public abstract class TmodAbstractExtractCommand : ICommand {
                         if (data.Path == File) {
                             found = true;
                             await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
-                            
+
                             // await System.IO.File.WriteAllBytesAsync(destinationPath, data.Data.Array);
-                            await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write); 
+                            await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write);
                             fs.Write(data.Data.Span);
                         }
                     },

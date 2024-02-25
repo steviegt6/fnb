@@ -1,9 +1,0 @@
-[package]
-name = "fnb"
-version = "1.0.0"
-description = "Simple command line utility for manipulating tModLoader .tmod archives and XNA's .xnb binaries."
-repository = "https://github.com/steviegt6/fnb"
-edition = "2021"
-
-[dependencies]
-clap = { version = "4.4", features = ["derive"] }

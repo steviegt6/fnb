@@ -10,11 +10,34 @@ using Tomat.FNB.TMOD;
 
 namespace Tomat.FNB.Commands;
 
+/// <summary>
+///     Command utilities.
+/// </summary>
 internal static class CommandUtil {
+    /// <summary>
+    ///     The tModLoader Steam app ID.
+    /// </summary>
     public const int TMODLOADER_APPID = 1281930;
 
+    /// <summary>
+    ///     Known possible tModLoader "mod loader" directory names.
+    /// </summary>
     private static readonly string[] mod_loader_dir_candidates = { "tModLoader", "tModLoader-1.4.3", "tModLoader-preview", "tModLoader-dev", "ModLoader" };
 
+    /// <summary>
+    ///     Helper method to extract a .tmod archive at a given path to a given
+    ///     destination path.
+    /// </summary>
+    /// <param name="console">
+    ///     The console to write to.
+    /// </param>
+    /// <param name="archivePath">
+    ///     The path to the .tmod archive.
+    /// </param>
+    /// <param name="destinationPath">
+    ///     The destination path to extract to. If <see langword="null"/>, the
+    ///     destination path will be the name of the archive without the extension.
+    /// </param>
     public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
         destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
         await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
@@ -43,7 +66,7 @@ internal static class CommandUtil {
                     Directory.CreateDirectory(dir);
 
                 // await File.WriteAllBytesAsync(path, data.Data.Array);
-                await using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write); 
+                await using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Write(data.Data.Span);
             },
             new ExecutionDataflowBlockOptions {
@@ -59,6 +82,17 @@ internal static class CommandUtil {
 #endif
     }
 
+    /// <summary>
+    ///     Attempts to find the local tModLoader archives for the given
+    ///     directory.
+    /// </summary>
+    /// <param name="localMods">
+    ///     The local tModLoader archives, if found.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if the local tModLoader archives were found;
+    ///     otherwise, <see langword="false"/>.
+    /// </returns>
     public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
         if (!TryGetTerrariaStoragePath(out var storageDir)) {
             localMods = null;
@@ -89,6 +123,17 @@ internal static class CommandUtil {
         return true;
     }
 
+    /// <summary>
+    ///     Attempts to find the path to the Terraria storage directory, which
+    ///     is where the game saves its transient files.
+    /// </summary>
+    /// <param name="storageDir">
+    ///     The Terraria storage directory, if found.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if the storage directory was found;
+    ///     otherwise, <see langword="false"/>.
+    /// </returns>
     public static bool TryGetTerrariaStoragePath([NotNullWhen(returnValue: true)] out string? storageDir) {
         storageDir = null;
 
@@ -112,6 +157,15 @@ internal static class CommandUtil {
         return true;
     }
 
+    /// <summary>
+    ///     Resolves the tModLoader Workshop entries for the given directory.
+    /// </summary>
+    /// <param name="workshopDir">
+    ///     The tModLoader Workshop directory.
+    /// </param>
+    /// <returns>
+    ///     A map of tModLoader Workshop entries.
+    /// </returns>
     public static Dictionary<string, TmodWorkshopRecord> ResolveTmodWorkshopEntries(string workshopDir) {
         var map = new Dictionary<string, TmodWorkshopRecord>();
 
@@ -147,6 +201,18 @@ internal static class CommandUtil {
         return map;
     }
 
+    /// <summary>
+    ///     Attempts to find the tModLoader workshop directory for the given
+    ///     Steam app ID.
+    /// </summary>
+    /// <param name="appId">The Steam app ID.</param>
+    /// <param name="workshopDir">
+    ///     The workshop directory, if found.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if the workshop directory was found;
+    ///     otherwise, <see langword="false"/>.
+    /// </returns>
     public static bool TryGetWorkshopDirectory(int appId, [NotNullWhen(returnValue: true)] out string? workshopDir) {
         if (!TryGetSteamDirectory(out var steamDir)) {
             workshopDir = null;
@@ -162,6 +228,16 @@ internal static class CommandUtil {
         return false;
     }
 
+    /// <summary>
+    ///     Attempts to automatically find the Steam directory on the system.
+    /// </summary>
+    /// <param name="steamDir">
+    ///     The Steam directory, if found.
+    /// </param>
+    /// <returns>
+    ///     <see langword="true"/> if the Steam directory was found; otherwise,
+    ///     <see langword="false"/>.
+    /// </returns>
     public static bool TryGetSteamDirectory([NotNullWhen(returnValue: true)] out string? steamDir) {
         foreach (var dir in getSteamDirectories()) {
             if (dir is null)
@@ -178,6 +254,9 @@ internal static class CommandUtil {
         return false;
 
         IEnumerable<string?> getSteamDirectories() {
+            // If HOME exists, we can use known Linux and MacOS paths.
+            // If not, we'll use Windows paths instead.
+
             if (Environment.GetEnvironmentVariable("HOME") is { } home) {
                 yield return Path.Combine(home, ".steam", "steam");
                 yield return Path.Combine(home, ".local", "share", "Steam");

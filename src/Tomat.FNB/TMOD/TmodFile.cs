@@ -13,22 +13,85 @@ using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD;
 
-public sealed class TmodFile (string modLoaderVersion, string name, string version, List<TmodFileEntry> entries) {
+/// <summary>
+///     Minimal information pertaining to file data within a .tmod archive.
+/// </summary>
+/// <param name="Path">The file path within the archive.</param>
+/// <param name="Data">The file data.</param>
+public readonly record struct TmodFileData(string Path, AmbiguousData<byte> Data);
+
+/// <summary>
+///     An actual file entry within a .tmod archive.
+/// </summary>
+/// <param name="Path">The file path within the archive.</param>
+/// <param name="Offset">The offset of the data within the archive.</param>
+/// <param name="Length">The length of the data within the archive.</param>
+/// <param name="CompressedLength">
+///     The compressed length of the data within the archive.
+/// </param>
+/// <param name="Data">The data of the entry within the archive.</param>
+public readonly record struct TmodFileEntry(string Path, int Offset, int Length, int CompressedLength, AmbiguousData<byte>? Data);
+
+/// <summary>
+///     Represents a .tmod archive.
+/// </summary>
+/// <param name="modLoaderVersion">
+///     The tModLoader version this file was created by.
+/// </param>
+/// <param name="name">
+///     The name of the mod this archive contains.
+/// </param>
+/// <param name="version">
+///     The version of the mod this archive contains.
+/// </param>
+/// <param name="entries">
+///     The files in the archive.
+/// </param>
+public sealed class TmodFile(string modLoaderVersion, string name, string version, List<TmodFileEntry> entries) {
+    /// <summary>
+    ///     The default minimum size for a file to be compressed.
+    /// </summary>
     public const uint DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 KiB
+
+    /// <summary>
+    ///     The default minimum tradeoff for a file to be compressed.
+    /// </summary>
     public const float DEFAULT_MINIMUM_COMPRESSION_TRADEOFF = 0.9f;
+
+    /// <summary>
+    ///     The header of a .tmod file.
+    /// </summary>
     public const uint TMOD_HEADER = 0x444F4D54; // 0x544D4F44; // "TMOD"
 
+    /// <summary>
+    ///     The length of the hash in bytes.
+    /// </summary>
     private const int hash_length = 20;
+
+    /// <summary>
+    ///     The length of the signature in bytes.
+    /// </summary>
     private const int signature_length = 256;
+
+    /// <summary>
+    ///     A collection of extensions that should not be compressed.
+    /// </summary>
     private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
+
+    /// <summary>
+    ///     Version of an older format to upgrade from.
+    /// </summary>
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
+
+    /// <summary>
+    ///     The file extractors to use.
+    /// </summary>
     private static readonly FileExtractor[] extractors;
 
-    // ReSharper disable once ConvertToConstant.Local - avoid allocations.
+    // ReSharper disable ConvertToConstant.Local - avoid allocations.
     private static readonly char dirty_separator = '\\';
-
-    // ReSharper disable once ConvertToConstant.Local - avoid allocations.
     private static readonly char clean_separator = '/';
+    // ReSharper restore ConvertToConstant.Local
 
     static TmodFile() {
         FileExtractor rawimgExtractor;
@@ -40,19 +103,43 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
     }
 
+    /// <summary>
+    ///     The version of tModLoader this file was created by.
+    /// </summary>
     public string ModLoaderVersion { get; } = modLoaderVersion;
 
+    /// <summary>
+    ///     The name of the mod this archive contains.
+    /// </summary>
     public string Name { get; } = name;
 
+    /// <summary>
+    ///     The version of the mod this archive contains.
+    /// </summary>
     public string Version { get; } = version;
 
+    /// <summary>
+    ///     The files in the archive.
+    /// </summary>
     public List<TmodFileEntry> Entries { get; } = entries;
 
+    /// <summary>
+    ///     Adds a file to the archive.
+    /// </summary>
+    /// <param name="fileData">The file data to add.</param>
+    /// <param name="minCompSize">
+    ///     The minimum size for a file to be compressed.
+    /// </param>
+    /// <param name="minCompTradeoff">
+    ///     The minimum tradeoff for a file to be compressed.
+    /// </param>
     public void AddFile(TmodFileData fileData, uint minCompSize = DEFAULT_MINIMUM_COMPRESSION_SIZE, float minCompTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF) {
+        // Sanitize paths.
         fileData = fileData with {
             Path = fileData.Path.Trim().Replace(dirty_separator, clean_separator),
         };
 
+        // Handle compression if it's allowed.
         var size = fileData.Data.Length;
         if (size > minCompSize && ShouldCompress(fileData))
             Compress(ref fileData, size, minCompTradeoff);
@@ -68,6 +155,15 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         );
     }
 
+    /// <summary>
+    ///     Writes the .tmod file to a stream.
+    /// </summary>
+    /// <param name="stream">
+    ///     The stream to write to.
+    /// </param>
+    /// <returns>
+    ///     Whether the write was successful.
+    /// </returns>
     public bool TryWrite(Stream stream) {
         var writer = new BinaryWriter(stream);
 
@@ -172,12 +268,7 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
                 return false;
 
             var modLoaderVersion = reader.ReadString();
-
-            /*
-            _ = reader.ReadBytes(hash_length);
-            _ = reader.ReadBytes(signature_length);
-            _ = reader.ReadUInt32();
-            */
+            
             stream.Position += hash_length;
             stream.Position += signature_length;
             stream.Position += sizeof(uint);
@@ -232,12 +323,6 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         }
     }
 
-    public List<TmodFileData> Extract(int maxDegreesOfParallelism) {
-        var files = new List<TmodFileData>();
-        Extract(new ActionBlock<TmodFileData>(files.Add), maxDegreesOfParallelism);
-        return files;
-    }
-
     public void Extract(ActionBlock<TmodFileData> finalBlock, int maxDegreeOfParallelism) {
         var transformBlock = new TransformBlock<TmodFileEntry, TmodFileData>(
             ProcessModEntry,
@@ -277,13 +362,5 @@ public sealed class TmodFile (string modLoaderVersion, string name, string versi
         using DeflateDecompressor ds = new();
         ds.Decompress(data.Array, new Span<byte>(array), out _);
         return new AmbiguousData<byte>(array);
-    }
-
-    private static byte[] Compress(byte[] data) {
-        using MemoryStream ms = new(data);
-        using MemoryStream cs = new();
-        using DeflateStream ds = new(cs, CompressionMode.Compress);
-        ms.CopyTo(ds);
-        return cs.GetBuffer();
     }
 }
