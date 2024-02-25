@@ -7,6 +7,7 @@ internal static class Program {
     private static async Task<int> Main(string[] args) {
         return await new CliApplicationBuilder()
             .SetTitle("fnb")
+            .SetExecutableName("fnb")
             .SetVersion(typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown")
             .AddCommandsFromThisAssembly()
             .Build()
