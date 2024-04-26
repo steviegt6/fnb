@@ -17,14 +17,14 @@
 
     <ItemGroup>
         <PackageReference Include="CliFx" Version="2.3.4"/>
-        <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.2"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0"/>
-        <PackageReference Include="LibDeflate.NET" Version="1.19.0"/>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2"/>
     </ItemGroup>
 
     <ItemGroup>
         <Content Include="fpng.dll" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Tomat.FNB.TMOD\Tomat.FNB.TMOD.csproj"/>
     </ItemGroup>
 
 </Project>

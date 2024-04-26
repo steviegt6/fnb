@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Tomat.FNB.Util;
+using Tomat.FNB.Common.Utilities;
 
 namespace Tomat.FNB.TMOD.Extractors;
 

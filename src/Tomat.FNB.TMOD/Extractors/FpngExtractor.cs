@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-using Tomat.FNB.Util;
+using Tomat.FNB.Common.Utilities;
 
 namespace Tomat.FNB.TMOD.Extractors;
 

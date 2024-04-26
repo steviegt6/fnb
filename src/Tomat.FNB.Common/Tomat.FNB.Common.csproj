@@ -12,14 +12,4 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2023.3.0"/>
-        <PackageReference Include="LibDeflate.NET" Version="1.19.0"/>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>
-    </ItemGroup>
-
 </Project>

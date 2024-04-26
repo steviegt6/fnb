@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tomat.FNB.Util;
+namespace Tomat.FNB.Common.Utilities;
 
 /// <summary>
 ///     Represents a reference to an ambiguous, immutable block of memory. This

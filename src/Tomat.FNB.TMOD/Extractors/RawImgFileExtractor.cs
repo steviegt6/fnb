@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using Tomat.FNB.Util;
+using Tomat.FNB.Common.Utilities;
 
 namespace Tomat.FNB.TMOD.Extractors;
 

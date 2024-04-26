@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 using LibDeflate;
+using Tomat.FNB.Common.Utilities;
 using Tomat.FNB.TMOD.Extractors;
-using Tomat.FNB.Util;
 
 namespace Tomat.FNB.TMOD;
 

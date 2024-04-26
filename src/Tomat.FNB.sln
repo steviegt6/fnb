@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB", "Tomat.FNB\Toma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.TMOD", "Tomat.FNB.TMOD\Tomat.FNB.TMOD.csproj", "{CDFAEB86-9FDA-4CBA-825E-7125217200C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Common", "Tomat.FNB.Common\Tomat.FNB.Common.csproj", "{271CE3B6-F277-4D73-BC32-3F25974790A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CDFAEB86-9FDA-4CBA-825E-7125217200C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDFAEB86-9FDA-4CBA-825E-7125217200C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDFAEB86-9FDA-4CBA-825E-7125217200C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
