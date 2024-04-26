@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-using Tomat.FNB.Common.Utilities;
 
 namespace Tomat.FNB.TMOD.Extractors;
 
@@ -17,11 +16,11 @@ public unsafe partial class FpngExtractor : FileExtractor {
 
     private static bool fpngInitialized;
 
-    public override bool ShouldExtract(TmodFileEntry entry) {
-        return Path.GetExtension(entry.Path) == ".rawimg";
+    public override bool ShouldExtract(TmodFile.Entry entry) {
+        return Path.GetExtension(entry.Data.Path.ToString()) == ".rawimg";
     }
 
-    public override TmodFileData Extract(TmodFileEntry entry, AmbiguousData<byte> data) {
+    public override TmodFile.Data Extract(TmodFile.Entry entry, byte[] data) {
         if (!fpngInitialized) {
             fpngInitialized = true;
             fpng_init();

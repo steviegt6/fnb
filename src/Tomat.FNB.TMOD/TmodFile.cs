@@ -8,90 +8,47 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks.Dataflow;
 using LibDeflate;
-using Tomat.FNB.Common.Utilities;
 using Tomat.FNB.TMOD.Extractors;
+using U8;
 
 namespace Tomat.FNB.TMOD;
 
 /// <summary>
-///     Minimal information pertaining to file data within a .tmod archive.
+///     A <c>.tmod</c> file archive.
 /// </summary>
-/// <param name="Path">The file path within the archive.</param>
-/// <param name="Data">The file data.</param>
-public readonly record struct TmodFileData(string Path, AmbiguousData<byte> Data);
-
-/// <summary>
-///     An actual file entry within a .tmod archive.
-/// </summary>
-/// <param name="Path">The file path within the archive.</param>
-/// <param name="Offset">The offset of the data within the archive.</param>
-/// <param name="Length">The length of the data within the archive.</param>
-/// <param name="CompressedLength">
-///     The compressed length of the data within the archive.
-/// </param>
-/// <param name="Data">The data of the entry within the archive.</param>
-public readonly record struct TmodFileEntry(string Path, int Offset, int Length, int CompressedLength, AmbiguousData<byte>? Data);
-
-/// <summary>
-///     Represents a .tmod archive.
-/// </summary>
-/// <param name="modLoaderVersion">
-///     The tModLoader version this file was created by.
-/// </param>
-/// <param name="name">
-///     The name of the mod this archive contains.
-/// </param>
-/// <param name="version">
-///     The version of the mod this archive contains.
-/// </param>
-/// <param name="entries">
-///     The files in the archive.
-/// </param>
-public sealed class TmodFile(string modLoaderVersion, string name, string version, List<TmodFileEntry> entries) {
+public sealed class TmodFile {
     /// <summary>
-    ///     The default minimum size for a file to be compressed.
+    ///     Generic per-file data for an archive.
     /// </summary>
-    public const uint DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 KiB
+    /// <param name="Path">The path of the file within the archive.</param>
+    /// <param name="Bytes">The file bytes.</param>
+    public record Data(U8String Path, byte[] Bytes);
 
     /// <summary>
-    ///     The default minimum tradeoff for a file to be compressed.
+    ///     A file entry in an archive.
     /// </summary>
+    /// <param name="Data">The entry data data.</param>
+    /// <param name="Offset">
+    ///     The offset of this entry within the archive.
+    /// </param>
+    /// <param name="Length">The real length of the stored data.</param>
+    /// <param name="CompressedLength">
+    ///     The compressed length of the stored data.
+    /// </param>
+    public record Entry(Data Data, int Offset, int Length, int CompressedLength);
+
+    public const uint DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10;
     public const float DEFAULT_MINIMUM_COMPRESSION_TRADEOFF = 0.9f;
+    public const uint TMOD_HEADER = 0x444F4D54; // "TMOD"
 
-    /// <summary>
-    ///     The header of a .tmod file.
-    /// </summary>
-    public const uint TMOD_HEADER = 0x444F4D54; // 0x544D4F44; // "TMOD"
-
-    /// <summary>
-    ///     The length of the hash in bytes.
-    /// </summary>
-    private const int hash_length = 20;
-
-    /// <summary>
-    ///     The length of the signature in bytes.
-    /// </summary>
-    private const int signature_length = 256;
-
-    /// <summary>
-    ///     A collection of extensions that should not be compressed.
-    /// </summary>
-    private static readonly string[] extensions_to_not_compress = { ".png", ".mp3", ".ogg" };
-
-    /// <summary>
-    ///     Version of an older format to upgrade from.
-    /// </summary>
+    private static readonly string[] extensions_to_not_compress = [".png", ".mp3", ".ogg"];
     private static readonly Version upgrade_version = new(0, 11, 0, 0);
-
-    /// <summary>
-    ///     The file extractors to use.
-    /// </summary>
     private static readonly FileExtractor[] extractors;
 
-    // ReSharper disable ConvertToConstant.Local - avoid allocations.
-    private static readonly char dirty_separator = '\\';
-    private static readonly char clean_separator = '/';
-    // ReSharper restore ConvertToConstant.Local
+    private const int hash_length = 20;
+    private const int signature_length = 256;
+    private const char dirty_separator = '\\';
+    private const char clean_separator = '/';
 
     static TmodFile() {
         FileExtractor rawimgExtractor;
@@ -103,25 +60,32 @@ public sealed class TmodFile(string modLoaderVersion, string name, string versio
         extractors = new[] { rawimgExtractor, new InfoFileExtractor() };
     }
 
+    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, List<Entry> entries) {
+        ModLoaderVersion = modLoaderVersion;
+        Name = name;
+        Version = version;
+        Entries = entries;
+    }
+
     /// <summary>
     ///     The version of tModLoader this file was created by.
     /// </summary>
-    public string ModLoaderVersion { get; } = modLoaderVersion;
+    public U8String ModLoaderVersion { get; }
 
     /// <summary>
     ///     The name of the mod this archive contains.
     /// </summary>
-    public string Name { get; } = name;
+    public U8String Name { get; }
 
     /// <summary>
     ///     The version of the mod this archive contains.
     /// </summary>
-    public string Version { get; } = version;
+    public U8String Version { get; }
 
     /// <summary>
     ///     The files in the archive.
     /// </summary>
-    public List<TmodFileEntry> Entries { get; } = entries;
+    public List<Entry> Entries { get; }
 
     /// <summary>
     ///     Adds a file to the archive.
@@ -133,14 +97,14 @@ public sealed class TmodFile(string modLoaderVersion, string name, string versio
     /// <param name="minCompTradeoff">
     ///     The minimum tradeoff for a file to be compressed.
     /// </param>
-    public void AddFile(TmodFileData fileData, uint minCompSize = DEFAULT_MINIMUM_COMPRESSION_SIZE, float minCompTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF) {
+    public void AddFile(Data fileData, uint minCompSize = DEFAULT_MINIMUM_COMPRESSION_SIZE, float minCompTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF) {
         // Sanitize paths.
         fileData = fileData with {
             Path = fileData.Path.Trim().Replace(dirty_separator, clean_separator),
         };
 
         // Handle compression if it's allowed.
-        var size = fileData.Data.Length;
+        var size = fileData.Bytes.Length;
         if (size > minCompSize && ShouldCompress(fileData))
             Compress(ref fileData, size, minCompTradeoff);
 
@@ -268,7 +232,7 @@ public sealed class TmodFile(string modLoaderVersion, string name, string versio
                 return false;
 
             var modLoaderVersion = reader.ReadString();
-            
+
             stream.Position += hash_length;
             stream.Position += signature_length;
             stream.Position += sizeof(uint);
