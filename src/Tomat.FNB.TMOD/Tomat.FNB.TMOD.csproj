@@ -12,6 +12,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations" Version="2023.3.0"/>
         <PackageReference Include="LibDeflate.NET" Version="1.19.0"/>
@@ -23,4 +24,8 @@
         <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="fpng.dll" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+    
 </Project>
