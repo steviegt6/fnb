@@ -116,7 +116,7 @@ public sealed class TmodFile : ITmodFile
 
     private readonly Dictionary<string, TmodFileEntry> entries;
 
-    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, Dictionary<TmodFileEntry> entries)
+    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, Dictionary<string, TmodFileEntry> entries)
     {
         ModLoaderVersion = modLoaderVersion;
         Name = name;
