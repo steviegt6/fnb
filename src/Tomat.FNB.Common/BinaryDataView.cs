@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Tomat.FNB.Common;
 
@@ -13,11 +14,10 @@ namespace Tomat.FNB.Common;
 /// </remarks>
 public unsafe interface IBinaryDataView
 {
-    byte[] AsArray();
+    int Size { get; }
 
-    Stream AsStream();
-
-    byte* AsPointer();
-
-    ref byte AsManagedPointer();
+    /// <summary>
+    ///     Compresses the data using the DEFLATE algorithm.
+    /// </summary>
+    IBinaryDataView CompressDeflate();
 }

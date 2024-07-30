@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using Tomat.FNB.Common;
 using U8;
 
@@ -66,19 +68,19 @@ public interface ITmodFile
     /// <summary>
     ///     The file entries within the <c>.tmod</c> archive.
     /// </summary>
-    IReadOnlyCollection<ITmodFileEntry> Entries { get; }
+    IReadOnlyCollection<TmodFileEntry> Entries { get; }
 
     /// <summary>
     ///     Adds a file to the <c>.tmod</c> archive.
     /// </summary>
-    /// <param name="data">The file data to add, including the path.</param>
+    /// <param name="file">The file data to add, including the path.</param>
     /// <param name="minimumCompressionSize">
     ///     The minimum size of the file to compress.
     /// </param>
     /// <param name="minimumCompressionTradeoff">
     ///     The minimum compression tradeoff for compression.
     /// </param>
-    void AddFile(TmodFileData data, uint minimumCompressionSize, float minimumCompressionTradeoff);
+    void AddFile(TmodFileData file, uint minimumCompressionSize = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE, float minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF);
 
     /// <summary>
     ///     Removes a file from the <c>.tmod</c> archive.
@@ -94,6 +96,88 @@ public interface ITmodFile
     /// <returns>Whether writing was a success.</returns>
     bool TryWrite(Stream stream);
 }
+
+#region TmodFile
+public sealed class TmodFile : ITmodFile
+{
+    private const char dirty_separator = '\\';
+    private const char clean_separator = '/';
+
+    public U8String ModLoaderVersion { get; set; }
+
+    public U8String Name { get; set; }
+
+    public U8String Version { get; set; }
+
+    public IReadOnlyCollection<TmodFileEntry> Entries => entries;
+
+    // These files are already compressed.
+    // We allow compression of PNG files because they are converted a custom
+    // RAWIMG format, which *should* be compressed.  We implement a special
+    // check to not compress icon.png.
+    private static readonly string[] extensions_to_not_compress = [/*".png",*/ ".mp3", ".ogg"];
+
+    private readonly List<TmodFileEntry> entries;
+
+    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, List<TmodFileEntry> entries)
+    {
+        ModLoaderVersion = modLoaderVersion;
+        Name = name;
+        Version = version;
+        this.entries = entries;
+    }
+
+    public void AddFile(TmodFileData file, uint minimumCompressionSize = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE, float minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF)
+    {
+        file = file with
+        {
+            Path = SanitizePath(file.Path)
+        };
+
+        var size = file.Data.Size;
+        if (EligibleForCompression(file, minimumCompressionSize))
+        {
+            Compress(ref file, size, minimumCompressionTradeoff);
+        }
+
+        entries.Add(new TmodFileEntry(file.Path, 0, size, size, file.Data));
+    }
+
+    public bool RemoveFile(string path)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryWrite(Stream stream)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static string SanitizePath(string path)
+    {
+        return path.Trim().Replace(dirty_separator, clean_separator);
+    }
+
+    private static bool EligibleForCompression(TmodFileData file, uint minCompSize)
+    {
+        return file.Data.Size >= minCompSize && file.Path != "icon.png" && !extensions_to_not_compress.Contains(Path.GetExtension(file.Path));
+    }
+
+    private static void Compress(ref TmodFileData file, int realSize, float tradeoff)
+    {
+        var data = file.Data;
+        var compressed = data.CompressDeflate();
+
+        if (compressed.Size < realSize * tradeoff)
+        {
+            file = file with
+            {
+                Data = compressed,
+            };
+        }
+    }
+}
+#endregion
 
 #region ReadOnlyTmodFile
 /// <summary>
@@ -119,7 +203,7 @@ public sealed class ReadOnlyTmodFile : ITmodFile
         set => throw new InvalidOperationException("Cannot change the version of a read-only `.tmod` file!");
     }
 
-    IReadOnlyCollection<ITmodFileEntry> ITmodFile.Entries => tmodFile.Entries;
+    IReadOnlyCollection<TmodFileEntry> ITmodFile.Entries => tmodFile.Entries;
 
     private readonly ITmodFile tmodFile;
 
@@ -128,7 +212,7 @@ public sealed class ReadOnlyTmodFile : ITmodFile
         this.tmodFile = tmodFile;
     }
 
-    void ITmodFile.AddFile(TmodFileData data, uint minimumCompressionSize, float minimumCompressionTradeoff)
+    void ITmodFile.AddFile(TmodFileData file, uint minimumCompressionSize, float minimumCompressionTradeoff)
     {
         throw new InvalidOperationException("Cannot add files to a read-only `.tmod` file!");
     }
