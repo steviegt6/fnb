@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>preview</LangVersion>
-        <Nullable>enable</Nullable>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
 
-        <Version>0.1.0</Version>
-        <AssemblyVersion>0.1.0</AssemblyVersion>
-        <FileVersion>0.1.0</FileVersion>
+		<Version>0.1.0</Version>
+		<AssemblyVersion>0.1.0</AssemblyVersion>
+		<FileVersion>0.1.0</FileVersion>
 
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    </PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CliFx" Version="2.3.5" />
+		<PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
+		<PackageReference Include="U8String" Version="0.16.0-alpha" />
+	</ItemGroup>
 
 </Project>
