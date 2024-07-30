@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Tomat.FNB.Common;
 
@@ -12,12 +11,26 @@ namespace Tomat.FNB.Common;
 ///     intensive code where minimizing conversion between representations is
 ///     preferable.
 /// </remarks>
-public unsafe interface IBinaryDataView
+public interface IBinaryDataView
 {
+    /// <summary>
+    ///     Flags describing this data view.
+    /// </summary>
+    BinaryDataViewFlags Flags { get; set; }
+
+    /// <summary>
+    ///     The size of the data in bytes.
+    /// </summary>
     int Size { get; }
 
     /// <summary>
     ///     Compresses the data using the DEFLATE algorithm.
     /// </summary>
     IBinaryDataView CompressDeflate();
+
+    /// <summary>
+    ///     Writes the data to a <see cref="BinaryWriter"/>.
+    /// </summary>
+    /// <param name="writer">The writer to write to.</param>
+    void Write(BinaryWriter writer);
 }
