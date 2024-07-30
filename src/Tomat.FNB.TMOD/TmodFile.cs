@@ -112,10 +112,7 @@ public sealed class TmodFile : ITmodFile
     public IReadOnlyCollection<TmodFileEntry> Entries => entries;
 
     // These files are already compressed.
-    // We allow compression of PNG files because they are converted a custom
-    // RAWIMG format, which *should* be compressed.  We implement a special
-    // check to not compress icon.png.
-    private static readonly string[] extensions_to_not_compress = [/*".png",*/ ".mp3", ".ogg"];
+    private static readonly string[] extensions_to_not_compress = [".png", ".mp3", ".ogg"];
 
     private readonly List<TmodFileEntry> entries;
 
@@ -160,7 +157,7 @@ public sealed class TmodFile : ITmodFile
 
     private static bool EligibleForCompression(TmodFileData file, uint minCompSize)
     {
-        return file.Data.Size >= minCompSize && file.Path != "icon.png" && !extensions_to_not_compress.Contains(Path.GetExtension(file.Path));
+        return file.Data.Size >= minCompSize && !extensions_to_not_compress.Contains(Path.GetExtension(file.Path));
     }
 
     private static void Compress(ref TmodFileData file, int realSize, float tradeoff)
