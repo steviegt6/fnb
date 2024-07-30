@@ -109,14 +109,14 @@ public sealed class TmodFile : ITmodFile
 
     public U8String Version { get; set; }
 
-    public IReadOnlyCollection<TmodFileEntry> Entries => entries;
+    public IReadOnlyCollection<TmodFileEntry> Entries => entries.Values;
 
     // These files are already compressed.
     private static readonly string[] extensions_to_not_compress = [".png", ".mp3", ".ogg"];
 
-    private readonly List<TmodFileEntry> entries;
+    private readonly Dictionary<string, TmodFileEntry> entries;
 
-    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, List<TmodFileEntry> entries)
+    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, Dictionary<TmodFileEntry> entries)
     {
         ModLoaderVersion = modLoaderVersion;
         Name = name;
@@ -137,7 +137,7 @@ public sealed class TmodFile : ITmodFile
             Compress(ref file, size, minimumCompressionTradeoff);
         }
 
-        entries.Add(new TmodFileEntry(file.Path, 0, size, size, file.Data));
+        entries.Add(file.Path, new TmodFileEntry(file.Path, 0, size, size, file.Data));
     }
 
     public bool RemoveFile(string path)
