@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using U8;
 
 namespace Tomat.FNB.TMOD;
@@ -47,10 +46,5 @@ public sealed class ReadOnlyTmodFile : ITmodFile
     bool ITmodFile.RemoveFile(string path)
     {
         throw new InvalidOperationException("Cannot remove files from a read-only `.tmod` file!");
-    }
-
-    bool ITmodFile.TryWrite(Stream stream)
-    {
-        return tmodFile.TryWrite(stream);
     }
 }

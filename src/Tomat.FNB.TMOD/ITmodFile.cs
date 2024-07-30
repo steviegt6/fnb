@@ -66,11 +66,4 @@ public interface ITmodFile
     /// <param name="path">The pah of the file to remove.</param>
     /// <returns>Whether the file was found and removed.</returns>
     bool RemoveFile(string path);
-
-    /// <summary>
-    ///     Attempts to write the <c>.tmod</c> archive to a stream.
-    /// </summary>
-    /// <param name="stream">The stream to write to.</param>
-    /// <returns>Whether writing was a success.</returns>
-    bool TryWrite(Stream stream);
 }

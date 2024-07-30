@@ -55,11 +55,6 @@ public sealed class TmodFile : ITmodFile
         throw new NotImplementedException();
     }
 
-    public bool TryWrite(Stream stream)
-    {
-        throw new NotImplementedException();
-    }
-
     private static string SanitizePath(string path)
     {
         return path.Trim().Replace(dirty_separator, clean_separator);
