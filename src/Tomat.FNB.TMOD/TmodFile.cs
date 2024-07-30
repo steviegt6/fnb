@@ -70,6 +70,8 @@ public interface ITmodFile
     /// </summary>
     IReadOnlyCollection<TmodFileEntry> Entries { get; }
 
+    TmodFileEntry this[string path] { get; }
+
     /// <summary>
     ///     Adds a file to the <c>.tmod</c> archive.
     /// </summary>
@@ -110,6 +112,8 @@ public sealed class TmodFile : ITmodFile
     public U8String Version { get; set; }
 
     public IReadOnlyCollection<TmodFileEntry> Entries => entries.Values;
+
+    public TmodFileEntry this[string path] => entries[path];
 
     // These files are already compressed.
     private static readonly string[] extensions_to_not_compress = [".png", ".mp3", ".ogg"];
@@ -201,6 +205,8 @@ public sealed class ReadOnlyTmodFile : ITmodFile
     }
 
     IReadOnlyCollection<TmodFileEntry> ITmodFile.Entries => tmodFile.Entries;
+
+    TmodFileEntry ITmodFile.this[string path] => tmodFile[path];
 
     private readonly ITmodFile tmodFile;
 
