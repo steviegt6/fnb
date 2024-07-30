@@ -52,7 +52,7 @@ public sealed class TmodFile : ITmodFile
 
     public bool RemoveFile(string path)
     {
-        throw new NotImplementedException();
+        return entries.Remove(SanitizePath(path));
     }
 
     private static string SanitizePath(string path)
