@@ -134,12 +134,16 @@ public static class TmodSerializer
 
             var modLoaderVersion = (U8String)reader.ReadString();
 
+            // Jump ahead past hashes and signatures.  We could eventually
+            // support checking the hash for validation, but it's of low
+            // priority.  This never has and never will be a secure method of
+            // integrity or validation, I don't know why the tModLoader
+            // developers chose to include it in the first place.
             stream.Position += TmodConstants.HASH_LENGTH
                              + TmodConstants.SIGNATURE_LENGTH
                              + sizeof(uint);
 
             var isLegacy = Version.Parse(modLoaderVersion.ToString()) < upgrade_version;
-
             if (isLegacy)
             {
                 var ds = new DeflateStream(stream, CompressionMode.Decompress, true);
@@ -156,19 +160,27 @@ public static class TmodSerializer
             {
                 for (var i = 0; i < entries.Length; i++)
                 {
-                    var entryName = reader.ReadString();
+                    var entryPath = reader.ReadString();
                     var entrySize = reader.ReadInt32();
                     var entryData = reader.ReadBytes(entrySize);
 
-                    entries[i] = new TmodFileEntry(entryName, offset, entrySize, entrySize, new ByteArrayBinaryDataView(entryData));
+                    // The data comes decompressed by the stream reader.
+                    var data = DataViewFactory.ByteArray.Create(entryData);
+
+                    entries[i] = new TmodFileEntry(entryPath, offset, entrySize, entrySize, data);
                 }
             }
             else
             {
+                // The first block of data is the file paths and their lengths.
                 for (var i = 0; i < entries.Length; i++)
                 {
-                    entries[i] =  new TmodFileEntry(reader.ReadString(), offset, reader.ReadInt32(), reader.ReadInt32(), null);
-                    offset     += entries[i].CompressedLength;
+                    var entryPath             = reader.ReadString();
+                    var entryLength           = reader.ReadInt32();
+                    var entryCompressedLength = reader.ReadInt32();
+
+                    entries[i] =  new TmodFileEntry(entryPath, offset, entryLength, entryCompressedLength, null);
+                    offset     += entryCompressedLength;
                 }
 
                 if (stream.Position >= int.MaxValue)
@@ -178,13 +190,20 @@ public static class TmodSerializer
 
                 var fileStartPos = (int)stream.Position;
 
+                // The second block of data is the actual compressed data.
                 for (var i = 0; i < entries.Length; i++)
                 {
                     var entry = entries[i];
+
+                    var isCompressed = entry.Length != entry.CompressedLength;
+                    var data = isCompressed
+                        ? DataViewFactory.ByteArray.Deflate.CreateCompressed(reader.ReadBytes(entry.CompressedLength))
+                        : DataViewFactory.ByteArray.Create(reader.ReadBytes(entry.CompressedLength));
+
                     entries[i] = entries[i] with
                     {
                         Offset = entry.Offset + fileStartPos,
-                        Data = new ByteArrayBinaryDataView(reader.ReadBytes(entry.CompressedLength)),
+                        Data = data,
                     };
                 }
             }

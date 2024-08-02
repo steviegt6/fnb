@@ -11,22 +11,16 @@ namespace Tomat.FNB.Common.BinaryData;
 ///     intensive code where minimizing conversion between representations is
 ///     preferable.
 /// </remarks>
-public interface IBinaryDataView
+public interface IDataView
 {
-    /// <summary>
-    ///     Flags describing this data view.
-    /// </summary>
-    BinaryDataViewFlags Flags { get; set; }
-
     /// <summary>
     ///     The size of the data in bytes.
     /// </summary>
     int Size { get; }
 
-    /// <summary>
-    ///     Compresses the data using the DEFLATE algorithm.
-    /// </summary>
-    IBinaryDataView CompressDeflate();
+    IDataView CompressDeflate();
+
+    IDataView DecompressDeflate();
 
     /// <summary>
     ///     Writes the data to a <see cref="BinaryWriter"/>.

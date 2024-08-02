@@ -27,5 +27,5 @@ public interface ITmodFileExtractor
     ///     the <paramref name="entry"/> if the entry is compressed.
     /// </param>
     /// <returns>The extracted form of the file.</returns>
-    TmodFileData Extract(TmodFileEntry entry, IBinaryDataView data);
+    TmodFileData Extract(TmodFileEntry entry, IDataView data);
 }

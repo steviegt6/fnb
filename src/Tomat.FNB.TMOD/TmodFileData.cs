@@ -9,4 +9,4 @@ namespace Tomat.FNB.TMOD;
 /// </summary>
 /// <param name="Path">The path of the file within the archive.</param>
 /// <param name="Data">The data of the file within the archive.</param>
-public readonly record struct TmodFileData(string Path, IBinaryDataView Data);
+public readonly record struct TmodFileData(string Path, IDataView Data);

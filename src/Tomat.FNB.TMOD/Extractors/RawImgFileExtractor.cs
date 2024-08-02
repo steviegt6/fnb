@@ -11,7 +11,7 @@ public sealed class RawImgFileExtractor : ITmodFileExtractor
         return Path.GetExtension(entry.Path) == ".rawimg";
     }
 
-    TmodFileData ITmodFileExtractor.Extract(TmodFileEntry entry, IBinaryDataView data)
+    TmodFileData ITmodFileExtractor.Extract(TmodFileEntry entry, IDataView data)
     {
         throw new System.NotImplementedException();
     }

@@ -18,5 +18,5 @@ public readonly record struct TmodFileEntry(
     int              Offset,
     int              Length,
     int              CompressedLength,
-    IBinaryDataView? Data
+    IDataView? Data
 );
