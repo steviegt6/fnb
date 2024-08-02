@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks.Dataflow;
 
 using LibDeflate;
 
@@ -21,7 +22,11 @@ public static class TmodFileSerializer
         float            MinimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
     );
 
-    public readonly record struct ReadOptions(IFileConverter[] Converters);
+    public readonly record struct ReadOptions(
+        IFileConverter[]                        Converters,
+        ActionBlock<(string path, byte[] data)> Processor,
+        int                                     MaxDegreeOfParallelism
+    );
 
     private record struct TmodFileEntry(
         string  Path,
@@ -106,7 +111,7 @@ public static class TmodFileSerializer
 
                     entries[i] = entries[i] with
                     {
-                        Data = Decompress(reader.ReadBytes(entry.CompressedLength), entry.Length),
+                        Data = reader.ReadBytes(entry.CompressedLength),
                     };
                 }
             }
@@ -115,11 +120,28 @@ public static class TmodFileSerializer
 
             Dictionary<string, byte[]> realEntries = [];
             {
+                var transformBlock = new TransformBlock<(TmodFileEntry, IFileConverter[]), (string, byte[])>(
+                    ProcessEntry,
+                    new ExecutionDataflowBlockOptions
+                    {
+                        MaxDegreeOfParallelism = opts.MaxDegreeOfParallelism == -1 ? Environment.ProcessorCount : opts.MaxDegreeOfParallelism,
+                    }
+                );
+
+                var linkOptions = new DataflowLinkOptions
+                {
+                    PropagateCompletion = true,
+                };
+
+                transformBlock.LinkTo(opts.Processor, linkOptions);
+
                 foreach (var entry in entries)
                 {
-                    var (path, data)  = Convert(entry.Path, entry.Data!, opts.Converters);
-                    realEntries[path] = data;
+                    transformBlock.Post((entry, opts.Converters));
                 }
+
+                transformBlock.Complete();
+                opts.Processor.Completion.Wait();
             }
 
             return new TmodFile(modLoaderVersion, name, version, realEntries);
@@ -248,6 +270,15 @@ public static class TmodFileSerializer
         }
 
         return (path, data);
+    }
+
+    private static (string, byte[]) ProcessEntry((TmodFileEntry, IFileConverter[]) obj)
+    {
+        var (entry, converters) = obj;
+        Debug.Assert(entry.Data is not null);
+
+        var data = Decompress(entry.Data, entry.Data.Length);
+        return Convert(entry.Path, data, converters);
     }
 
     private static byte[] Decompress(byte[] data, int uncompressedLength)
