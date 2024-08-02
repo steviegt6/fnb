@@ -19,16 +19,11 @@ public sealed class TmodFile(
 
     public byte[] this[string path] => Entries[path];
 
-    public void AddFile(
-        string path,
-        byte[] data,
-        long   minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
-        float  minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
-    )
+    public void AddFile(string path, byte[] data)
     {
         path = SanitizePath(path);
 
-        throw new System.NotImplementedException();
+        entries[path] = data;
     }
 
     public bool RemoveFile(string path)

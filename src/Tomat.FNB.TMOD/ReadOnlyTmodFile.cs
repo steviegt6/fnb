@@ -27,7 +27,7 @@ public readonly struct ReadOnlyTmodFile(ITmodFile tmodFile) : ITmodFile
 
     byte[] ITmodFile.this[string path] => tmodFile[path];
 
-    void ITmodFile.AddFile(string path, byte[] data, long minimumCompressionSize, float minimumCompressionTradeoff)
+    void ITmodFile.AddFile(string path, byte[] data)
     {
         throw new ReadOnlyException("Cannot add a file to a read-only TmodFile.");
     }

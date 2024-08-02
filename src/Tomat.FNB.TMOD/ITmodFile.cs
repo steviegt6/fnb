@@ -14,12 +14,7 @@ public interface ITmodFile
 
     byte[] this[string path] { get; }
 
-    void AddFile(
-        string path,
-        byte[] data,
-        long   minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
-        float  minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
-    );
+    void AddFile(string path, byte[] data);
 
     bool RemoveFile(string path);
 }
