@@ -10,7 +10,7 @@ public static class TmodConstants
     /// <summary>
     ///     The default minimum size for a file to be compressed.
     /// </summary>
-    public const uint DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 KiB
+    public const long DEFAULT_MINIMUM_COMPRESSION_SIZE = 1 << 10; // 1 KiB
 
     /// <summary>
     ///     The default minimum tradeoff for a file to be compressed..

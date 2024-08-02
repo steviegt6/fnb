@@ -29,7 +29,7 @@ public sealed class TmodFile(
 
     public void AddFile(
         TmodFileData file,
-        uint         minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        long         minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
         float        minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
     )
     {
@@ -57,12 +57,12 @@ public sealed class TmodFile(
         return path.Trim().Replace(dirty_separator, clean_separator);
     }
 
-    private static bool EligibleForCompression(TmodFileData file, uint minCompSize)
+    private static bool EligibleForCompression(TmodFileData file, long minCompSize)
     {
         return file.Data.Size >= minCompSize && !extensions_to_not_compress.Contains(Path.GetExtension(file.Path));
     }
 
-    private static void Compress(ref TmodFileData file, int realSize, float tradeoff)
+    private static void Compress(ref TmodFileData file, long realSize, float tradeoff)
     {
         var data       = file.Data;
         var compressed = data.CompressDeflate();

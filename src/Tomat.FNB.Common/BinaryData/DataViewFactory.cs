@@ -11,7 +11,7 @@ public static class DataViewFactory
 {
     private sealed class ByteArrayImpl : IDataView
     {
-        public int Size => bytes.Length;
+        public long Size => bytes.Length;
 
         private readonly byte[] bytes;
         private readonly bool   compressed;

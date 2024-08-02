@@ -30,7 +30,11 @@ public sealed class ReadOnlyTmodFile(ITmodFile tmodFile) : ITmodFile
 
     TmodFileEntry ITmodFile.this[string path] => tmodFile[path];
 
-    void ITmodFile.AddFile(TmodFileData file, uint minimumCompressionSize, float minimumCompressionTradeoff)
+    void ITmodFile.AddFile(
+        TmodFileData file,
+        long         minimumCompressionSize,
+        float        minimumCompressionTradeoff
+    )
     {
         throw new InvalidOperationException("Cannot add files to a read-only `.tmod` file!");
     }

@@ -16,7 +16,7 @@ public interface IDataView
     /// <summary>
     ///     The size of the data in bytes.
     /// </summary>
-    int Size { get; }
+    long Size { get; }
 
     IDataView CompressDeflate();
 

@@ -57,9 +57,10 @@ public static class TmodSerializer
                 foreach (var entry in tmod.Entries)
                 {
                     Debug.Assert(entry.Data is not null, $"{entry.Path} has null data!");
+                    Debug.Assert(entry.Length <= int.MaxValue);
 
                     writer.Write(entry.Path);
-                    writer.Write(entry.Length);
+                    writer.Write((int)entry.Length);
                     entry.Data.Write(writer);
                 }
             }
@@ -67,9 +68,12 @@ public static class TmodSerializer
             {
                 foreach (var entry in tmod.Entries)
                 {
+                    Debug.Assert(entry.CompressedLength <= int.MaxValue);
+                    Debug.Assert(entry.Length           <= int.MaxValue);
+
                     writer.Write(entry.Path);
-                    writer.Write(entry.CompressedLength);
-                    writer.Write(entry.Length);
+                    writer.Write((int)entry.CompressedLength);
+                    writer.Write((int)entry.Length);
                 }
 
                 foreach (var entry in tmod.Entries)
@@ -109,12 +113,26 @@ public static class TmodSerializer
 #endregion
 
 #region Read
+    /// <summary>
+    ///     Reads a <c>.tmod</c> archive from a file.
+    /// </summary>
+    /// <param name="path">The path of the file to read.</param>
+    /// <returns>
+    ///     An <see cref="ITmodFile"/> instance containing the read data.
+    /// </returns>
     public static ITmodFile Read(string path)
     {
         using var fs = File.OpenRead(path);
         return Read(fs);
     }
 
+    /// <summary>
+    ///     Reads a <c>.tmod</c> archive from a byte array.
+    /// </summary>
+    /// <param name="bytes">The byte array to read from.</param>
+    /// <returns>
+    ///     An <see cref="ITmodFile"/> instance containing the read data.
+    /// </returns>
     public static ITmodFile Read(byte[] bytes)
     {
         using var ms = new MemoryStream(bytes);
@@ -126,7 +144,7 @@ public static class TmodSerializer
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
     /// <returns>
-    ///     An <see cref="ITmodFile"/> instance contained the read data.
+    ///     An <see cref="ITmodFile"/> instance containing the read data.
     /// </returns>
     public static ITmodFile Read(Stream stream)
     {
@@ -150,7 +168,7 @@ public static class TmodSerializer
                              + SIGNATURE_LENGTH
                              + sizeof(uint);
 
-            var isLegacy = Version.Parse(modLoaderVersion.ToString()) < VERSION_0_11_0_0;
+            var isLegacy = Version.Parse(modLoaderVersion) < VERSION_0_11_0_0;
             if (isLegacy)
             {
                 var ds = new DeflateStream(stream, CompressionMode.Decompress, true);
@@ -202,10 +220,13 @@ public static class TmodSerializer
                 {
                     var entry = entries[i];
 
+                    Debug.Assert(entry.Length           <= int.MaxValue);
+                    Debug.Assert(entry.CompressedLength <= int.MaxValue);
+
                     var isCompressed = entry.Length != entry.CompressedLength;
                     var data = isCompressed
-                        ? DataViewFactory.ByteArray.Deflate.CreateCompressed(reader.ReadBytes(entry.CompressedLength), entry.Length)
-                        : DataViewFactory.ByteArray.Create(reader.ReadBytes(entry.CompressedLength), entry.Length);
+                        ? DataViewFactory.ByteArray.Deflate.CreateCompressed(reader.ReadBytes((int)entry.CompressedLength), (int)entry.Length)
+                        : DataViewFactory.ByteArray.Create(reader.ReadBytes((int)entry.CompressedLength), (int)entry.Length);
 
                     entries[i] = entries[i] with
                     {
