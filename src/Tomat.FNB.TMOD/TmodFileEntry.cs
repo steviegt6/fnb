@@ -1,4 +1,5 @@
 ﻿using Tomat.FNB.Common;
+using Tomat.FNB.Common.BinaryData;
 
 namespace Tomat.FNB.TMOD;
 
@@ -12,4 +13,10 @@ namespace Tomat.FNB.TMOD;
 /// <param name="Length">The length of the file when uncompressed.</param>
 /// <param name="CompressedLength">The compressed file length.</param>
 /// <param name="Data">The optionally compressed file data.</param>
-public readonly record struct TmodFileEntry(string Path, int Offset, int Length, int CompressedLength, IBinaryDataView? Data);
+public readonly record struct TmodFileEntry(
+    string           Path,
+    int              Offset,
+    int              Length,
+    int              CompressedLength,
+    IBinaryDataView? Data
+);

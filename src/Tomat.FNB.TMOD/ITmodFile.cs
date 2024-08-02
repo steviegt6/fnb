@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+
 using U8;
 
 namespace Tomat.FNB.TMOD;
@@ -58,7 +58,11 @@ public interface ITmodFile
     /// <param name="minimumCompressionTradeoff">
     ///     The minimum compression tradeoff for compression.
     /// </param>
-    void AddFile(TmodFileData file, uint minimumCompressionSize = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE, float minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF);
+    void AddFile(
+        TmodFileData file,
+        uint         minimumCompressionSize     = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float        minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+    );
 
     /// <summary>
     ///     Removes a file from the <c>.tmod</c> archive.

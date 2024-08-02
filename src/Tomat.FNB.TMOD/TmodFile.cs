@@ -1,21 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using U8;
 
 namespace Tomat.FNB.TMOD;
 
-public sealed class TmodFile : ITmodFile
+public sealed class TmodFile(
+    U8String                          modLoaderVersion,
+    U8String                          name,
+    U8String                          version,
+    Dictionary<string, TmodFileEntry> entries
+) : ITmodFile
 {
     private const char dirty_separator = '\\';
     private const char clean_separator = '/';
 
-    public U8String ModLoaderVersion { get; set; }
+    public U8String ModLoaderVersion { get; set; } = modLoaderVersion;
 
-    public U8String Name { get; set; }
+    public U8String Name { get; set; } = name;
 
-    public U8String Version { get; set; }
+    public U8String Version { get; set; } = version;
 
     public IReadOnlyCollection<TmodFileEntry> Entries => entries.Values;
 
@@ -24,21 +29,15 @@ public sealed class TmodFile : ITmodFile
     // These files are already compressed.
     private static readonly string[] extensions_to_not_compress = [".png", ".mp3", ".ogg"];
 
-    private readonly Dictionary<string, TmodFileEntry> entries;
-
-    public TmodFile(U8String modLoaderVersion, U8String name, U8String version, Dictionary<string, TmodFileEntry> entries)
-    {
-        ModLoaderVersion = modLoaderVersion;
-        Name = name;
-        Version = version;
-        this.entries = entries;
-    }
-
-    public void AddFile(TmodFileData file, uint minimumCompressionSize = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE, float minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF)
+    public void AddFile(
+        TmodFileData file,
+        uint         minimumCompressionSize     = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float        minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+    )
     {
         file = file with
         {
-            Path = SanitizePath(file.Path)
+            Path = SanitizePath(file.Path),
         };
 
         var size = file.Data.Size;
@@ -67,7 +66,7 @@ public sealed class TmodFile : ITmodFile
 
     private static void Compress(ref TmodFileData file, int realSize, float tradeoff)
     {
-        var data = file.Data;
+        var data       = file.Data;
         var compressed = data.CompressDeflate();
 
         if (compressed.Size < realSize * tradeoff)

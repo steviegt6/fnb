@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Tomat.FNB.Common;
+namespace Tomat.FNB.Common.BinaryData;
 
 /// <summary>
 ///     An abstract implementation of <see cref="IBinaryDataView"/> that
@@ -15,12 +15,7 @@ public abstract class AbstractBinaryDataView : IBinaryDataView
 
     IBinaryDataView IBinaryDataView.CompressDeflate()
     {
-        if ((Flags & BinaryDataViewFlags.CompressedDeflate) != 0)
-        {
-            return this;
-        }
-
-        return CompressDeflate();
+        return (Flags & BinaryDataViewFlags.CompressedDeflate) != 0 ? this : CompressDeflate();
     }
 
     protected abstract IBinaryDataView CompressDeflate();

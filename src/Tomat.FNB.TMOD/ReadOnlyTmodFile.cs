@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using U8;
 
 namespace Tomat.FNB.TMOD;
@@ -7,7 +8,7 @@ namespace Tomat.FNB.TMOD;
 /// <summary>
 ///     A read-only view into a <c>.tmod</c> file archive.
 /// </summary>
-public sealed class ReadOnlyTmodFile : ITmodFile
+public sealed class ReadOnlyTmodFile(ITmodFile tmodFile) : ITmodFile
 {
     U8String ITmodFile.ModLoaderVersion
     {
@@ -30,13 +31,6 @@ public sealed class ReadOnlyTmodFile : ITmodFile
     IReadOnlyCollection<TmodFileEntry> ITmodFile.Entries => tmodFile.Entries;
 
     TmodFileEntry ITmodFile.this[string path] => tmodFile[path];
-
-    private readonly ITmodFile tmodFile;
-
-    public ReadOnlyTmodFile(ITmodFile tmodFile)
-    {
-        this.tmodFile = tmodFile;
-    }
 
     void ITmodFile.AddFile(TmodFileData file, uint minimumCompressionSize, float minimumCompressionTradeoff)
     {

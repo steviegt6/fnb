@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tomat.FNB.Common;
+namespace Tomat.FNB.Common.BinaryData;
 
 /// <summary>
 ///     Informative flags describing an <see cref="IBinaryDataView"/>.
@@ -22,5 +22,5 @@ public enum BinaryDataViewFlags : byte
     /// <summary>
     ///     Whether this data view has been compressed.
     /// </summary>
-    Compressed = CompressedDeflate
+    Compressed = CompressedDeflate,
 }

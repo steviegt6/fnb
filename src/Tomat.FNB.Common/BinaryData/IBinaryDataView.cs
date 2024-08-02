@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Tomat.FNB.Common;
+namespace Tomat.FNB.Common.BinaryData;
 
 /// <summary>
 ///     An abstraction over traditional methods of holding onto binary data
