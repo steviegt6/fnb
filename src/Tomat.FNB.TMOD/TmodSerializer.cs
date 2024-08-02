@@ -114,6 +114,18 @@ public static class TmodSerializer
 #endregion
 
 #region Read
+    public static ITmodFile Read(string path)
+    {
+        using var fs = File.OpenRead(path);
+        return Read(fs);
+    }
+
+    public static ITmodFile Read(byte[] bytes)
+    {
+        using var ms = new MemoryStream(bytes);
+        return Read(ms);
+    }
+
     /// <summary>
     ///     Reads a <c>.tmod</c> archive from a stream.
     /// </summary>
@@ -165,7 +177,7 @@ public static class TmodSerializer
                     var entryData = reader.ReadBytes(entrySize);
 
                     // The data comes decompressed by the stream reader.
-                    var data = DataViewFactory.ByteArray.Create(entryData);
+                    var data = DataViewFactory.ByteArray.Create(entryData, entrySize);
 
                     entries[i] = new TmodFileEntry(entryPath, offset, entrySize, entrySize, data);
                 }
@@ -197,8 +209,8 @@ public static class TmodSerializer
 
                     var isCompressed = entry.Length != entry.CompressedLength;
                     var data = isCompressed
-                        ? DataViewFactory.ByteArray.Deflate.CreateCompressed(reader.ReadBytes(entry.CompressedLength))
-                        : DataViewFactory.ByteArray.Create(reader.ReadBytes(entry.CompressedLength));
+                        ? DataViewFactory.ByteArray.Deflate.CreateCompressed(reader.ReadBytes(entry.CompressedLength), entry.Length)
+                        : DataViewFactory.ByteArray.Create(reader.ReadBytes(entry.CompressedLength), entry.Length);
 
                     entries[i] = entries[i] with
                     {
