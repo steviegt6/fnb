@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -7,17 +8,20 @@ using System.Security.Cryptography;
 
 using LibDeflate;
 
+using Tomat.FNB.TMOD.Converters;
+
 namespace Tomat.FNB.TMOD;
 
 public static class TmodFileSerializer
 {
     public readonly record struct WriteOptions(
-        bool  Compress                   = true,
-        long  MinimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
-        float MinimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+        IFileConverter[] Converters,
+        bool             Compress                   = true,
+        long             MinimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float            MinimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
     );
 
-    public readonly record struct ReadOptions;
+    public readonly record struct ReadOptions(IFileConverter[] Converters);
 
     private record struct TmodFileEntry(
         string  Path,
@@ -109,7 +113,15 @@ public static class TmodFileSerializer
 
             Debug.Assert(!entries.Any(x => x.Data is null));
 
-            var realEntries = entries.ToDictionary(x => x.Path, x => x.Data!);
+            Dictionary<string, byte[]> realEntries = [];
+            {
+                foreach (var entry in entries)
+                {
+                    var (path, data)  = Convert(entry.Path, entry.Data!, opts.Converters);
+                    realEntries[path] = data;
+                }
+            }
+
             return new TmodFile(modLoaderVersion, name, version, realEntries);
         }
         finally
@@ -128,6 +140,13 @@ public static class TmodFileSerializer
 
     public static void Write(ITmodFile tmodFile, Stream stream, WriteOptions opts)
     {
+        Dictionary<string, byte[]> entries = [];
+        foreach (var (path, data) in tmodFile.Entries)
+        {
+            var (realPath, realData) = Convert(path, data, opts.Converters);
+            entries[realPath]        = realData;
+        }
+
         var writer = new BinaryWriter(stream);
 
         try
@@ -159,7 +178,7 @@ public static class TmodFileSerializer
 
             if (isLegacy)
             {
-                foreach (var (path, data) in tmodFile.Entries)
+                foreach (var (path, data) in entries)
                 {
                     writer.Write(path);
                     writer.Write(data.Length);
@@ -168,10 +187,10 @@ public static class TmodFileSerializer
             }
             else
             {
-                var compressedData = new byte[][tmodFile.Entries.Count];
+                var compressedData = new byte[][entries.Count];
 
                 var i = 0;
-                foreach (var (path, data) in tmodFile.Entries)
+                foreach (var (path, data) in entries)
                 {
                     compressedData[i] = opts.Compress ? Compress(data, opts) : data;
 
@@ -217,6 +236,19 @@ public static class TmodFileSerializer
         }
     }
 #endregion
+
+    private static (string path, byte[] data) Convert(string path, byte[] data, IFileConverter[] converters)
+    {
+        foreach (var converter in converters)
+        {
+            if (converter.ShouldConvert(path, data))
+            {
+                return converter.Convert(path, data);
+            }
+        }
+
+        return (path, data);
+    }
 
     private static byte[] Decompress(byte[] data, int uncompressedLength)
     {

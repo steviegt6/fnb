@@ -1,4 +1,6 @@
-﻿using System;
+﻿global using static Tomat.FNB.TMOD.TmodConstants;
+
+using System;
 
 namespace Tomat.FNB.TMOD;
 
