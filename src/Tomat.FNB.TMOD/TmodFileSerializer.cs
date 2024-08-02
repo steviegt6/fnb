@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 
 using LibDeflate;
 
@@ -10,6 +11,14 @@ namespace Tomat.FNB.TMOD;
 
 public static class TmodFileSerializer
 {
+    public readonly record struct WriteOptions(
+        bool  Compress                   = true,
+        long  MinimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float MinimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+    );
+
+    public readonly record struct ReadOptions;
+
     private record struct TmodFileEntry(
         string  Path,
         int     Length,
@@ -17,19 +26,20 @@ public static class TmodFileSerializer
         byte[]? Data
     );
 
-    public static ITmodFile Read(string path)
+#region Read
+    public static ITmodFile Read(string path, ReadOptions opts)
     {
         using var fs = File.OpenRead(path);
-        return Read(fs);
+        return Read(fs, opts);
     }
 
-    public static ITmodFile Read(byte[] bytes)
+    public static ITmodFile Read(byte[] bytes, ReadOptions opts)
     {
         using var ms = new MemoryStream(bytes);
-        return Read(ms);
+        return Read(ms, opts);
     }
 
-    public static ITmodFile Read(Stream stream)
+    public static ITmodFile Read(Stream stream, ReadOptions opts)
     {
         var reader = new BinaryReader(stream);
 
@@ -110,6 +120,106 @@ public static class TmodFileSerializer
             reader.Dispose();
         }
     }
+#endregion
+
+#region Write
+    public static void Write(ITmodFile tmodFile, string path, WriteOptions opts)
+    {
+        using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write);
+        Write(tmodFile, fs, opts);
+    }
+
+    public static void Write(ITmodFile tmodFile, Stream stream, WriteOptions opts)
+    {
+        var writer = new BinaryWriter(stream);
+
+        try
+        {
+            writer.Write(TMOD_HEADER);
+            writer.Write(tmodFile.ModLoaderVersion);
+
+            var hashStartPos = stream.Position;
+            {
+                // writer.Write(new byte[HASH_LENGTH]);
+                // writer.Write(new byte[SIGNATURE_LENGTH]);
+                // writer.Write(0);
+
+                writer.Write(new byte[HASH_LENGTH + SIGNATURE_LENGTH + sizeof(uint)]);
+            }
+            var hashEndPos = stream.Position;
+
+            var isLegacy = Version.Parse(tmodFile.ModLoaderVersion) < VERSION_0_11_0_0;
+            if (isLegacy)
+            {
+                var ms = new MemoryStream();
+                var ds = new DeflateStream(ms, CompressionMode.Compress, true);
+                writer = new BinaryWriter(ds);
+            }
+
+            writer.Write(tmodFile.Name);
+            writer.Write(tmodFile.Version);
+            writer.Write(tmodFile.Entries.Count);
+
+            if (isLegacy)
+            {
+                foreach (var (path, data) in tmodFile.Entries)
+                {
+                    writer.Write(path);
+                    writer.Write(data.Length);
+                    writer.Write(data);
+                }
+            }
+            else
+            {
+                var compressedData = new byte[][tmodFile.Entries.Count];
+
+                var i = 0;
+                foreach (var (path, data) in tmodFile.Entries)
+                {
+                    compressedData[i] = opts.Compress ? Compress(data, opts) : data;
+
+                    writer.Write(path);
+                    writer.Write(data.Length);
+                    writer.Write(compressedData[i].Length);
+
+                    i++;
+                }
+
+                for (i = 0; i < compressedData.Length; i++)
+                {
+                    writer.Write(compressedData[i]);
+                }
+            }
+
+            if (isLegacy)
+            {
+                Debug.Assert(writer.BaseStream is MemoryStream);
+
+                // TODO: Can we replace ToArray with GetBuffer?
+                var compressed = (writer.BaseStream as MemoryStream)!.ToArray();
+                writer.Dispose();
+                writer = new BinaryWriter(stream);
+                writer.Write(compressed);
+            }
+
+            stream.Position = hashEndPos;
+            {
+                var hash = SHA1.Create().ComputeHash(stream);
+
+                stream.Position = hashStartPos;
+                {
+                    writer.Write(hash);
+                    writer.Write(new byte[SIGNATURE_LENGTH]);
+                    writer.Write((int)(stream.Length - hashEndPos));
+                }
+            }
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+#endregion
 
     private static byte[] Decompress(byte[] data, int uncompressedLength)
     {
@@ -129,5 +239,23 @@ public static class TmodFileSerializer
         }
 
         return data;
+    }
+
+    private static byte[] Compress(byte[] data, WriteOptions opts)
+    {
+        if (data.Length < opts.MinimumCompressionSize)
+        {
+            return data;
+        }
+
+        using var ms = new MemoryStream(data);
+        using (var ds = new DeflateStream(ms, CompressionMode.Compress))
+        {
+            ds.Write(data, 0, data.Length);
+        }
+
+        // TODO: Can we replace ToArray with GetBuffer?
+        var compressed = ms.ToArray();
+        return compressed.Length < data.Length * opts.MinimumCompressionTradeoff ? compressed : data;
     }
 }
