@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
 using LibDeflate;
@@ -23,9 +24,10 @@ public static class TmodFileSerializer
     );
 
     public readonly record struct ReadOptions(
-        IFileConverter[]                        Converters,
-        ActionBlock<(string path, byte[] data)> Processor,
-        int                                     MaxDegreeOfParallelism
+        IFileConverter[]           Converters,
+        Func<string, byte[], Task> Processor,
+        int                        InputDegree,
+        int                        OutputDegree
     );
 
     private record struct TmodFileEntry(
@@ -124,7 +126,7 @@ public static class TmodFileSerializer
                     ProcessEntry,
                     new ExecutionDataflowBlockOptions
                     {
-                        MaxDegreeOfParallelism = opts.MaxDegreeOfParallelism == -1 ? Environment.ProcessorCount : opts.MaxDegreeOfParallelism,
+                        MaxDegreeOfParallelism = opts.InputDegree,
                     }
                 );
 
@@ -133,7 +135,18 @@ public static class TmodFileSerializer
                     PropagateCompletion = true,
                 };
 
-                transformBlock.LinkTo(opts.Processor, linkOptions);
+                var block = new ActionBlock<(string path, byte[] data)>(
+                    async obj =>
+                    {
+                        await opts.Processor(obj.path, obj.data);
+                        realEntries[obj.path] = obj.data;
+                    },
+                    new ExecutionDataflowBlockOptions
+                    {
+                        MaxDegreeOfParallelism = opts.OutputDegree,
+                    }
+                );
+                transformBlock.LinkTo(block, linkOptions);
 
                 foreach (var entry in entries)
                 {
@@ -141,7 +154,7 @@ public static class TmodFileSerializer
                 }
 
                 transformBlock.Complete();
-                opts.Processor.Completion.Wait();
+                block.Completion.Wait();
             }
 
             return new TmodFile(modLoaderVersion, name, version, realEntries);
