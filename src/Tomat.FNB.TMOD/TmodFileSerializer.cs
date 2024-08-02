@@ -66,7 +66,6 @@ public static class TmodFileSerializer
             var name    = reader.ReadString();
             var version = reader.ReadString();
 
-            var offset  = 0;
             var entries = new TmodFileEntry[reader.ReadInt32()];
 
             if (isLegacy)
@@ -90,8 +89,6 @@ public static class TmodFileSerializer
                         reader.ReadInt32(),
                         null
                     );
-
-                    offset += entries[i].CompressedLength;
                 }
 
                 if (stream.Position >= int.MaxValue)
