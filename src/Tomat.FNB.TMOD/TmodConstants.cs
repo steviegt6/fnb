@@ -1,4 +1,6 @@
-﻿namespace Tomat.FNB.TMOD;
+﻿using System;
+
+namespace Tomat.FNB.TMOD;
 
 /// <summary>
 ///     Well-known constants pertaining to the <c>.tmod</c> file format.
@@ -29,4 +31,10 @@ public static class TmodConstants
     ///     The length of the signature in a <c>.tmod</c> file.
     /// </summary>
     public const int SIGNATURE_LENGTH = 256;
+
+    /// <summary>
+    ///     Version <c>0.11.0.0</c>, which indicates the first change in the
+    ///     <c>.tmod</c> file format.
+    /// </summary>
+    public static readonly Version VERSION_0_11_0_0 = new(0, 11, 0, 0);
 }

@@ -1,0 +1,1 @@
+global using static Tomat.FNB.TMOD.TmodConstants;

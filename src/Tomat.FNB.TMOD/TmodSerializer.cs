@@ -17,8 +17,6 @@ namespace Tomat.FNB.TMOD;
 /// </summary>
 public static class TmodSerializer
 {
-    private static readonly Version upgrade_version = new(0, 11, 0, 0);
-
 #region Write
     /// <summary>
     ///     Writes the <c>.tmod</c> archive to a stream.
@@ -31,18 +29,18 @@ public static class TmodSerializer
 
         try
         {
-            writer.Write(TmodConstants.TMOD_HEADER);
+            writer.Write(TMOD_HEADER);
             writer.Write(tmod.ModLoaderVersion);
 
             var hashStartPos = stream.Position;
             {
-                writer.Write(new byte[TmodConstants.HASH_LENGTH]);
-                writer.Write(new byte[TmodConstants.SIGNATURE_LENGTH]);
+                writer.Write(new byte[HASH_LENGTH]);
+                writer.Write(new byte[SIGNATURE_LENGTH]);
                 writer.Write(0);
             }
             var hashEndPos = stream.Position;
 
-            var isLegacy = Version.Parse(tmod.ModLoaderVersion) < upgrade_version;
+            var isLegacy = Version.Parse(tmod.ModLoaderVersion) < VERSION_0_11_0_0;
             if (isLegacy)
             {
                 var ms = new MemoryStream();
@@ -98,7 +96,7 @@ public static class TmodSerializer
                 stream.Position = hashStartPos;
                 {
                     writer.Write(hash);
-                    writer.Write(new byte[TmodConstants.SIGNATURE_LENGTH]);
+                    writer.Write(new byte[SIGNATURE_LENGTH]);
                     writer.Write((int)(stream.Length - hashEndPos));
                 }
             }
@@ -136,7 +134,7 @@ public static class TmodSerializer
 
         try
         {
-            if (reader.ReadUInt32() != TmodConstants.TMOD_HEADER)
+            if (reader.ReadUInt32() != TMOD_HEADER)
             {
                 throw new InvalidDataException("Failed to read 'TMOD' header!");
             }
@@ -148,11 +146,11 @@ public static class TmodSerializer
             // priority.  This never has and never will be a secure method of
             // integrity or validation, I don't know why the tModLoader
             // developers chose to include it in the first place.
-            stream.Position += TmodConstants.HASH_LENGTH
-                             + TmodConstants.SIGNATURE_LENGTH
+            stream.Position += HASH_LENGTH
+                             + SIGNATURE_LENGTH
                              + sizeof(uint);
 
-            var isLegacy = Version.Parse(modLoaderVersion.ToString()) < upgrade_version;
+            var isLegacy = Version.Parse(modLoaderVersion.ToString()) < VERSION_0_11_0_0;
             if (isLegacy)
             {
                 var ds = new DeflateStream(stream, CompressionMode.Decompress, true);

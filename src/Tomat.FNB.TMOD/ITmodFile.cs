@@ -58,8 +58,8 @@ public interface ITmodFile
     /// </param>
     void AddFile(
         TmodFileData file,
-        uint         minimumCompressionSize     = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_SIZE,
-        float        minimumCompressionTradeoff = TmodConstants.DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+        uint         minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
+        float        minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
     );
 
     /// <summary>
