@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using U8;
-
 namespace Tomat.FNB.TMOD;
 
 /// <summary>
@@ -28,18 +26,18 @@ public interface ITmodFile
     ///     this value is also used to handle multi-versioning.  The format
     ///     does not change with every update.
     /// </remarks>
-    U8String ModLoaderVersion { get; set; }
+    string ModLoaderVersion { get; set; }
 
     /// <summary>
     ///     The internal name of the mod contained within the archive.
     /// </summary>
-    U8String Name { get; set; }
+    string Name { get; set; }
 
     /// <summary>
     ///     The <see cref="System.Version"/>-compatible version of the mod
     ///     contained within the archive.
     /// </summary>
-    U8String Version { get; set; }
+    string Version { get; set; }
 
     /// <summary>
     ///     The file entries within the <c>.tmod</c> archive.

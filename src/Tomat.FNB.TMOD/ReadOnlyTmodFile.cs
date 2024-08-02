@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using U8;
-
 namespace Tomat.FNB.TMOD;
 
 /// <summary>
@@ -10,19 +8,19 @@ namespace Tomat.FNB.TMOD;
 /// </summary>
 public sealed class ReadOnlyTmodFile(ITmodFile tmodFile) : ITmodFile
 {
-    U8String ITmodFile.ModLoaderVersion
+    string ITmodFile.ModLoaderVersion
     {
         get => tmodFile.ModLoaderVersion;
         set => throw new InvalidOperationException("Cannot change the mod loader version of a read-only `.tmod` file!");
     }
 
-    U8String ITmodFile.Name
+    string ITmodFile.Name
     {
         get => tmodFile.Name;
         set => throw new InvalidOperationException("Cannot change the name of a read-only `.tmod` file!");
     }
 
-    U8String ITmodFile.Version
+    string ITmodFile.Version
     {
         get => tmodFile.Version;
         set => throw new InvalidOperationException("Cannot change the version of a read-only `.tmod` file!");

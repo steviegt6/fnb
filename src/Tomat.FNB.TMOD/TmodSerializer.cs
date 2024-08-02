@@ -7,9 +7,6 @@ using System.Security.Cryptography;
 
 using Tomat.FNB.Common.BinaryData;
 
-using U8;
-using U8.IO;
-
 namespace Tomat.FNB.TMOD;
 
 /// <summary>
@@ -45,7 +42,7 @@ public static class TmodSerializer
             }
             var hashEndPos = stream.Position;
 
-            var isLegacy = Version.Parse(tmod.ModLoaderVersion.ToString()) < upgrade_version;
+            var isLegacy = Version.Parse(tmod.ModLoaderVersion) < upgrade_version;
             if (isLegacy)
             {
                 var ms = new MemoryStream();
@@ -144,7 +141,7 @@ public static class TmodSerializer
                 throw new InvalidDataException("Failed to read 'TMOD' header!");
             }
 
-            var modLoaderVersion = (U8String)reader.ReadString();
+            var modLoaderVersion = reader.ReadString();
 
             // Jump ahead past hashes and signatures.  We could eventually
             // support checking the hash for validation, but it's of low
@@ -162,8 +159,8 @@ public static class TmodSerializer
                 reader = new BinaryReader(ds);
             }
 
-            var name    = (U8String)reader.ReadString();
-            var version = (U8String)reader.ReadString();
+            var name    = reader.ReadString();
+            var version = reader.ReadString();
 
             var offset  = 0;
             var entries = new TmodFileEntry[reader.ReadInt32()];

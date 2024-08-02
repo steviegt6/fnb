@@ -2,25 +2,23 @@
 using System.IO;
 using System.Linq;
 
-using U8;
-
 namespace Tomat.FNB.TMOD;
 
 public sealed class TmodFile(
-    U8String                          modLoaderVersion,
-    U8String                          name,
-    U8String                          version,
+    string                            modLoaderVersion,
+    string                            name,
+    string                            version,
     Dictionary<string, TmodFileEntry> entries
 ) : ITmodFile
 {
     private const char dirty_separator = '\\';
     private const char clean_separator = '/';
 
-    public U8String ModLoaderVersion { get; set; } = modLoaderVersion;
+    public string ModLoaderVersion { get; set; } = modLoaderVersion;
 
-    public U8String Name { get; set; } = name;
+    public string Name { get; set; } = name;
 
-    public U8String Version { get; set; } = version;
+    public string Version { get; set; } = version;
 
     public IReadOnlyCollection<TmodFileEntry> Entries => entries.Values;
 

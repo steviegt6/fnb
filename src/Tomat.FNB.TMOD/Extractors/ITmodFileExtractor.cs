@@ -1,5 +1,4 @@
-﻿using Tomat.FNB.Common;
-using Tomat.FNB.Common.BinaryData;
+﻿using Tomat.FNB.Common.BinaryData;
 
 namespace Tomat.FNB.TMOD.Extractors;
 

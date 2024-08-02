@@ -16,7 +16,6 @@
         <PackageReference Include="CliFx" Version="2.3.5"/>
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0"/>
         <PackageReference Include="LibDeflate.NET" Version="1.19.0"/>
-        <PackageReference Include="U8String" Version="0.16.0-alpha"/>
     </ItemGroup>
 
 </Project>
