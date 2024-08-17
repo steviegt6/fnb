@@ -144,6 +144,13 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
         }
     }
 
+    /// <summary>
+    ///     Deserializes a <c>.tmod</c> file from the given stream.
+    /// </summary>
+    /// <param name="stream">The stream to read from.</param>
+    /// <returns>
+    ///     The deserialized (but unconverted) <c>.tmod</c> file.
+    /// </returns>
     public static SerializableTmodFile FromStream(Stream stream)
     {
         var reader = new BinaryReader(stream);
