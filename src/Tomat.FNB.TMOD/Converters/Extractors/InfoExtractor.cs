@@ -45,8 +45,9 @@ public sealed class InfoExtractor : IFileConverter
         };
     };
 
-    private static readonly Reader skip_reader = (BinaryReader _, ref string _, out string? value) =>
+    private static readonly Reader description_reader = (BinaryReader reader, ref string _, out string? value) =>
     {
+        reader.ReadString();
         value = null;
     };
 
@@ -77,10 +78,10 @@ public sealed class InfoExtractor : IFileConverter
 
         // Identical to description.txt, which is already included - pointless
         // to extract.
-        { "description", skip_reader },
+        { "description", description_reader },
 
         // {"eacPath", STRING_READER},
-        // {"buildVersion", STRING_READER},
+        { "buildVersion", string_reader },
         { "displayName", string_reader },
         { "author", string_reader },
         { "version", string_reader },

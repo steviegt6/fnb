@@ -4,16 +4,22 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+
 using CliFx.Infrastructure;
+
 using Microsoft.Win32;
+
 using Tomat.FNB.TMOD;
+using Tomat.FNB.TMOD.Converters.Extractors;
+using Tomat.FNB.TMOD.Utilities;
 
 namespace Tomat.FNB.Commands;
 
 /// <summary>
 ///     Command utilities.
 /// </summary>
-internal static class CommandUtil {
+internal static class CommandUtil
+{
     /// <summary>
     ///     The tModLoader Steam app ID.
     /// </summary>
@@ -38,7 +44,8 @@ internal static class CommandUtil {
     ///     The destination path to extract to. If <see langword="null"/>, the
     ///     destination path will be the name of the archive without the extension.
     /// </param>
-    public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
+    public static async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath)
+    {
         destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
         await console.Output.WriteLineAsync($"Extracting \"{archivePath}\" to \"{destinationPath}\"...");
 
@@ -49,32 +56,46 @@ internal static class CommandUtil {
         var watch = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
-            await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
+        IReadOnlyTmodFile tmodFile;
+        try
+        {
+            await using var fs = File.OpenRead(archivePath);
+            {
+                var serializableTmodFile = SerializableTmodFile.FromStream(fs);
+                tmodFile = serializableTmodFile.Convert([RawimgExtractor.GetRawimgExtractor(), new InfoExtractor()]);
+            }
+        }
+        catch (Exception e)
+        {
+            await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\": {e}");
             return;
         }
 
-        const int numerator = 6;
-        const int denominator = 8;
+        var transformBlock = new ActionBlock<(string path, byte[] data)>(
+            async x =>
+            {
+                var (path, data) = x;
+                var dest = Path.Combine(destinationPath, path);
 
-        ActionBlock<TmodFileData> finalBlock = new(
-            async data => {
-                var path = Path.Combine(destinationPath, data.Path);
-                var dir = Path.GetDirectoryName(path);
-
+                var dir = Path.GetDirectoryName(dest);
                 if (dir is not null)
                     Directory.CreateDirectory(dir);
 
-                // await File.WriteAllBytesAsync(path, data.Data.Array);
-                await using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write);
-                fs.Write(data.Data.Span);
+                await File.WriteAllBytesAsync(dest, data);
             },
-            new ExecutionDataflowBlockOptions {
-                MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount * numerator / denominator),
+            new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = Environment.ProcessorCount,
             }
         );
 
-        tmodFile.Extract(finalBlock, Math.Max(1, Environment.ProcessorCount * (denominator - numerator) / denominator));
+        foreach (var (path, entry) in tmodFile.Entries)
+        {
+            transformBlock.Post((path, entry));
+        }
+
+        transformBlock.Complete();
+        transformBlock.Completion.Wait();
 
 #if DEBUG || true
         watch.Stop();
@@ -93,15 +114,18 @@ internal static class CommandUtil {
     ///     <see langword="true"/> if the local tModLoader archives were found;
     ///     otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods) {
-        if (!TryGetTerrariaStoragePath(out var storageDir)) {
+    public static bool TryGetLocalTmodArchives([NotNullWhen(returnValue: true)] out Dictionary<string, Dictionary<string, string>>? localMods)
+    {
+        if (!TryGetTerrariaStoragePath(out var storageDir))
+        {
             localMods = null;
             return false;
         }
 
         localMods = new Dictionary<string, Dictionary<string, string>>();
 
-        foreach (var candidate in mod_loader_dir_candidates) {
+        foreach (var candidate in mod_loader_dir_candidates)
+        {
             var dir = Path.Combine(storageDir, candidate);
             if (!Directory.Exists(dir))
                 continue;
@@ -112,7 +136,8 @@ internal static class CommandUtil {
 
             var modsMap = new Dictionary<string, string>();
 
-            foreach (var mod in Directory.EnumerateFiles(modsDir, "*.tmod", SearchOption.TopDirectoryOnly)) {
+            foreach (var mod in Directory.EnumerateFiles(modsDir, "*.tmod", SearchOption.TopDirectoryOnly))
+            {
                 var modName = Path.GetFileName(mod);
                 modsMap.Add(modName, mod);
             }
@@ -134,19 +159,23 @@ internal static class CommandUtil {
     ///     <see langword="true"/> if the storage directory was found;
     ///     otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool TryGetTerrariaStoragePath([NotNullWhen(returnValue: true)] out string? storageDir) {
+    public static bool TryGetTerrariaStoragePath([NotNullWhen(returnValue: true)] out string? storageDir)
+    {
         storageDir = null;
 
-        if (OperatingSystem.IsWindows()) {
+        if (OperatingSystem.IsWindows())
+        {
             storageDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "My Games");
         }
-        else if (OperatingSystem.IsLinux()) {
+        else if (OperatingSystem.IsLinux())
+        {
             if (Environment.GetEnvironmentVariable("XDG_DATA_HOME") is not { } xdgDataHome)
                 storageDir = Environment.GetEnvironmentVariable("HOME") is not { } home ? "." : Path.Combine(home, ".local", "share");
             else
                 storageDir = xdgDataHome;
         }
-        else if (OperatingSystem.IsMacOS()) {
+        else if (OperatingSystem.IsMacOS())
+        {
             storageDir = Environment.GetEnvironmentVariable("HOME") is not { } home ? "." : Path.Combine(home, "Library", "Application Support");
         }
 
@@ -166,10 +195,12 @@ internal static class CommandUtil {
     /// <returns>
     ///     A map of tModLoader Workshop entries.
     /// </returns>
-    public static Dictionary<string, TmodWorkshopRecord> ResolveTmodWorkshopEntries(string workshopDir) {
+    public static Dictionary<string, TmodWorkshopRecord> ResolveTmodWorkshopEntries(string workshopDir)
+    {
         var map = new Dictionary<string, TmodWorkshopRecord>();
 
-        foreach (var dir in Directory.EnumerateDirectories(workshopDir)) {
+        foreach (var dir in Directory.EnumerateDirectories(workshopDir))
+        {
             var dirName = Path.GetFileName(dir);
 
             if (!long.TryParse(dirName, out var itemId))
@@ -179,17 +210,20 @@ internal static class CommandUtil {
 
             var rootTmods = Directory.EnumerateFiles(dir, "*.tmod", SearchOption.TopDirectoryOnly);
 
-            foreach (var rootTmod in rootTmods) {
+            foreach (var rootTmod in rootTmods)
+            {
                 var tmodName = Path.GetFileName(rootTmod);
                 items.Add(new TmodWorkshopItem(null, tmodName, rootTmod));
             }
 
-            foreach (var version in Directory.EnumerateDirectories(dir)) {
+            foreach (var version in Directory.EnumerateDirectories(dir))
+            {
                 var versionName = Path.GetFileName(version);
 
                 var tmods = Directory.EnumerateFiles(version, "*.tmod", SearchOption.TopDirectoryOnly);
 
-                foreach (var tmod in tmods) {
+                foreach (var tmod in tmods)
+                {
                     var tmodName = Path.GetFileName(tmod);
                     items.Add(new TmodWorkshopItem(versionName, tmodName, tmod));
                 }
@@ -213,8 +247,10 @@ internal static class CommandUtil {
     ///     <see langword="true"/> if the workshop directory was found;
     ///     otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool TryGetWorkshopDirectory(int appId, [NotNullWhen(returnValue: true)] out string? workshopDir) {
-        if (!TryGetSteamDirectory(out var steamDir)) {
+    public static bool TryGetWorkshopDirectory(int appId, [NotNullWhen(returnValue: true)] out string? workshopDir)
+    {
+        if (!TryGetSteamDirectory(out var steamDir))
+        {
             workshopDir = null;
             return false;
         }
@@ -238,8 +274,10 @@ internal static class CommandUtil {
     ///     <see langword="true"/> if the Steam directory was found; otherwise,
     ///     <see langword="false"/>.
     /// </returns>
-    public static bool TryGetSteamDirectory([NotNullWhen(returnValue: true)] out string? steamDir) {
-        foreach (var dir in getSteamDirectories()) {
+    public static bool TryGetSteamDirectory([NotNullWhen(returnValue: true)] out string? steamDir)
+    {
+        foreach (var dir in getSteamDirectories())
+        {
             if (dir is null)
                 continue;
 
@@ -253,18 +291,21 @@ internal static class CommandUtil {
         steamDir = null;
         return false;
 
-        IEnumerable<string?> getSteamDirectories() {
+        IEnumerable<string?> getSteamDirectories()
+        {
             // If HOME exists, we can use known Linux and MacOS paths.
             // If not, we'll use Windows paths instead.
 
-            if (Environment.GetEnvironmentVariable("HOME") is { } home) {
-                yield return Path.Combine(home, ".steam", "steam");
-                yield return Path.Combine(home, ".local", "share", "Steam");
-                yield return Path.Combine(home, ".var", "app", "com.valvesoftware.Steam", "data", "Steam");
+            if (Environment.GetEnvironmentVariable("HOME") is { } home)
+            {
+                yield return Path.Combine(home, ".steam",  "steam");
+                yield return Path.Combine(home, ".local",  "share",               "Steam");
+                yield return Path.Combine(home, ".var",    "app",                 "com.valvesoftware.Steam", "data", "Steam");
                 yield return Path.Combine(home, "Library", "Application Support", "Steam");
             }
 
-            if (OperatingSystem.IsWindows()) {
+            if (OperatingSystem.IsWindows())
+            {
                 if (Registry.GetValue(@"HKEY_CURRENT_USER\Software\Valve\Steam", "SteamPath", null) is string steamPath)
                     yield return steamPath;
 

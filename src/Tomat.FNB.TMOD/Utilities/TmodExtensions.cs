@@ -11,7 +11,7 @@ using Tomat.FNB.TMOD.Converters;
 
 namespace Tomat.FNB.TMOD.Utilities;
 
-internal static class TmodExtensions
+public static class TmodExtensions
 {
     /// <summary>
     ///     Creates a read-only view into a <c>.tmod</c> file.
@@ -111,9 +111,9 @@ internal static class TmodExtensions
     ///     A new <c>.tmod</c> file with the converted entries.
     /// </returns>
     public static TmodFile Convert(
-        this IReadOnlyTmodFile tmod,
-        IFileConverter[]       converters,
-        int                    maxDegreeOfParallelism = -1
+        this ISerializableTmodFile tmod,
+        IFileConverter[]           converters,
+        int                        maxDegreeOfParallelism = -1
     )
     {
         if (maxDegreeOfParallelism < 0)
@@ -136,17 +136,17 @@ internal static class TmodExtensions
     }
 
     private static Dictionary<string, byte[]> ConvertAndDecompressEntries(
-        IReadOnlyTmodFile tmod,
-        IFileConverter[]  converters,
-        int               maxDegreeOfParallelism
+        ISerializableTmodFile tmod,
+        IFileConverter[]      converters,
+        int                   maxDegreeOfParallelism
     )
     {
         var entries = new Dictionary<string, byte[]>();
 
         var transformBlock = new TransformBlock<
-            (string path, byte[] data, IFileConverter[] converters),
+            (string path, ISerializableTmodFile.FileEntry entry, IFileConverter[] converters),
             (string path, byte[] bytes)>(
-            static obj => ExtractEntry(obj.path, obj.data, obj.converters),
+            static obj => ExtractEntry(obj.path, obj.entry, obj.converters),
             new ExecutionDataflowBlockOptions
             {
                 MaxDegreeOfParallelism = maxDegreeOfParallelism,
@@ -179,13 +179,15 @@ internal static class TmodExtensions
         return entries;
 
         static (string path, byte[] bytes) ExtractEntry(
-            string           path,
-            byte[]           data,
-            IFileConverter[] converters
+            string                          path,
+            ISerializableTmodFile.FileEntry entry,
+            IFileConverter[]                converters
         )
         {
-            data = Decompress(data, data.Length);
-            return ProcessEntry(path, data, converters);
+            Debug.Assert(entry.Data is not null);
+
+            var decompressed = Decompress(entry.Data, entry.Length);
+            return ProcessEntry(path, decompressed, converters);
         }
     }
 
@@ -304,7 +306,7 @@ internal static class TmodExtensions
             }
         }
 
-        return data;
+        return array;
     }
 
     private static byte[] Compress(byte[] data)

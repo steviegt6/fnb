@@ -2,16 +2,22 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+
 using CliFx;
 using CliFx.Attributes;
 using CliFx.Infrastructure;
+
 using JetBrains.Annotations;
+
 using Tomat.FNB.TMOD;
+using Tomat.FNB.TMOD.Converters.Extractors;
+using Tomat.FNB.TMOD.Utilities;
 
 namespace Tomat.FNB.Commands.TMOD.Abstract;
 
-public abstract class TmodAbstractExtractCommand : ICommand {
-    #region Options
+public abstract class TmodAbstractExtractCommand : ICommand
+{
+#region Options
     /// <summary>
     ///     The directory to extract the mod to. If not specified, it will be
     ///     extracted to <c>./&lt;mod name&gt;</c>.
@@ -42,53 +48,48 @@ public abstract class TmodAbstractExtractCommand : ICommand {
     [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign)]
     [CommandOption("pure", 'p', Description = "Whether to use pure file representations (no conversions, i.e. no .rawimg -> .png)", IsRequired = false)]
     public bool Pure { get; set; }
-    #endregion
+#endregion
 
     public abstract ValueTask ExecuteAsync(IConsole console);
 
-    protected async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath) {
-        if (File is null && !List) {
+    protected async ValueTask ExtractArchive(IConsole console, string archivePath, string? destinationPath)
+    {
+        if (File is null && !List)
+        {
             await CommandUtil.ExtractArchive(console, archivePath, destinationPath);
             return;
         }
 
         if (List)
         {
-            ITmodFile tmodFile;
+            IReadOnlyTmodFile tmodFile;
             try
             {
-                tmodFile = TmodFileSerializer.Read(archivePath, new TmodFileSerializer.ReadOptions());
+                await using var fs = System.IO.File.OpenRead(archivePath);
+                {
+                    var serializableTmodFile = SerializableTmodFile.FromStream(fs);
+                    tmodFile = serializableTmodFile.Convert(Pure ? [] : [RawimgExtractor.GetRawimgExtractor(), new InfoExtractor()]);
+                }
             }
-            if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
-                await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
+            catch (Exception e)
+            {
+                await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\": {e}");
                 return;
             }
 
-            if (Pure) {
-                await console.Output.WriteLineAsync($"Files in \"{archivePath}\":");
-                foreach (var entry in tmodFile.Entries)
-                    await console.Output.WriteLineAsync(entry.Path);
-            }
-            else {
-                ActionBlock<TmodFileData> finalBlock = new(
-                    async data => {
-                        await console.Output.WriteLineAsync(data.Path);
-                    },
-                    new ExecutionDataflowBlockOptions {
-                        MaxDegreeOfParallelism = 1,
-                    }
-                );
-
-                await console.Output.WriteLineAsync($"Files in \"{archivePath}\":");
-                tmodFile.Extract(finalBlock, -1);
+            await console.Output.WriteLineAsync($"Files in \"{archivePath}\":");
+            foreach (var (path, _) in tmodFile.Entries)
+            {
+                await console.Output.WriteLineAsync(path);
             }
 
             return;
         }
 
-        if (File is not null) {
+        if (File is not null)
+        {
             destinationPath ??= Path.GetFileNameWithoutExtension(archivePath);
-            destinationPath = Path.Combine(destinationPath, File);
+            destinationPath =   Path.Combine(destinationPath, File);
 
             if (System.IO.File.Exists(destinationPath))
                 System.IO.File.Delete(destinationPath);
@@ -97,51 +98,30 @@ public abstract class TmodAbstractExtractCommand : ICommand {
             if (dir is not null)
                 Directory.CreateDirectory(dir);
 
-            if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
-                await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
+            IReadOnlyTmodFile tmodFile;
+            try
+            {
+                await using var fs = System.IO.File.OpenRead(archivePath);
+                {
+                    var serializableTmodFile = SerializableTmodFile.FromStream(fs);
+                    tmodFile = serializableTmodFile.Convert(Pure ? [] : [RawimgExtractor.GetRawimgExtractor(), new InfoExtractor()]);
+                }
+            }
+            catch (Exception e)
+            {
+                await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\": {e}");
                 return;
             }
 
-            if (Pure) {
-                var entry = tmodFile.Entries.Find(e => e.Path == File);
-                if (entry.Data is null) {
-                    await console.Error.WriteLineAsync($"No file found in \"{archivePath}\" with the name \"{File}\".");
-                    return;
-                }
-
-                await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
-
-                // await System.IO.File.WriteAllBytesAsync(destinationPath, entry.Data.Array);
-                await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write);
-                fs.Write(entry.Data.Span);
-            }
-            else {
-                var found = false;
-
-                ActionBlock<TmodFileData> finalBlock = new(
-                    async data => {
-                        if (data.Path == File) {
-                            found = true;
-                            await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
-
-                            // await System.IO.File.WriteAllBytesAsync(destinationPath, data.Data.Array);
-                            await using var fs = System.IO.File.Open(destinationPath, FileMode.OpenOrCreate, FileAccess.Write);
-                            fs.Write(data.Data.Span);
-                        }
-                    },
-                    new ExecutionDataflowBlockOptions {
-                        MaxDegreeOfParallelism = 1,
-                    }
-                );
-
-                tmodFile.Extract(finalBlock, -1);
-
-                if (!found) {
-                    await console.Error.WriteLineAsync($"No file found in \"{archivePath}\" with the name \"{File}\".");
-                    return;
-                }
+            if (!tmodFile.Entries.TryGetValue(File, out var entry))
+            {
+                await console.Error.WriteLineAsync($"No file found in \"{archivePath}\" with the name \"{File}\".");
+                return;
             }
 
+            await console.Output.WriteLineAsync($"Extracting \"{File}\" from \"{archivePath}\" to \"{destinationPath}\"...");
+
+            await System.IO.File.WriteAllBytesAsync(destinationPath, entry);
             return;
         }
 

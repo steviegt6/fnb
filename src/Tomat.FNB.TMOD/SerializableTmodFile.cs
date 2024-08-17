@@ -180,7 +180,7 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
 
             if (isLegacy)
             {
-                for (var i = 0; i < entries.Count; i++)
+                for (var i = 0; i < entryCount; i++)
                 {
                     var path   = reader.ReadString();
                     var length = reader.ReadInt32();
@@ -199,7 +199,7 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
             }
             else
             {
-                for (var i = 0; i < entries.Count; i++)
+                for (var i = 0; i < entryCount; i++)
                 {
                     var path             = reader.ReadString();
                     var length           = reader.ReadInt32();
