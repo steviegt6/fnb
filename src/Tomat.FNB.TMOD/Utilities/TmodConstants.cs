@@ -1,13 +1,13 @@
-﻿global using static Tomat.FNB.TMOD.TmodConstants;
+﻿global using static Tomat.FNB.TMOD.Utilities.TmodConstants;
 
 using System;
 
-namespace Tomat.FNB.TMOD;
+namespace Tomat.FNB.TMOD.Utilities;
 
 /// <summary>
 ///     Well-known constants pertaining to the <c>.tmod</c> file format.
 /// </summary>
-public static class TmodConstants
+internal static class TmodConstants
 {
     /// <summary>
     ///     The default minimum size for a file to be compressed.

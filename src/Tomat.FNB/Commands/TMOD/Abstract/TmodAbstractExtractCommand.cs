@@ -52,7 +52,13 @@ public abstract class TmodAbstractExtractCommand : ICommand {
             return;
         }
 
-        if (List) {
+        if (List)
+        {
+            ITmodFile tmodFile;
+            try
+            {
+                tmodFile = TmodFileSerializer.Read(archivePath, new TmodFileSerializer.ReadOptions());
+            }
             if (!TmodFile.TryReadFromPath(archivePath, out var tmodFile)) {
                 await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\".");
                 return;
