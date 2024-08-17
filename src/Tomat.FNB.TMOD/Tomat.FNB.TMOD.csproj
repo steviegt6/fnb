@@ -26,8 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Converters\Extractors\" />
-      <Folder Include="Converters\Packers\" />
+        <Folder Include="Converters\Packers\"/>
     </ItemGroup>
 
 </Project>
