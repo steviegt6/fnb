@@ -76,39 +76,17 @@ internal static class TmodExtensions
             maxDegreeOfParallelism
         );
 
-        var encoding = new System.Text.UTF8Encoding(false);
-        var offset   = 0;
-        if (!isLegacy)
-        {
-            offset += sizeof(uint); // TMOD_HEADER
-            offset += encoding.GetByteCount(tmod.ModLoaderVersion);
-            offset += HASH_LENGTH + SIGNATURE_LENGTH + sizeof(uint); // Hash
-            offset += encoding.GetByteCount(tmod.Name);
-            offset += encoding.GetByteCount(tmod.Version);
-            offset += sizeof(int); // Entries.Count
-
-            foreach (var (path, _) in entries)
-            {
-                offset += encoding.GetByteCount(path);
-                offset += sizeof(int); // Length
-                offset += sizeof(int); // CompressedLength
-            }
-        }
-
         var fileEntries = new Dictionary<string, ISerializableTmodFile.FileEntry>();
         {
             foreach (var (path, (originalBytes, compressedBytes)) in entries)
             {
                 var entry = new ISerializableTmodFile.FileEntry
                 {
-                    Offset           = offset,
                     Length           = originalBytes.Length,
                     CompressedLength = compressedBytes.Length,
                     Data             = compressedBytes,
                 };
                 fileEntries.Add(path, entry);
-
-                offset += compressedBytes.Length;
             }
         }
 

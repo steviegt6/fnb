@@ -85,7 +85,6 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
             {
                 foreach (var (path, entry) in Entries)
                 {
-                    Debug.Assert(entry.Offset           == 0);
                     Debug.Assert(entry.CompressedLength == 0);
                     Debug.Assert(entry.Data is not null);
                     Debug.Assert(entry.Length == entry.Data.Length);
@@ -97,11 +96,8 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
             }
             else
             {
-                var offset = writer.BaseStream.Position;
-
                 foreach (var (path, entry) in Entries)
                 {
-                    Debug.Assert(entry.Offset           == offset);
                     Debug.Assert(entry.CompressedLength <= entry.Length);
                     Debug.Assert(entry.Data is not null);
                     Debug.Assert(entry.Length == entry.Data.Length || entry.CompressedLength == entry.Data.Length);
@@ -187,7 +183,6 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
                         path,
                         new ISerializableTmodFile.FileEntry
                         {
-                            Offset           = 0,
                             Length           = length,
                             CompressedLength = length,
                             Data             = data,
@@ -207,7 +202,6 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
                         path,
                         new ISerializableTmodFile.FileEntry
                         {
-                            Offset           = 0,
                             Length           = length,
                             CompressedLength = compressedLength,
                             Data             = null,
@@ -215,10 +209,14 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
                     );
                 }
 
-                var offset = (int)stream.Position;
                 foreach (var (path, entry) in entries)
                 {
+                    Debug.Assert(entry.CompressedLength <= entry.Length && entry.CompressedLength != 0);
+
                     var data = reader.ReadBytes(entry.CompressedLength);
+                    {
+                        Debug.Assert(data.Length == entry.CompressedLength);
+                    }
 
                     entries[path] = entry with
                     {
@@ -226,6 +224,8 @@ public readonly struct SerializableTmodFile : ISerializableTmodFile
                     };
                 }
             }
+
+            return new SerializableTmodFile(modLoaderVersion, name, version, entries);
         }
         finally
         {

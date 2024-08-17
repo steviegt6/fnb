@@ -16,17 +16,6 @@ public interface ISerializableTmodFile : IReadOnlyTmodFile
     public readonly struct FileEntry
     {
         /// <summary>
-        ///     The offset of this entry within the <c>.tmod</c> file.
-        /// </summary>
-        /// <remarks>
-        ///     This is only knowable for non-legacy versions of the
-        ///     <c>.tmod</c> file format. Thus, it is possible to check whether
-        ///     this entry belongs to a legacy file by checking if this value is
-        ///     zero.
-        /// </remarks>
-        public int Offset { get; init; }
-
-        /// <summary>
         ///     The real (uncompressed) length of the entry.
         /// </summary>
         public int Length { get; init; }
