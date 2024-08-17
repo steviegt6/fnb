@@ -56,7 +56,7 @@ internal static class TmodExtensions
         int                    maxDegreeOfParallelism     = -1
     )
     {
-        if (maxDegreeOfParallelism == -1)
+        if (maxDegreeOfParallelism < 0)
         {
             maxDegreeOfParallelism = Environment.ProcessorCount;
         }
@@ -96,6 +96,97 @@ internal static class TmodExtensions
             tmod.Version,
             fileEntries
         );
+    }
+
+    /// <summary>
+    ///     Uses the given <paramref name="converters"/> to convert the
+    ///     <paramref name="tmod"/> file['s entries].
+    /// </summary>
+    /// <param name="tmod">The <c>.tmod</c> file.</param>
+    /// <param name="converters">The file converters.</param>
+    /// <param name="maxDegreeOfParallelism">
+    ///     The max degree of parallelism to use when converting files.
+    /// </param>
+    /// <returns>
+    ///     A new <c>.tmod</c> file with the converted entries.
+    /// </returns>
+    public static TmodFile Convert(
+        this IReadOnlyTmodFile tmod,
+        IFileConverter[]       converters,
+        int                    maxDegreeOfParallelism = -1
+    )
+    {
+        if (maxDegreeOfParallelism < 0)
+        {
+            maxDegreeOfParallelism = Environment.ProcessorCount;
+        }
+
+        var entries = ConvertAndDecompressEntries(
+            tmod,
+            converters,
+            maxDegreeOfParallelism
+        );
+
+        return new TmodFile(
+            tmod.ModLoaderVersion,
+            tmod.Name,
+            tmod.Version,
+            entries
+        );
+    }
+
+    private static Dictionary<string, byte[]> ConvertAndDecompressEntries(
+        IReadOnlyTmodFile tmod,
+        IFileConverter[]  converters,
+        int               maxDegreeOfParallelism
+    )
+    {
+        var entries = new Dictionary<string, byte[]>();
+
+        var transformBlock = new TransformBlock<
+            (string path, byte[] data, IFileConverter[] converters),
+            (string path, byte[] bytes)>(
+            static obj => ExtractEntry(obj.path, obj.data, obj.converters),
+            new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = maxDegreeOfParallelism,
+            }
+        );
+        {
+            var action = new ActionBlock<(string path, byte[] bytes)>(
+                obj =>
+                {
+                    entries.Add(obj.path, obj.bytes);
+                }
+            );
+            transformBlock.LinkTo(
+                action,
+                new DataflowLinkOptions
+                {
+                    PropagateCompletion = true,
+                }
+            );
+
+            foreach (var (path, entry) in tmod.Entries)
+            {
+                transformBlock.Post((path, entry, converters));
+            }
+
+            transformBlock.Complete();
+            action.Completion.Wait();
+        }
+
+        return entries;
+
+        static (string path, byte[] bytes) ExtractEntry(
+            string           path,
+            byte[]           data,
+            IFileConverter[] converters
+        )
+        {
+            data = Decompress(data, data.Length);
+            return ProcessEntry(path, data, converters);
+        }
     }
 
     private static Dictionary<string, (byte[] originalBytes, byte[] compressedBytes)> ConvertAndCompressEntries(
@@ -144,39 +235,27 @@ internal static class TmodExtensions
         }
 
         return entries;
-    }
 
-    private static (string path, byte[] bytes) ExtractEntry(
-        string                          path,
-        ISerializableTmodFile.FileEntry entry,
-        IFileConverter[]                converters
-    )
-    {
-        Debug.Assert(entry.Data is not null);
-
-        entry = entry with { Data = Decompress(entry.Data, entry.Length) };
-        return ProcessEntry(path, entry.Data, converters);
-    }
-
-    private static (string path, byte[] bytes) PackEntry(
-        string           path,
-        byte[]           data,
-        IFileConverter[] converters,
-        bool             compress                   = true,
-        long             minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
-        float            minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
-    )
-    {
-        (path, data) = ProcessEntry(path, data, converters);
-
-        if (!compress || data.Length < minimumCompressionSize)
+        static (string path, byte[] bytes) PackEntry(
+            string           path,
+            byte[]           data,
+            IFileConverter[] converters,
+            bool             compress                   = true,
+            long             minimumCompressionSize     = DEFAULT_MINIMUM_COMPRESSION_SIZE,
+            float            minimumCompressionTradeoff = DEFAULT_MINIMUM_COMPRESSION_TRADEOFF
+        )
         {
-            return (path, data);
-        }
+            (path, data) = ProcessEntry(path, data, converters);
 
-        var compressedBytes = Compress(data);
-        var meetsTradeoff   = compressedBytes.Length < data.Length * minimumCompressionTradeoff;
-        return (path, meetsTradeoff ? compressedBytes : data);
+            if (!compress || data.Length < minimumCompressionSize)
+            {
+                return (path, data);
+            }
+
+            var compressedBytes = Compress(data);
+            var meetsTradeoff   = compressedBytes.Length < data.Length * minimumCompressionTradeoff;
+            return (path, meetsTradeoff ? compressedBytes : data);
+        }
     }
 
     private static (string path, byte[] bytes) ProcessEntry(
