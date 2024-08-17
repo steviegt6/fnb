@@ -62,7 +62,24 @@ internal static class CommandUtil
             await using var fs = File.OpenRead(archivePath);
             {
                 var serializableTmodFile = SerializableTmodFile.FromStream(fs);
-                tmodFile = serializableTmodFile.Convert([RawimgExtractor.GetRawimgExtractor(), new InfoExtractor()]);
+                tmodFile = serializableTmodFile.Convert(
+                    [RawimgExtractor.GetRawimgExtractor(), new InfoExtractor()],
+                    action:
+                    (addFile, path, data) =>
+                    {
+                        addFile(path, data);
+
+                        var dest = Path.Combine(destinationPath, path);
+
+                        var dir = Path.GetDirectoryName(dest);
+                        if (dir is not null)
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
+
+                        File.WriteAllBytes(dest, data);
+                    }
+                );
             }
         }
         catch (Exception e)
@@ -70,32 +87,6 @@ internal static class CommandUtil
             await console.Error.WriteLineAsync($"Failed to read \"{archivePath}\": {e}");
             return;
         }
-
-        var transformBlock = new ActionBlock<(string path, byte[] data)>(
-            async x =>
-            {
-                var (path, data) = x;
-                var dest = Path.Combine(destinationPath, path);
-
-                var dir = Path.GetDirectoryName(dest);
-                if (dir is not null)
-                    Directory.CreateDirectory(dir);
-
-                await File.WriteAllBytesAsync(dest, data);
-            },
-            new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = Environment.ProcessorCount,
-            }
-        );
-
-        foreach (var (path, entry) in tmodFile.Entries)
-        {
-            transformBlock.Post((path, entry));
-        }
-
-        transformBlock.Complete();
-        transformBlock.Completion.Wait();
 
 #if DEBUG || true
         watch.Stop();

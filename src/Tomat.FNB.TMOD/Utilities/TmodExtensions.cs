@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -104,27 +105,57 @@ public static class TmodExtensions
     /// </summary>
     /// <param name="tmod">The <c>.tmod</c> file.</param>
     /// <param name="converters">The file converters.</param>
-    /// <param name="maxDegreeOfParallelism">
+    /// <param name="action">An additional action that may be performed.</param>
+    /// <param name="transformParallelism">
     ///     The max degree of parallelism to use when converting files.
+    /// </param>
+    /// <param name="actionParallelism">
+    ///     The max degree of parallelism to use when performing actions.
     /// </param>
     /// <returns>
     ///     A new <c>.tmod</c> file with the converted entries.
     /// </returns>
     public static TmodFile Convert(
-        this ISerializableTmodFile tmod,
-        IFileConverter[]           converters,
-        int                        maxDegreeOfParallelism = -1
+        this ISerializableTmodFile                      tmod,
+        IFileConverter[]                                converters,
+        Action<Action<string, byte[]>, string, byte[]>? action               = null,
+        int                                             transformParallelism = -1,
+        int                                             actionParallelism    = -1
     )
     {
-        if (maxDegreeOfParallelism < 0)
+        const int numerator   = 6;
+        const int denominator = 8;
+
+        if (transformParallelism < 0 && actionParallelism < 0)
         {
-            maxDegreeOfParallelism = Environment.ProcessorCount;
+            transformParallelism = Math.Max(1, Environment.ProcessorCount * numerator                 / denominator);
+            actionParallelism    = Math.Max(1, Environment.ProcessorCount * (denominator - numerator) / denominator);
+        }
+        else if (transformParallelism < 0)
+        {
+            if (actionParallelism >= Environment.ProcessorCount)
+            {
+                actionParallelism = Math.Max(1, Environment.ProcessorCount - 1);
+            }
+
+            transformParallelism = Environment.ProcessorCount - actionParallelism;
+        }
+        else if (actionParallelism < 0)
+        {
+            if (transformParallelism >= Environment.ProcessorCount)
+            {
+                transformParallelism = Math.Max(1, Environment.ProcessorCount - 1);
+            }
+
+            actionParallelism = Environment.ProcessorCount - transformParallelism;
         }
 
         var entries = ConvertAndDecompressEntries(
             tmod,
             converters,
-            maxDegreeOfParallelism
+            action,
+            transformParallelism,
+            actionParallelism
         );
 
         return new TmodFile(
@@ -136,9 +167,11 @@ public static class TmodExtensions
     }
 
     private static Dictionary<string, byte[]> ConvertAndDecompressEntries(
-        ISerializableTmodFile tmod,
-        IFileConverter[]      converters,
-        int                   maxDegreeOfParallelism
+        ISerializableTmodFile                           tmod,
+        IFileConverter[]                                converters,
+        Action<Action<string, byte[]>, string, byte[]>? action,
+        int                                             transformParallelism,
+        int                                             actionParallelism
     )
     {
         var entries = new Dictionary<string, byte[]>();
@@ -149,18 +182,30 @@ public static class TmodExtensions
             static obj => ExtractEntry(obj.path, obj.entry, obj.converters),
             new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = maxDegreeOfParallelism,
+                MaxDegreeOfParallelism = transformParallelism,
             }
         );
         {
-            var action = new ActionBlock<(string path, byte[] bytes)>(
+            var concurrentEntries = new ConcurrentDictionary<string, byte[]>();
+
+            var addFile = new Action<string, byte[]>((path, bytes) => concurrentEntries.AddOrUpdate(path, bytes, (_, _) => bytes));
+            action ??= (act, path, bytes) =>
+            {
+                act(path, bytes);
+            };
+
+            var actionBlock = new ActionBlock<(string path, byte[] bytes)>(
                 obj =>
                 {
-                    entries.Add(obj.path, obj.bytes);
+                    action(addFile, obj.path, obj.bytes);
+                },
+                new ExecutionDataflowBlockOptions
+                {
+                    MaxDegreeOfParallelism = actionParallelism,
                 }
             );
             transformBlock.LinkTo(
-                action,
+                actionBlock,
                 new DataflowLinkOptions
                 {
                     PropagateCompletion = true,
@@ -173,7 +218,12 @@ public static class TmodExtensions
             }
 
             transformBlock.Complete();
-            action.Completion.Wait();
+            actionBlock.Completion.Wait();
+
+            foreach (var (path, bytes) in concurrentEntries)
+            {
+                entries.Add(path, bytes);
+            }
         }
 
         return entries;
