@@ -15,7 +15,10 @@
     <ItemGroup>
         <PackageReference Include="CliFx" Version="2.3.5"/>
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0"/>
-        <PackageReference Include="LibDeflate.NET" Version="1.19.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj" />
     </ItemGroup>
 
 </Project>

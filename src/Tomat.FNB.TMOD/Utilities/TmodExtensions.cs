@@ -6,8 +6,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks.Dataflow;
 
-using LibDeflate;
+using Tomat.FNB.Deflate;
 
+using Tomat.FNB.Common.Compression;
 using Tomat.FNB.TMOD.Converters;
 
 namespace Tomat.FNB.TMOD.Utilities;
