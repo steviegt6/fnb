@@ -7,18 +7,34 @@ namespace Tomat.FNB.Common.Compression;
 
 public abstract class Compressor : IDisposable
 {
-    public IMemoryOwner<byte>? Compress(
+    public abstract int Compress(ReadOnlySpan<byte> input, Span<byte> output);
+
+    public abstract int GetBound(int inputLength);
+
+    protected virtual void Dispose(bool disposing) { }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+}
+
+public static class CompressorExtensions
+{
+    public static IMemoryOwner<byte>? Compress(
+        this Compressor    @this,
         ReadOnlySpan<byte> input,
         bool               useUpperBound = false
     )
     {
-        var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
+        var output = MemoryOwner<byte>.Allocate(useUpperBound ? @this.GetBound(input.Length) : input.Length);
         try
         {
-            var bytesWritten = CompressCore(input, output.Span);
-            if (bytesWritten != nuint.Zero)
+            var bytesWritten = @this.Compress(input, output.Span);
+            if (bytesWritten != 0)
             {
-                return output[..(int)bytesWritten];
+                return output[..bytesWritten];
             }
 
             output.Dispose();
@@ -29,37 +45,5 @@ public abstract class Compressor : IDisposable
             output.Dispose();
             throw;
         }
-    }
-
-    public int Compress(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output
-    )
-    {
-        return (int)CompressCore(input, output);
-    }
-    
-    public int GetBound(
-        int inputLength
-    )
-    {
-        return (int)GetBoundCore((nuint)inputLength);
-    }
-
-    protected abstract nuint CompressCore(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output
-    );
-
-    protected abstract nuint GetBoundCore(
-        nuint inputLength
-    );
-
-    protected virtual void Dispose(bool disposing) { }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

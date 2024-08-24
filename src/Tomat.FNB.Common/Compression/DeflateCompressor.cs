@@ -19,9 +19,7 @@ public sealed class DeflateCompressor(int compressionLevel) : LibDeflateCompress
         );
     }
 
-    protected override nuint GetBoundCore(
-        nuint inputLength
-    )
+    protected override nuint GetBoundCore(nuint inputLength)
     {
         return libdeflate_deflate_compress_bound(Compressor, inputLength);
     }

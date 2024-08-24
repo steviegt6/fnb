@@ -19,9 +19,7 @@ public sealed class GzipCompressor(int compressionLevel) : LibDeflateCompressor(
         );
     }
 
-    protected override nuint GetBoundCore(
-        nuint inputLength
-    )
+    protected override nuint GetBoundCore(nuint inputLength)
     {
         return libdeflate_gzip_compress_bound(Compressor, inputLength);
     }

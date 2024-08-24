@@ -20,6 +20,23 @@ public abstract class LibDeflateCompressor : Compressor
         }
     }
 
+    public override int Compress(ReadOnlySpan<byte> input, Span<byte> output)
+    {
+        return (int)CompressCore(input, output);
+    }
+
+    public override int GetBound(int inputLength)
+    {
+        return (int)GetBoundCore((nuint)inputLength);
+    }
+
+    protected abstract nuint CompressCore(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output
+    );
+
+    protected abstract nuint GetBoundCore(nuint inputLength);
+
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);

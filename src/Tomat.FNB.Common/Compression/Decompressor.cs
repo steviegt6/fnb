@@ -7,7 +7,45 @@ namespace Tomat.FNB.Common.Compression;
 
 public abstract class Decompressor : IDisposable
 {
-    public OperationStatus Decompress(
+    public abstract OperationStatus Decompress(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        int                uncompressedSize
+    );
+
+    public abstract OperationStatus Decompress(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        out int            bytesWritten
+    );
+
+    public abstract OperationStatus Decompress(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        int                uncompressedSize,
+        out int            bytesRead
+    );
+
+    public abstract OperationStatus Decompress(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        out int            bytesWritten,
+        out int            bytesRead
+    );
+
+    protected virtual void Dispose(bool disposing) { }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+}
+
+public static class DecompressorExtensions
+{
+    public static OperationStatus Decompress(
+        this Decompressor       @this,
         ReadOnlySpan<byte>      input,
         int                     uncompressedSize,
         out IMemoryOwner<byte>? outputOwner,
@@ -17,12 +55,12 @@ public abstract class Decompressor : IDisposable
         var output = MemoryOwner<byte>.Allocate(uncompressedSize);
         try
         {
-            var status = DecompressCore(input, output.Span, (nuint)uncompressedSize, out var inBytesCount);
+            var status = @this.Decompress(input, output.Span, uncompressedSize, out var inBytesCount);
             switch (status)
             {
                 case OperationStatus.Done:
                     outputOwner = output;
-                    bytesRead   = (int)inBytesCount;
+                    bytesRead   = inBytesCount;
                     return status;
 
                 case OperationStatus.NeedMoreData:
@@ -42,7 +80,8 @@ public abstract class Decompressor : IDisposable
         }
     }
 
-    public OperationStatus Decompress(
+    public static OperationStatus Decompress(
+        this Decompressor       @this,
         ReadOnlySpan<byte>      input,
         int                     uncompressedSize,
         out IMemoryOwner<byte>? outputOwner
@@ -51,7 +90,7 @@ public abstract class Decompressor : IDisposable
         var output = MemoryOwner<byte>.Allocate(uncompressedSize);
         try
         {
-            var status = DecompressCore(input, output.Span, uncompressedSize: (nuint)uncompressedSize);
+            var status = @this.Decompress(input, output.Span, uncompressedSize);
             switch (status)
             {
                 case OperationStatus.Done:
@@ -74,14 +113,20 @@ public abstract class Decompressor : IDisposable
         }
     }
 
-    public OperationStatus Decompress(ReadOnlySpan<byte> input, Span<byte> output, out int bytesWritten, out int bytesRead)
+    public static OperationStatus Decompress(
+        this Decompressor  @this,
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        out int            bytesWritten,
+        out int            bytesRead
+    )
     {
-        var status = DecompressCore(input, output, out var outBytesCount, out var inBytesCount);
+        var status = @this.Decompress(input, output, out var outBytesCount, out var inBytesCount);
         switch (status)
         {
             case OperationStatus.Done:
-                bytesWritten = (int)outBytesCount;
-                bytesRead    = (int)inBytesCount;
+                bytesWritten = outBytesCount;
+                bytesRead    = inBytesCount;
                 return status;
 
             case OperationStatus.NeedMoreData:
@@ -94,13 +139,18 @@ public abstract class Decompressor : IDisposable
         }
     }
 
-    public OperationStatus Decompress(ReadOnlySpan<byte> input, Span<byte> output, out int bytesWritten)
+    public static OperationStatus Decompress(
+        this Decompressor  @this,
+        ReadOnlySpan<byte> input,
+        Span<byte>         output,
+        out int            bytesWritten
+    )
     {
-        var status = DecompressCore(input, output, out var outBytesCount);
+        var status = @this.Decompress(input, output, out var outBytesCount);
         switch (status)
         {
             case OperationStatus.Done:
-                bytesWritten = (int)outBytesCount;
+                bytesWritten = outBytesCount;
                 return status;
 
             case OperationStatus.NeedMoreData:
@@ -110,39 +160,5 @@ public abstract class Decompressor : IDisposable
                 bytesWritten = 0;
                 return status;
         }
-    }
-
-    protected abstract OperationStatus DecompressCore(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output,
-        nuint              uncompressedSize
-    );
-
-    protected abstract OperationStatus DecompressCore(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output,
-        out nuint          bytesWritten
-    );
-
-    protected abstract OperationStatus DecompressCore(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output,
-        nuint              uncompressedSize,
-        out nuint          bytesRead
-    );
-
-    protected abstract OperationStatus DecompressCore(
-        ReadOnlySpan<byte> input,
-        Span<byte>         output,
-        out nuint          bytesWritten,
-        out nuint          bytesRead
-    );
-
-    protected virtual void Dispose(bool disposing) { }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }
