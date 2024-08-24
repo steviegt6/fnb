@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Tomat.FNB.Common.Compression;
 
-public sealed class DeflateCompressor(int compressionLevel) : Compressor(compressionLevel)
+public sealed class DeflateCompressor(int compressionLevel) : LibDeflateCompressor(compressionLevel)
 {
     protected override nuint CompressCore(
         ReadOnlySpan<byte> input,
@@ -11,7 +11,7 @@ public sealed class DeflateCompressor(int compressionLevel) : Compressor(compres
     )
     {
         return libdeflate_deflate_compress(
-            CompressorPtr,
+            Compressor,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -23,6 +23,6 @@ public sealed class DeflateCompressor(int compressionLevel) : Compressor(compres
         nuint inputLength
     )
     {
-        return libdeflate_deflate_compress_bound(CompressorPtr, inputLength);
+        return libdeflate_deflate_compress_bound(Compressor, inputLength);
     }
 }

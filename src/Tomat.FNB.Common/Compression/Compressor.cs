@@ -7,53 +7,27 @@ namespace Tomat.FNB.Common.Compression;
 
 public abstract class Compressor : IDisposable
 {
-    protected nint CompressorPtr { get; }
-
-    private bool disposed;
-
-    protected Compressor(int compressionLevel)
-    {
-        if (compressionLevel is < 0 or > 12)
-        {
-            throw new ArgumentOutOfRangeException(nameof(compressionLevel));
-        }
-
-        CompressorPtr = libdeflate_alloc_compressor(compressionLevel);
-        if (CompressorPtr == nint.Zero)
-        {
-            throw new InvalidOperationException("Failed to allocate compressor");
-        }
-    }
-
-    ~Compressor()
-    {
-        Dispose(disposing: false);
-    }
-
     public IMemoryOwner<byte>? Compress(
         ReadOnlySpan<byte> input,
         bool               useUpperBound = false
     )
     {
-        DisposedGuard();
+        var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
+        try
         {
-            var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
-            try
+            var bytesWritten = CompressCore(input, output.Span);
+            if (bytesWritten != nuint.Zero)
             {
-                var bytesWritten = CompressCore(input, output.Span);
-                if (bytesWritten != nuint.Zero)
-                {
-                    return output[..(int)bytesWritten];
-                }
+                return output[..(int)bytesWritten];
+            }
 
-                output.Dispose();
-                return null;
-            }
-            catch
-            {
-                output.Dispose();
-                throw;
-            }
+            output.Dispose();
+            return null;
+        }
+        catch
+        {
+            output.Dispose();
+            throw;
         }
     }
 
@@ -62,10 +36,14 @@ public abstract class Compressor : IDisposable
         Span<byte>         output
     )
     {
-        DisposedGuard();
-        {
-            return (int)CompressCore(input, output);
-        }
+        return (int)CompressCore(input, output);
+    }
+    
+    public int GetBound(
+        int inputLength
+    )
+    {
+        return (int)GetBoundCore((nuint)inputLength);
     }
 
     protected abstract nuint CompressCore(
@@ -77,40 +55,11 @@ public abstract class Compressor : IDisposable
         nuint inputLength
     );
 
-    private int GetBound(
-        int inputLength
-    )
-    {
-        DisposedGuard();
-        {
-            return (int)GetBoundCore((nuint)inputLength);
-        }
-    }
-
-    private void DisposedGuard()
-    {
-        if (!disposed)
-        {
-            return;
-        }
-
-        throw new ObjectDisposedException(nameof(Compressor));
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposed)
-        {
-            return;
-        }
-
-        libdeflate_free_compressor(CompressorPtr);
-        disposed = true;
-    }
+    protected virtual void Dispose(bool disposing) { }
 
     public void Dispose()
     {
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 }

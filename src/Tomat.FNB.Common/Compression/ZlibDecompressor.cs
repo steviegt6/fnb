@@ -7,7 +7,7 @@ using Tomat.FNB.Deflate;
 
 namespace Tomat.FNB.Common.Compression;
 
-public sealed class ZlibDecompressor : Decompressor
+public sealed class ZlibDecompressor : LibDeflateDecompressor
 {
     protected override OperationStatus DecompressCore(
         ReadOnlySpan<byte> input,
@@ -16,7 +16,7 @@ public sealed class ZlibDecompressor : Decompressor
     )
     {
         return libdeflate_zlib_decompress(
-            DecompressorPtr,
+            Decompressor,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -32,7 +32,7 @@ public sealed class ZlibDecompressor : Decompressor
     )
     {
         return libdeflate_zlib_decompress(
-            DecompressorPtr,
+            Decompressor,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -49,7 +49,7 @@ public sealed class ZlibDecompressor : Decompressor
     )
     {
         return libdeflate_zlib_decompress_ex(
-            DecompressorPtr,
+            Decompressor,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -67,7 +67,7 @@ public sealed class ZlibDecompressor : Decompressor
     )
     {
         return libdeflate_zlib_decompress_ex(
-            DecompressorPtr,
+            Decompressor,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),

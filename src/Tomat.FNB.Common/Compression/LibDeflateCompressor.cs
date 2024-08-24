@@ -1,0 +1,32 @@
+using System;
+
+namespace Tomat.FNB.Common.Compression;
+
+public abstract class LibDeflateCompressor : Compressor
+{
+    protected nint Compressor { get; }
+
+    protected LibDeflateCompressor(int compressionLevel)
+    {
+        if (compressionLevel is < 0 or > 12)
+        {
+            throw new ArgumentOutOfRangeException(nameof(compressionLevel));
+        }
+
+        Compressor = libdeflate_alloc_compressor(compressionLevel);
+        if (Compressor == nint.Zero)
+        {
+            throw new InvalidOperationException("Failed to allocate compressor");
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        if (disposing)
+        {
+            libdeflate_free_compressor(Compressor);
+        }
+    }
+}
