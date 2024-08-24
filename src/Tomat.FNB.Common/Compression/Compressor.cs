@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Buffers;
 
-using Tomat.FNB.Deflate.Imports;
+using CommunityToolkit.HighPerformance.Buffers;
 
 namespace Tomat.FNB.Common.Compression;
-
-using static Library;
 
 public abstract class Compressor : IDisposable
 {

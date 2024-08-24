@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using Tomat.FNB.Deflate;
+
 namespace Tomat.FNB.Common.Compression;
 
 public sealed class DeflateDecompressor : Decompressor

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Buffers;
 
+using CommunityToolkit.HighPerformance.Buffers;
+
 namespace Tomat.FNB.Common.Compression;
 
 public abstract class Decompressor : IDisposable
