@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj"/>
+        <ProjectReference Include="..\Tomat.FNB.FPNG\Tomat.FNB.FPNG.csproj"/>
     </ItemGroup>
 
 </Project>
