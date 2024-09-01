@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Common", "Tomat.F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Deflate", "LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj", "{44A03B0D-15F1-4EF5-992A-694EB528FC5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.FPNG.Managed", "Tomat.FNB.FPNG.Managed\Tomat.FNB.FPNG.Managed.csproj", "{2000EB79-E543-4494-AA5D-98584D339E1A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Benchmarks", "Tomat.FNB.Benchmarks\Tomat.FNB.Benchmarks.csproj", "{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Tests", "Tomat.FNB.Tests\Tomat.FNB.Tests.csproj", "{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}"
@@ -41,10 +39,6 @@ Global
 		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2000EB79-E543-4494-AA5D-98584D339E1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2000EB79-E543-4494-AA5D-98584D339E1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2000EB79-E543-4494-AA5D-98584D339E1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2000EB79-E543-4494-AA5D-98584D339E1A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Release|Any CPU.ActiveCfg = Release|Any CPU
