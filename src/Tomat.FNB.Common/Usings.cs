@@ -1,1 +1,0 @@
-global using static Tomat.FNB.Deflate.libdeflate;
