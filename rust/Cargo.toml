@@ -14,5 +14,5 @@ panic = "abort"
 strip = "debuginfo"
 
 [dependencies]
-image = "0.25.5"
 libc = "0.2.168"
+png = "0.17.15"
