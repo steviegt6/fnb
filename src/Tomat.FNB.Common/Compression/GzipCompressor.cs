@@ -11,7 +11,7 @@ public sealed class GzipCompressor(int compressionLevel) : LibDeflateCompressor(
     )
     {
         return libdeflate_gzip_compress(
-            Compressor,
+            CompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -21,6 +21,6 @@ public sealed class GzipCompressor(int compressionLevel) : LibDeflateCompressor(
 
     protected override nuint GetBoundCore(nuint inputLength)
     {
-        return libdeflate_gzip_compress_bound(Compressor, inputLength);
+        return libdeflate_gzip_compress_bound(CompressorPtr, inputLength);
     }
 }

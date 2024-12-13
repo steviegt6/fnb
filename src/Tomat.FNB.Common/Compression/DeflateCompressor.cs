@@ -11,7 +11,7 @@ public sealed class DeflateCompressor(int compressionLevel) : LibDeflateCompress
     )
     {
         return libdeflate_deflate_compress(
-            Compressor,
+            CompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -21,6 +21,6 @@ public sealed class DeflateCompressor(int compressionLevel) : LibDeflateCompress
 
     protected override nuint GetBoundCore(nuint inputLength)
     {
-        return libdeflate_deflate_compress_bound(Compressor, inputLength);
+        return libdeflate_deflate_compress_bound(CompressorPtr, inputLength);
     }
 }

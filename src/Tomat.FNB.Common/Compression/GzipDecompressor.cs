@@ -16,7 +16,7 @@ public sealed class GzipDecompressor : LibDeflateDecompressor
     )
     {
         return libdeflate_gzip_decompress(
-            Decompressor,
+            DecompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -32,7 +32,7 @@ public sealed class GzipDecompressor : LibDeflateDecompressor
     )
     {
         return libdeflate_gzip_decompress(
-            Decompressor,
+            DecompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -49,7 +49,7 @@ public sealed class GzipDecompressor : LibDeflateDecompressor
     )
     {
         return libdeflate_gzip_decompress_ex(
-            Decompressor,
+            DecompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),
@@ -67,7 +67,7 @@ public sealed class GzipDecompressor : LibDeflateDecompressor
     )
     {
         return libdeflate_gzip_decompress_ex(
-            Decompressor,
+            DecompressorPtr,
             MemoryMarshal.GetReference(input),
             (nuint)input.Length,
             ref MemoryMarshal.GetReference(output),

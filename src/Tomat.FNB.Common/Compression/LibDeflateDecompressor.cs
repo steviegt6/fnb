@@ -5,12 +5,12 @@ namespace Tomat.FNB.Common.Compression;
 
 public abstract class LibDeflateDecompressor : Decompressor
 {
-    protected nint Decompressor { get; }
+    protected nint DecompressorPtr { get; }
 
     protected LibDeflateDecompressor()
     {
-        Decompressor = libdeflate_alloc_decompressor();
-        if (Decompressor == nint.Zero)
+        DecompressorPtr = libdeflate_alloc_decompressor();
+        if (DecompressorPtr == nint.Zero)
         {
             throw new InvalidOperationException("Failed to allocate decompressor");
         }
@@ -93,7 +93,7 @@ public abstract class LibDeflateDecompressor : Decompressor
 
         if (disposing)
         {
-            libdeflate_free_decompressor(Decompressor);
+            libdeflate_free_decompressor(DecompressorPtr);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Tomat.FNB.Common.Compression;
 
 public abstract class LibDeflateCompressor : Compressor
 {
-    protected nint Compressor { get; }
+    protected nint CompressorPtr { get; }
 
     protected LibDeflateCompressor(int compressionLevel)
     {
@@ -13,8 +13,8 @@ public abstract class LibDeflateCompressor : Compressor
             throw new ArgumentOutOfRangeException(nameof(compressionLevel));
         }
 
-        Compressor = libdeflate_alloc_compressor(compressionLevel);
-        if (Compressor == nint.Zero)
+        CompressorPtr = libdeflate_alloc_compressor(compressionLevel);
+        if (CompressorPtr == nint.Zero)
         {
             throw new InvalidOperationException("Failed to allocate compressor");
         }
@@ -43,7 +43,7 @@ public abstract class LibDeflateCompressor : Compressor
 
         if (disposing)
         {
-            libdeflate_free_compressor(Compressor);
+            libdeflate_free_compressor(CompressorPtr);
         }
     }
 }
