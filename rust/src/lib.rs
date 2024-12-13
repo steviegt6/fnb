@@ -22,9 +22,8 @@ pub extern "C" fn encode_png(width: u32, height: u32, data: *const u8, length: *
         return ptr::null_mut();
     }
 
-    unsafe {
-        ptr::copy_nonoverlapping(buf.as_ptr(), ptr, *length);
-    }
+    let ptr = buf.as_mut_ptr();
+    std::mem::forget(buf);
 
     ptr
 }
