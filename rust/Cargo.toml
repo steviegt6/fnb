@@ -1,8 +1,8 @@
 [package]
-name = "image-fnb"
+name = "libfnb"
 version = "1.0.0"
 edition = "2021"
-description = "Wrapper around image-rs for use in fnb"
+description = "Native wrapper around various dependencies for fnb"
 
 [lib]
 crate-type = ["cdylib"]
@@ -14,5 +14,6 @@ panic = "abort"
 strip = "debuginfo"
 
 [dependencies]
+fdeflate = "0.3.7"
 libc = "0.2.168"
 png = "0.17.15"

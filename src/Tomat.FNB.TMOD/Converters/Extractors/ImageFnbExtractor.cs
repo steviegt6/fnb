@@ -50,10 +50,10 @@ internal sealed unsafe partial class ImageFnbExtractor : IFileConverter
     // [LibraryImport("image_fnb", EntryPoint = "free_encoded_png")]
     // private static partial void free_encoded_png(byte* data);
 
-    [LibraryImport("image_fnb", EntryPoint = "encode_png")]
-    private static partial byte* encode_png(nint width, nint height, byte* data, out nint length);
+    [LibraryImport("libfnb", EntryPoint = "encode_png")]
+    private static partial byte* encode_png(nint width, nint height, byte* data, out nuint length);
 
-    [LibraryImport("image_fnb", EntryPoint = "free_encoded_png")]
+    [LibraryImport("libfnb", EntryPoint = "free_encoded_png")]
     private static partial void free_encoded_png(byte* data);
 #endregion
 }

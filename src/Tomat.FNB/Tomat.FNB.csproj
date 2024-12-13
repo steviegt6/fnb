@@ -16,7 +16,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="image_fnb.dll" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="libfnb.dll" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
     <ItemGroup>

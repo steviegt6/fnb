@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
 
 using Tomat.FNB.Deflate;
@@ -13,7 +14,7 @@ using Tomat.FNB.TMOD.Converters;
 
 namespace Tomat.FNB.TMOD.Utilities;
 
-public static class TmodExtensions
+public static partial class TmodExtensions
 {
     /// <summary>
     ///     Creates a read-only view into a <c>.tmod</c> file.
@@ -331,7 +332,7 @@ public static class TmodExtensions
         return (path, data);
     }
 
-    private static byte[] Decompress(byte[] data, int uncompressedLength)
+    private static unsafe byte[] Decompress(byte[] data, int uncompressedLength)
     {
         // In cases where the file isn't actually compressed.  This is possible
         // with custom fnb settings or if a tModLoader `.tmod` contains files
@@ -349,11 +350,22 @@ public static class TmodExtensions
         // the allocated array regardless.
         var array = GC.AllocateUninitializedArray<byte>(uncompressedLength);
 
-        using var ds = new DeflateDecompressor();
+        // using var ds = new DeflateDecompressor();
+        // {
+        //     ds.Decompress(data, new Span<byte>(array), out var written);
+        //     {
+        //         Debug.Assert(written == uncompressedLength && array.Length == uncompressedLength);
+        //     }
+        // }
+
+        fixed (byte* inData = data)
         {
-            ds.Decompress(data, new Span<byte>(array), out var written);
+            fixed (byte* outData = array)
             {
-                Debug.Assert(written == uncompressedLength && array.Length == uncompressedLength);
+                var written = decompress_deflate(inData, data.Length, outData, uncompressedLength);
+                {
+                    Debug.Assert(written == uncompressedLength);
+                }
             }
         }
 
@@ -372,4 +384,7 @@ public static class TmodExtensions
         var compressedData = ms.ToArray();
         return compressedData;
     }
+    
+    [LibraryImport("libfnb", EntryPoint = "decompress_deflate")]
+    private static unsafe partial nint decompress_deflate(byte* in_data, nint in_length, byte* out_data, nint out_length);
 }
