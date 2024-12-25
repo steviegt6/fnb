@@ -9,7 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.TMOD", "Tomat.FNB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Common", "Tomat.FNB.Common\Tomat.FNB.Common.csproj", "{271CE3B6-F277-4D73-BC32-3F25974790A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Deflate", "LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj", "{44A03B0D-15F1-4EF5-992A-694EB528FC5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Benchmarks", "Tomat.FNB.Benchmarks\Tomat.FNB.Benchmarks.csproj", "{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Tests", "Tomat.FNB.Tests\Tomat.FNB.Tests.csproj", "{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "meta", "meta", "{A113D8B8-2CFE-48B2-A58C-87BE71B500EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,15 +33,23 @@ Global
 		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{271CE3B6-F277-4D73-BC32-3F25974790A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44A03B0D-15F1-4EF5-992A-694EB528FC5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57AC395-6C83-4D06-A6AF-6A8D4EA24594}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E002ACB-39F6-4080-830B-192C9DCA6A55}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E57AC395-6C83-4D06-A6AF-6A8D4EA24594} = {A113D8B8-2CFE-48B2-A58C-87BE71B500EF}
+		{C036F7EB-3B26-47BD-9E8A-8C72A73A273F} = {A113D8B8-2CFE-48B2-A58C-87BE71B500EF}
 	EndGlobalSection
 EndGlobal

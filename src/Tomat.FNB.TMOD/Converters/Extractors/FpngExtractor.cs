@@ -66,7 +66,7 @@ internal sealed unsafe partial class FpngExtractor : IFileConverter
     }
 
     // ReSharper disable InconsistentNaming
-    [LibraryImport("fpng.dll")]
+    [LibraryImport("libfpng.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static unsafe partial bool fpng_encode_image_to_memory_wrapper(
@@ -80,12 +80,12 @@ internal sealed unsafe partial class FpngExtractor : IFileConverter
         out int           imageLength
     );
 
-    [LibraryImport("fpng.dll")]
+    [LibraryImport("libfpng.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool fpng_release_image(nint bufSafeHandle);
 
-    [LibraryImport("fpng.dll")]
+    [LibraryImport("libfpng.dll")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     private static partial void fpng_init();
     // ReSharper restore InconsistentNaming

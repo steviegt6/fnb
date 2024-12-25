@@ -36,7 +36,8 @@ public sealed unsafe class RawimgExtractor : IFileConverter
     {
         if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
         {
-            return new FpngExtractor();
+            // return new FpngExtractor();
+            return new ImageFnbExtractor();
         }
 
         return new RawimgExtractor();

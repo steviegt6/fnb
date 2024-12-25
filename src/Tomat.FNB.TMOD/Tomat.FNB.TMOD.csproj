@@ -22,10 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="fpng.dll" CopyToOutputDirectory="PreserveNewest"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Folder Include="Converters\Packers\"/>
     </ItemGroup>
 
