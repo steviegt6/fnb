@@ -2,7 +2,7 @@
 name = "fnb-native"
 version = "1.0.0"
 edition = "2021"
-description = "Native wrapper around various dependencies for fnb"
+description = "Native auxiliary library for Tomat.FNB"
 
 [lib]
 crate-type = ["cdylib"]
