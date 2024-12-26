@@ -56,9 +56,9 @@ internal static unsafe partial class FnbNative
 
     public static readonly bool IS_SUPPORTED =
         OperatingSystem.IsWindows()
-            ? (true)
+            ? RuntimeInformation.ProcessArchitecture is Architecture.X64 or Architecture.X86
             : OperatingSystem.IsLinux()
-                ? (true)
+                ? RuntimeInformation.ProcessArchitecture is Architecture.X64 or Architecture.Arm64
                 : false;
 
     /// <summary>
