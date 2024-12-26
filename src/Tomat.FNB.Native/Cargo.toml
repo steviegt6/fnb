@@ -6,6 +6,7 @@ description = "Native auxiliary library for Tomat.FNB"
 
 [lib]
 crate-type = ["cdylib"]
+path = "lib.rs" # Root directory instead of src/.
 
 [profile.release]
 # Optimize for speed above all in release builds.  We also save space where we
