@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
 
@@ -11,11 +11,6 @@
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
-
-
-    <ItemGroup>
-        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5"/>
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>

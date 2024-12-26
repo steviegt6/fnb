@@ -54,6 +54,13 @@ internal static unsafe partial class FnbNative
         public static unsafe partial nint decompress_deflate(byte* in_data, nint in_length, byte* out_data, nint out_length);
     }
 
+    public static readonly bool IS_SUPPORTED =
+        OperatingSystem.IsWindows()
+            ? (true)
+            : OperatingSystem.IsLinux()
+                ? (true)
+                : false;
+
     /// <summary>
     ///     Encodes a raw array of RGBA32 pixels into a PNG image.
     /// </summary>
