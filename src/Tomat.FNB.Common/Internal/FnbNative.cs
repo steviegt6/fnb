@@ -1,8 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 
-using Microsoft.Win32.SafeHandles;
-
 namespace Tomat.FNB.Common.Internal;
 
 // ReSharper disable InconsistentNaming - This is a native interop file.
@@ -24,7 +22,7 @@ internal static unsafe partial class FnbNative
         /// <param name="length">The resulting length of the PNG in memory.</param>
         /// <returns>A pointer to the PNG in memory.</returns>
         [LibraryImport(lib_name, EntryPoint = nameof(encode_png))]
-        public static partial FnbPngHandle encode_png(nint width, nint height, byte* data, out nuint length);
+        public static partial nint encode_png(nint width, nint height, byte* data, out nuint length);
 
         /// <summary>
         ///     Frees the memory allocated for a PNG image from
@@ -32,7 +30,7 @@ internal static unsafe partial class FnbNative
         /// </summary>
         /// <param name="data">A pointer to the PNG image in memory.</param>
         [LibraryImport(lib_name, EntryPoint = nameof(free_encoded_png))]
-        public static partial void free_encoded_png(byte* data);
+        public static partial void free_encoded_png(nint data);
 
         /// <summary>
         ///     Decompresses a DEFLATE-compressed buffer.
@@ -56,22 +54,6 @@ internal static unsafe partial class FnbNative
         public static unsafe partial nint decompress_deflate(byte* in_data, nint in_length, byte* out_data, nint out_length);
     }
 
-    private sealed class FnbPngHandle : SafeHandleZeroOrMinusOneIsInvalid
-    {
-        public FnbPngHandle() : base(true) { }
-
-        public FnbPngHandle(byte* pPng) : base(true)
-        {
-            SetHandle((nint)pPng);
-        }
-
-        protected override bool ReleaseHandle()
-        {
-            fnb_native.free_encoded_png((byte*)handle);
-            return true;
-        }
-    }
-
     /// <summary>
     ///     Encodes a raw array of RGBA32 pixels into a PNG image.
     /// </summary>
@@ -79,23 +61,17 @@ internal static unsafe partial class FnbNative
     /// <param name="height">The height.</param>
     /// <param name="image">The image bytes.</param>
     /// <param name="pngBytes">The PNG.</param>
-    /// <returns>
-    ///     A handle to the PNG in memory, which must be disposed of when
-    ///     finished.
-    /// </returns>
-    public static IDisposable EncodePng(int width, int height, Span<byte> image, out byte[] pngBytes)
+    public static void EncodePng(int width, int height, Span<byte> image, out byte[] pngBytes)
     {
         fixed (byte* pImage = image)
         {
             var pPng = fnb_native.encode_png(width, height, pImage, out var length);
-            {
-                pngBytes = new byte[length];
-                Marshal.Copy(pPng.DangerousGetHandle(), pngBytes, 0, (int)length);
-            }
-            return pPng;
+            pngBytes = new byte[length];
+            Marshal.Copy(pPng, pngBytes, 0, (int)length);
+            fnb_native.free_encoded_png(pPng);
         }
     }
-    
+
     /// <summary>
     ///     Decompresses a DEFLATE-compressed buffer.
     /// </summary>
