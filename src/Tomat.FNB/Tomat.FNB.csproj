@@ -16,10 +16,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="libfnb.dll" CopyToOutputDirectory="PreserveNewest"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\Tomat.FNB.TMOD\Tomat.FNB.TMOD.csproj"/>
     </ItemGroup>
 
