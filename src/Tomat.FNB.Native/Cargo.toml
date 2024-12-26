@@ -15,5 +15,4 @@ strip = "debuginfo"
 
 [dependencies]
 fdeflate = "0.3.7"
-libc = "0.2.168"
 png = "0.17.15"
