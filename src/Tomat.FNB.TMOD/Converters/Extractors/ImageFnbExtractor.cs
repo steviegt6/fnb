@@ -33,27 +33,4 @@ internal sealed unsafe partial class ImageFnbExtractor : IFileConverter
             return (Path.ChangeExtension(path, ".png"), imageData);
         }
     }
-
-#region image_fnb
-    // [LibraryImport("image_fnb", EntryPoint = "decode_png")]
-    // private static partial nint decode_png(byte* data, nint length);
-
-    // [LibraryImport("image_fnb", EntryPoint = "encode_png")]
-    // private static partial byte* encode_png(nint image, out nint length);
-
-    // [LibraryImport("image_fnb", EntryPoint = "create_image_from_raw_data")]
-    // private static partial nint create_image_from_raw_data(nint width, nint height, byte* data);
-
-    // [LibraryImport("image_fnb", EntryPoint = "free_decoded_image")]
-    // private static partial void free_decoded_image(nint image);
-
-    // [LibraryImport("image_fnb", EntryPoint = "free_encoded_png")]
-    // private static partial void free_encoded_png(byte* data);
-
-    [LibraryImport("libfnb", EntryPoint = "encode_png")]
-    private static partial byte* encode_png(nint width, nint height, byte* data, out nuint length);
-
-    [LibraryImport("libfnb", EntryPoint = "free_encoded_png")]
-    private static partial void free_encoded_png(byte* data);
-#endregion
 }
