@@ -6,4 +6,7 @@ bin/
 obj/
 target/
 
+# Our local NuGet repository libfnb packages get written to.
+./nuget/
+
 *.user
