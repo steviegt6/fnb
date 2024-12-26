@@ -1,5 +1,5 @@
 [package]
-name = "libfnb"
+name = "fnb-native"
 version = "1.0.0"
 edition = "2021"
 description = "Native wrapper around various dependencies for fnb"
