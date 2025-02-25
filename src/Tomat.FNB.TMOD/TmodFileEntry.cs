@@ -3,9 +3,6 @@ namespace Tomat.FNB.TMOD;
 /// <summary>
 ///     Represents a <c>.tmod</c> file entry.
 /// </summary>
-/// <param name="Path">
-///     The path of this file entry, serving as a unique name.
-/// </param>
 /// <param name="Length">The actual length of the stored file.</param>
 /// <param name="CompressedLength">
 ///     The compressed length of the file, if applicable.
@@ -14,7 +11,6 @@ namespace Tomat.FNB.TMOD;
 ///     The offset of the file data in the stream this entry was read from.
 /// </param>
 public readonly record struct TmodFileEntry(
-    string Path,
     int    Length,
     int    CompressedLength,
     long   StreamOffset

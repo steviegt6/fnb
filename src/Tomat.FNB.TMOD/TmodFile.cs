@@ -42,12 +42,13 @@ namespace Tomat.FNB.TMOD;
 ///     <see cref="System.Version.Parse(string)"/>-compatible string.
 /// </param>
 public readonly record struct TmodFile(
-    Stream SeekableStream,
-    Stream ReadableStream,
-    bool   OwnsStreams,
-    string TmlVersion,
-    string Name,
-    string Version
+    Stream                            SeekableStream,
+    Stream                            ReadableStream,
+    bool                              OwnsStreams,
+    string                            TmlVersion,
+    string                            Name,
+    string                            Version,
+    Dictionary<string, TmodFileEntry> Entries
 ) : IDisposable
 {
     /// <summary>
@@ -181,7 +182,7 @@ public readonly record struct TmodFile(
         var version = r.NetString();
 
         var entryCount = r.S32();
-        var entries    = new List<TmodFileEntry>(entryCount);
+        var entries    = new Dictionary<string, TmodFileEntry>(entryCount);
 
         if (isLegacy)
         {
@@ -191,8 +192,8 @@ public readonly record struct TmodFile(
                 var length = r.S32();
 
                 entries.Add(
+                    path,
                     new TmodFileEntry(
-                        path,
                         length,
                         length,
                         r.Stream.Position
@@ -211,8 +212,8 @@ public readonly record struct TmodFile(
                 var compressedLength = r.S32();
 
                 entries.Add(
+                    path,
                     new TmodFileEntry(
-                        path,
                         length,
                         compressedLength,
                         0
