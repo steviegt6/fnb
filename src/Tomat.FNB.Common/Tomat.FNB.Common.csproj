@@ -10,4 +10,8 @@
         <ProjectReference Include="..\LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.2"/>
+    </ItemGroup>
+
 </Project>

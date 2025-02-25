@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 using Tomat.FNB.Common.IO;
 using Tomat.FNB.Common.IO.Compression;
+using Tomat.FNB.TMOD.Converters;
 
 namespace Tomat.FNB.TMOD;
 
@@ -88,7 +91,9 @@ public sealed class TmodFile : IDisposable
     /// </summary>
     public const int SIGNATURE_LENGTH = 256;
 
-    private const int stack_alloc_byte_threshold = (1 << 20) / 2;
+    // We can have up to 3 "copies" on the stack at a time.  The compressed
+    // bytes, uncompressed bytes, and converted bytes.
+    private const int stack_alloc_byte_threshold = (1048576 - 10000) / 3;
 #endregion
 
     private static readonly LibDeflateDecompressor decompressor = new();
@@ -208,7 +213,128 @@ public sealed class TmodFile : IDisposable
     ///     Operates over every file in a multithreaded fashion, minimizing
     ///     allocations of new byte arrays.
     /// </summary>
-    public void ProcessFiles() { }
+    public void ProcessFiles(
+        IFileConverter[]           converters,
+        Action<string, Span<byte>> action
+        /*Action<string, Memory<byte>> action,
+        int                        transformParallelism = -1,
+        int                        actionParallelism    = -1*/
+    )
+    {
+        /*
+        // TODO: We can tweak these or make them configurable for different
+        //       systems.
+        const int numerator   = 6;
+        const int denominator = 8;
+
+        if (transformParallelism < 0 && actionParallelism < 0)
+        {
+            transformParallelism = Math.Max(1, Environment.ProcessorCount * numerator                 / denominator);
+            actionParallelism    = Math.Max(1, Environment.ProcessorCount * (denominator - numerator) / denominator);
+        }
+        else if (transformParallelism < 0)
+        {
+            if (actionParallelism >= Environment.ProcessorCount)
+            {
+                actionParallelism = Math.Max(1, Environment.ProcessorCount - 1);
+            }
+
+            transformParallelism = Environment.ProcessorCount - actionParallelism;
+        }
+        else if (actionParallelism < 0)
+        {
+            if (transformParallelism >= Environment.ProcessorCount)
+            {
+                transformParallelism = Math.Max(1, Environment.ProcessorCount - 1);
+            }
+
+            actionParallelism = Environment.ProcessorCount - transformParallelism;
+        }
+
+        var transformBlock = new TransformBlock<
+            (TmodFile tmodFile, string path, IFileConverter[] converters),
+            (string path, Memory<byte> bytes)>(
+            static obj => obj.tmodFile.ExtractEntry(obj.path, obj.converters),
+            new ExecutionDataflowBlockOptions
+            {
+                MaxDegreeOfParallelism = transformParallelism,
+            }
+        );
+        {
+            var actionBlock = new ActionBlock<(string path, Memory<byte> bytes)>(
+                obj =>
+                {
+                    action(obj.path, obj.bytes);
+                })
+        }
+        */
+
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+        };
+
+        Parallel.ForEach(
+            FileNames,
+            parallelOptions,
+            (path, _) =>
+            {
+                var entry = entries[path];
+                if (readFileCache.TryGetValue(path, out var cachedBytes))
+                {
+                    ConvertFile(path, cachedBytes, converters, action);
+                    return;
+                }
+
+                var uncompressedBytes = entry.UncompressedLength <= stack_alloc_byte_threshold
+                    ? stackalloc byte[entry.UncompressedLength]
+                    : new byte[entry.UncompressedLength];
+
+                seekableStream.Position = entry.StreamOffset;
+
+                if (entry.IsCompressed)
+                {
+                    var compressedBytes = entry.CompressedLength <= stack_alloc_byte_threshold
+                        ? stackalloc byte[entry.CompressedLength]
+                        : new byte[entry.CompressedLength];
+
+                    if (readableStream.Read(compressedBytes) != entry.CompressedLength)
+                    {
+                        throw new IOException("todo");
+                    }
+
+                    if (!Decompress(compressedBytes, uncompressedBytes))
+                    {
+                        throw new IOException("todo2");
+                    }
+                }
+                else
+                {
+                    if (readableStream.Read(uncompressedBytes) != entry.UncompressedLength)
+                    {
+                        throw new IOException("todo");
+                    }
+                }
+
+                ConvertFile(path, uncompressedBytes, converters, action);
+            }
+        );
+    }
+
+    private static void ConvertFile(string path, Span<byte> cachedBytes, IFileConverter[] converters, Action<string, Span<byte>> action)
+    {
+        foreach (var converter in converters)
+        {
+            if (!converter.ShouldConvert(path, cachedBytes))
+            {
+                continue;
+            }
+
+            converter.Convert(path, cachedBytes, action);
+        }
+
+        action(path, cachedBytes);
+    }
 
     public void Dispose()
     {
