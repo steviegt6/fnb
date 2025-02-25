@@ -37,32 +37,21 @@ public static class RawImgExtractor
             }
         }
 
-        public (string path, byte[] data)? Convert(string path, Span<byte> data)
+        public unsafe (string path, byte[] data)? Convert(string path, Span<byte> data)
         {
-            var newPath = default(string);
-            var newData = default(byte[]);
-
-            var res = Convert(
-                path,
-                data,
-                (thePath, theData) =>
-                {
-                    newPath = thePath;
-                    newData = theData.ToArray();
-                }
-            );
-
-            if (!res)
+            fixed (byte* pData = data)
             {
-                return null;
-            }
+                var width  = *(int*)(pData + 4);
+                var height = *(int*)(pData + 4);
+                var pImage = pData + 12;
 
-            if (newPath is null || newData is null)
-            {
-                throw new InvalidOperationException("Somehow got bad data");
-            }
+                using var image = Image.WrapMemory<Rgba32>(pImage, width * height * 4, width, height);
 
-            return (newPath, newData);
+                using var ms = new MemoryStream();
+                image.SaveAsPng(ms);
+
+                return (Path.ChangeExtension(path, ".png"), ms.ToArray());
+            }
         }
     }
 
