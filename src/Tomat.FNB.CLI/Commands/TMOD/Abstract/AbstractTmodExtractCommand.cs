@@ -69,7 +69,7 @@ public abstract class AbstractTmodExtractCommand : ICommand
         string?  destinationPath
     )
     {
-        if (File.Exists(archivePath))
+        if (!File.Exists(archivePath))
         {
             throw new FileNotFoundException($"Could not find .tmod file: {archivePath}");
         }
