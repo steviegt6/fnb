@@ -14,6 +14,38 @@ namespace Tomat.FNB.TMOD;
 /// </summary>
 public sealed class TmodFile : IDisposable
 {
+    /// <summary>
+    ///     Represents a <c>.tmod</c> file entry.
+    /// </summary>
+    /// <param name="UncompressedLength">The length of the stored file.</param>
+    /// <param name="CompressedLength">
+    ///     The compressed length of the file, if applicable.
+    /// </param>
+    /// <param name="StreamOffset">
+    ///     The offset of the file data in the stream this entry was read from.
+    /// </param>
+    private readonly record struct Entry(
+        int  UncompressedLength,
+        int  CompressedLength,
+        long StreamOffset
+    )
+    {
+        /// <summary>
+        ///     Whether this file entry is compressed and needs to be
+        ///     decompressed.
+        /// </summary>
+        public bool IsCompressed => UncompressedLength != CompressedLength;
+
+        /// <summary>
+        ///     Whether this entry has a known stream offset to read from.
+        /// </summary>
+        /// <remarks>
+        ///     It should always be true, but during deserialization entries
+        ///     without a stream offset may be initialized.
+        /// </remarks>
+        public bool Readable => StreamOffset > 0;
+    }
+
 #region Constants
     /// <summary>
     ///     The default size needed to be met for a file to be compressed.
@@ -73,16 +105,16 @@ public sealed class TmodFile : IDisposable
     private readonly Stream readableStream;
     private readonly bool   ownsStreams;
 
-    private readonly Dictionary<string, TmodFileEntry> entries;
+    private readonly Dictionary<string, Entry> entries;
 
     private TmodFile(
-        Stream                            seekableStream,
-        Stream                            readableStream,
-        bool                              ownsStreams,
-        string                            tmlVersion,
-        string                            name,
-        string                            version,
-        Dictionary<string, TmodFileEntry> entries
+        Stream                    seekableStream,
+        Stream                    readableStream,
+        bool                      ownsStreams,
+        string                    tmlVersion,
+        string                    name,
+        string                    version,
+        Dictionary<string, Entry> entries
     )
     {
         this.seekableStream = seekableStream;
@@ -122,14 +154,13 @@ public sealed class TmodFile : IDisposable
     ///     yourself afterward.
     /// </param>
     /// <param name="hash">
-    ///     The hash span, initialized either to
-    ///     <see cref="TmodFileHeader.HASH_LENGTH"/> to read the hash or =
-    ///     <c>0</c> to skip.
+    ///     The hash span, initialized either to <see cref="HASH_LENGTH"/> to
+    ///     read the hash or <c>0</c> to skip reading it.
     /// </param>
     /// <param name="signature">
     ///     The signature span, initialized either to
-    ///     <see cref="TmodFileHeader.SIGNATURE_LENGTH"/> to read the signature
-    ///     or <c>0</c> to skip.
+    ///     <see cref="SIGNATURE_LENGTH"/> to read the signature or <c>0</c> to
+    ///     skip reading it.
     /// </param>
     /// <param name="ownsStream">
     ///     The resulting <see cref="TmodFile"/> will hold onto either the file
@@ -146,45 +177,45 @@ public sealed class TmodFile : IDisposable
         bool           ownsStream = true
     )
     {
-        if (hash.Length is not TmodFileHeader.HASH_LENGTH and not 0)
+        if (hash.Length is not HASH_LENGTH and not 0)
         {
-            throw new ArgumentException($"Hash span was not of correct length ({hash.Length}), should be {TmodFileHeader.HASH_LENGTH} or 0", nameof(hash));
+            throw new ArgumentException($"Hash span was not of correct length ({hash.Length}), should be {HASH_LENGTH} or 0", nameof(hash));
         }
 
-        if (signature.Length is not TmodFileHeader.HASH_LENGTH and not 0)
+        if (signature.Length is not HASH_LENGTH and not 0)
         {
-            throw new ArgumentException($"Signature span was not of correct length ({signature.Length}), should be {TmodFileHeader.SIGNATURE_LENGTH} or 0", nameof(signature));
+            throw new ArgumentException($"Signature span was not of correct length ({signature.Length}), should be {SIGNATURE_LENGTH} or 0", nameof(signature));
         }
 
-        if (r.U32() != TmodFileHeader.TMOD_MAGIC_HEADER)
+        if (r.U32() != TMOD_MAGIC_HEADER)
         {
-            throw new InvalidDataException($"Did not get magic header: {TmodFileHeader.TMOD_MAGIC_HEADER:X8}");
+            throw new InvalidDataException($"Did not get magic header: {TMOD_MAGIC_HEADER:X8}");
         }
 
         var tmlVersion = r.NetString();
 
         if (hash.Length > 0)
         {
-            if (r.Span(hash) != TmodFileHeader.HASH_LENGTH)
+            if (r.Span(hash) != HASH_LENGTH)
             {
                 throw new InvalidOperationException("Failed to read hash");
             }
         }
         else
         {
-            r.Stream.Position += TmodFileHeader.HASH_LENGTH;
+            r.Stream.Position += HASH_LENGTH;
         }
 
         if (signature.Length > 0)
         {
-            if (r.Span(signature) != TmodFileHeader.SIGNATURE_LENGTH)
+            if (r.Span(signature) != SIGNATURE_LENGTH)
             {
                 throw new InvalidOperationException("Failed to read signature");
             }
         }
         else
         {
-            r.Stream.Position += TmodFileHeader.SIGNATURE_LENGTH;
+            r.Stream.Position += SIGNATURE_LENGTH;
         }
 
         // TODO: Skip the encoded length of the data blob.  We have no use for
@@ -211,7 +242,7 @@ public sealed class TmodFile : IDisposable
         var version = r.NetString();
 
         var entryCount = r.S32();
-        var entries    = new Dictionary<string, TmodFileEntry>(entryCount);
+        var entries    = new Dictionary<string, Entry>(entryCount);
 
         if (isLegacy)
         {
@@ -222,7 +253,7 @@ public sealed class TmodFile : IDisposable
 
                 entries.Add(
                     path,
-                    new TmodFileEntry(
+                    new Entry(
                         length,
                         length,
                         r.Stream.Position
@@ -242,7 +273,7 @@ public sealed class TmodFile : IDisposable
 
                 entries.Add(
                     path,
-                    new TmodFileEntry(
+                    new Entry(
                         length,
                         compressedLength,
                         0
