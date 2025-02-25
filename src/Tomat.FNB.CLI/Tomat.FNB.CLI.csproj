@@ -11,4 +11,8 @@
         <PackageReference Include="CliFx" Version="2.3.5"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>
+    </ItemGroup>
+
 </Project>
