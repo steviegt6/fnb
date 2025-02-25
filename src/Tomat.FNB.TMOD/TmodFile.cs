@@ -12,45 +12,9 @@ namespace Tomat.FNB.TMOD;
 ///     known entries, as well as APIs for processing the data labeled by those
 ///     entries.
 /// </summary>
-/// <param name="SeekableStream">
-///     The stream containing relevant file data which may be directly
-///     seeked.
-/// </param>
-/// <param name="ReadableStream">
-///     The stream which should be used to read any file data in case of
-///     compression.  It should wrap <paramref name="SeekableStream"/> and it
-///     should be configured to dispose of <see cref="SeekableStream"/> when
-///     it's disposed.
-/// </param>
-/// <param name="OwnsStreams">
-///     Whether this instance owns the streams and may dispose of them when this
-///     instance is disposed.
-/// </param>
-/// <param name="TmlVersion">
-///     The version of tModLoader this <c>.tmod</c> file was created from.
-///     <br />
-///     Obviously, tools like <b>fnb</b> mean the file may not have been created
-///     through tModLoader, so it more realistically indicates the version the
-///     mod is intended to be run under.
-/// </param>
-/// <param name="Name">
-///     The uniquely-identifiable, internal name of the mod.  Distinctly not the
-///     display name.
-/// </param>
-/// <param name="Version">
-///     The version of the mod, which must be formatted as a
-///     <see cref="System.Version.Parse(string)"/>-compatible string.
-/// </param>
-public readonly record struct TmodFile(
-    Stream                            SeekableStream,
-    Stream                            ReadableStream,
-    bool                              OwnsStreams,
-    string                            TmlVersion,
-    string                            Name,
-    string                            Version,
-    Dictionary<string, TmodFileEntry> Entries
-) : IDisposable
+public sealed class TmodFile : IDisposable
 {
+#region Constants
     /// <summary>
     ///     The default size needed to be met for a file to be compressed.
     /// </summary>
@@ -68,19 +32,84 @@ public readonly record struct TmodFile(
     /// </summary>
     private static readonly Version new_format_milestone = new(0, 11, 0, 0);
 
+    /// <summary>
+    ///     The magic header that denotes a <c>.tmod</c> file.
+    /// </summary>
+    public const int TMOD_MAGIC_HEADER = 0x444F4D54; // "TMOD"
+
+    /// <summary>
+    ///     The length of the <c>.tmod</c> hash part.
+    /// </summary>
+    public const int HASH_LENGTH = 20;
+
+    /// <summary>
+    ///     The length of the <c>.tmod</c> signature part.
+    /// </summary>
+    public const int SIGNATURE_LENGTH = 256;
+#endregion
+
+    /// <summary>
+    ///     The version of tModLoader this <c>.tmod</c> file was created from.
+    ///     <br />
+    ///     Obviously, tools like <b>fnb</b> mean the file may not have been created
+    ///     through tModLoader, so it more realistically indicates the version the
+    ///     mod is intended to be run under.
+    /// </summary>
+    public string TmlVersion { get; }
+
+    /// <summary>
+    ///     The uniquely-identifiable, internal name of the mod.  Distinctly not the
+    ///     display name.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    ///     The version of the mod, which must be formatted as a
+    ///     <see cref="System.Version.Parse(string)"/>-compatible string.
+    /// </summary>
+    public string Version { get; }
+
+    private readonly Stream seekableStream;
+    private readonly Stream readableStream;
+    private readonly bool   ownsStreams;
+
+    private readonly Dictionary<string, TmodFileEntry> entries;
+
+    private TmodFile(
+        Stream                            seekableStream,
+        Stream                            readableStream,
+        bool                              ownsStreams,
+        string                            tmlVersion,
+        string                            name,
+        string                            version,
+        Dictionary<string, TmodFileEntry> entries
+    )
+    {
+        this.seekableStream = seekableStream;
+        this.readableStream = readableStream;
+        this.ownsStreams    = ownsStreams;
+        TmlVersion          = tmlVersion;
+        Name                = name;
+        Version             = version;
+        this.entries        = entries;
+    }
+
     public void Dispose()
     {
-        if (!OwnsStreams)
+        if (!ownsStreams)
         {
             return;
         }
 
         // For now, we do not need to call ::Dispose() on SeekableStream since
         // we're assuming ReadableStream wraps it.  API consumers should ensure
-        // their ReadableStream is configured to dispose of SeekableStream.
-        ReadableStream.Dispose();
+        // their ReadableStream is configured to dispose of SeekableStream, but
+        // currently we only allow for creating TmodFile instances through
+        // deserialization.
+        readableStream.Dispose();
     }
 
+#region Deserialization
     /// <summary>
     ///     Reads a <c>.tmod</c> file.
     /// </summary>
@@ -222,4 +251,5 @@ public readonly record struct TmodFile(
             }
         }
     }
+#endregion
 }
