@@ -4,10 +4,19 @@
         <TargetFramework>net9.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj" />
+        <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Converters\Packers\"/>
     </ItemGroup>
 
 </Project>
