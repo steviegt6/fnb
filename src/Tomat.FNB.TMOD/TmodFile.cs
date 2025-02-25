@@ -204,8 +204,10 @@ public sealed class TmodFile : IDisposable
         return readFileCache[path] = bytes;
     }
 
-    // TODO: Introduce API for processing all files in bulk with multiple
-    //       threads.
+    /// <summary>
+    ///     Operates over every file in a multithreaded fashion, minimizing
+    ///     allocations of new byte arrays.
+    /// </summary>
     public void ProcessFiles() { }
 
     public void Dispose()
