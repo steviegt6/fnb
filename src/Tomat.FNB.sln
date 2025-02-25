@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Common", "Tomat.F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.TMOD", "Tomat.FNB.TMOD\Tomat.FNB.TMOD.csproj", "{E85B8894-77E0-44FB-9957-7CBE7D0A3386}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomat.FNB.Deflate", "LibDeflate.NET\src\Tomat.FNB.Deflate\Tomat.FNB.Deflate.csproj", "{1AC3700D-71F0-4198-85B7-9F990810E324}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LibDeflate.NET", "LibDeflate.NET", "{F9174326-FB93-450D-8E45-0E7B9B7A38EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,12 @@ Global
 		{E85B8894-77E0-44FB-9957-7CBE7D0A3386}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E85B8894-77E0-44FB-9957-7CBE7D0A3386}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E85B8894-77E0-44FB-9957-7CBE7D0A3386}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC3700D-71F0-4198-85B7-9F990810E324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC3700D-71F0-4198-85B7-9F990810E324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC3700D-71F0-4198-85B7-9F990810E324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC3700D-71F0-4198-85B7-9F990810E324}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1AC3700D-71F0-4198-85B7-9F990810E324} = {F9174326-FB93-450D-8E45-0E7B9B7A38EE}
 	EndGlobalSection
 EndGlobal

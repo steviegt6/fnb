@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 
 using Tomat.FNB.Common.IO;
+using Tomat.FNB.Common.IO.Compression;
 
 namespace Tomat.FNB.TMOD;
 
@@ -86,7 +87,11 @@ public sealed class TmodFile : IDisposable
     ///     The length of the <c>.tmod</c> signature part.
     /// </summary>
     public const int SIGNATURE_LENGTH = 256;
+
+    private const int stack_alloc_byte_threshold = (1 << 20) / 2;
 #endregion
+
+    private static readonly LibDeflateDecompressor decompressor = new();
 
     /// <summary>
     ///     The version of tModLoader this <c>.tmod</c> file was created from.
@@ -113,8 +118,12 @@ public sealed class TmodFile : IDisposable
     private readonly Stream readableStream;
     private readonly bool   ownsStreams;
 
-    private readonly Dictionary<string, Entry> entries;
+    private readonly Dictionary<string, Entry>  entries;
+    private readonly Dictionary<string, byte[]> readFileCache = [];
 
+    /// <summary>
+    ///     The names of every file in this archive.
+    /// </summary>
     public IEnumerable<string> FileNames => entries.Keys;
 
     private TmodFile(
@@ -136,6 +145,69 @@ public sealed class TmodFile : IDisposable
         this.entries        = entries;
     }
 
+    /// <summary>
+    ///     Whether the file at the given <paramref name="path"/> exists.
+    /// </summary>
+    /// <param name="path">The file path.</param>
+    public bool FileExists(string path)
+    {
+        return entries.ContainsKey(path);
+    }
+
+    /// <summary>
+    ///     Reads the file from the stream and caches it, returning the read
+    ///     bytes.
+    /// </summary>
+    /// <param name="path">The file path.</param>
+    /// <returns>The read file bytes.</returns>
+    /// <remarks>
+    ///     It is recommended to avoid this if possible, instead preferring
+    ///     <see cref="ProcessFiles"/> to minimize unnecessary allocations.
+    /// </remarks>
+    /// <seealso cref="ProcessFiles"/>
+    public byte[] GetFileBytes(string path)
+    {
+        if (readFileCache.TryGetValue(path, out var bytes))
+        {
+            return bytes;
+        }
+
+        var entry = entries[path];
+        seekableStream.Position = entry.StreamOffset;
+
+        bytes = new byte[entry.UncompressedLength];
+
+        if (entry.IsCompressed)
+        {
+            var compressedBytes = entry.CompressedLength <= stack_alloc_byte_threshold
+                ? stackalloc byte[entry.CompressedLength]
+                : new byte[entry.CompressedLength];
+
+            if (readableStream.Read(compressedBytes) != compressedBytes.Length)
+            {
+                throw new IOException($"Failed to read bytes for entry {path}");
+            }
+
+            if (!Decompress(compressedBytes, new Span<byte>(bytes)))
+            {
+                throw new IOException($"Failed to decompress bytes for entry {path}");
+            }
+
+            return readFileCache[path] = bytes;
+        }
+
+        if (readableStream.Read(bytes, 0, entry.UncompressedLength) != entry.UncompressedLength)
+        {
+            throw new IOException($"Failed to read bytes for entry {path}");
+        }
+
+        return readFileCache[path] = bytes;
+    }
+
+    // TODO: Introduce API for processing all files in bulk with multiple
+    //       threads.
+    public void ProcessFiles() { }
+
     public void Dispose()
     {
         if (!ownsStreams)
@@ -149,6 +221,11 @@ public sealed class TmodFile : IDisposable
         // currently we only allow for creating TmodFile instances through
         // deserialization.
         readableStream.Dispose();
+    }
+
+    private bool Decompress(Span<byte> compressedBytes, Span<byte> uncompressedBytes)
+    {
+        return decompressor.Decompress(compressedBytes, uncompressedBytes);
     }
 
 #region Deserialization
