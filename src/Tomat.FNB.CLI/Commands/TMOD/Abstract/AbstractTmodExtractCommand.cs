@@ -11,6 +11,8 @@ using JetBrains.Annotations;
 
 using Tomat.FNB.Common.IO;
 using Tomat.FNB.TMOD;
+using Tomat.FNB.TMOD.Converters;
+using Tomat.FNB.TMOD.Converters.Extractors;
 
 namespace Tomat.FNB.CLI.Commands.TMOD.Abstract;
 
@@ -74,7 +76,7 @@ public abstract class AbstractTmodExtractCommand : ICommand
             throw new FileNotFoundException($"Could not find .tmod file: {archivePath}");
         }
 
-        var tmodFile = ReadFile(archivePath);
+        var tmodFile = CommandUtil.ReadTmodFile(archivePath);
         if (tmodFile is null)
         {
             throw new InvalidOperationException($"Failed to read the file, are you sure it's a .tmod archive?: {archivePath}");
@@ -95,27 +97,7 @@ public abstract class AbstractTmodExtractCommand : ICommand
             return;
         }
 
-        throw new NotImplementedException("File extraction is not yet implemented");
-    }
-
-    private static TmodFile? ReadFile(string archivePath)
-    {
-        var fs = File.OpenRead(archivePath);
-        var r  = new ByteReader(fs);
-
-        try
-        {
-            return TmodFile.Read(ref r, new Span<byte>(), new Span<byte>(), ownsStream: true);
-        }
-        catch
-        {
-            // Only dispose of them if TmodFile::Read throws so we don't leave
-            // them dangling.  Otherwise, TmodFile will assume ownership and we
-            // should leave them be.
-            r.Dispose();
-            fs.Dispose();
-
-            return null;
-        }
+        var converters = PureFiles ? Array.Empty<IFileConverter>() : [new InfoExtractor(), RawImgExtractor.GetInstance()];
+        await CommandUtil.ExtractArchive(console, tmodFile, archivePath, destinationPath, converters);
     }
 }
