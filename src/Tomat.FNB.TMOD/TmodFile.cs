@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
@@ -12,6 +13,11 @@ namespace Tomat.FNB.TMOD;
 ///     known entries, as well as APIs for processing the data labeled by those
 ///     entries.
 /// </summary>
+/// <remarks>
+///     This class is designed to be immutable when it comes to editing data (it
+///     may mutate data internally for caching purposes).  If you want to build
+///     a new <c>.tmod</c> file, see <see cref="TmodFileBuilder"/>.
+/// </remarks>
 public sealed class TmodFile : IDisposable
 {
     /// <summary>
@@ -19,7 +25,9 @@ public sealed class TmodFile : IDisposable
     /// </summary>
     /// <param name="UncompressedLength">The length of the stored file.</param>
     /// <param name="CompressedLength">
-    ///     The compressed length of the file, if applicable.
+    ///     The compressed length of the file, if applicable.  If this file is
+    ///     not compressed, then this will be equal to
+    ///     <see cref="UncompressedLength"/>.
     /// </param>
     /// <param name="StreamOffset">
     ///     The offset of the file data in the stream this entry was read from.
@@ -281,6 +289,28 @@ public sealed class TmodFile : IDisposable
                 );
             }
         }
+
+        foreach (var (path, entry) in entries)
+        {
+            Debug.Assert(entry.CompressedLength <= entry.UncompressedLength && entry.CompressedLength > 0);
+
+            entries[path] = entry with
+            {
+                StreamOffset = seekable.Position,
+            };
+
+            seekable.Position += entry.CompressedLength;
+        }
+
+        return new TmodFile(
+            seekable,
+            r.Stream,
+            ownsStream,
+            tmlVersion,
+            name,
+            version,
+            entries
+        );
     }
 #endregion
 }
