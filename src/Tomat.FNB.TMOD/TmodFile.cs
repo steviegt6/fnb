@@ -256,11 +256,11 @@ public sealed class TmodFile : IDisposable
                     new Entry(
                         length,
                         length,
-                        r.Stream.Position
+                        seekable.Position
                     )
                 );
 
-                r.Stream.Position += length;
+                seekable.Position += length;
             }
         }
         else
