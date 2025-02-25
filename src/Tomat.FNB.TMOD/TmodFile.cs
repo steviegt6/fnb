@@ -115,6 +115,8 @@ public sealed class TmodFile : IDisposable
 
     private readonly Dictionary<string, Entry> entries;
 
+    public IEnumerable<string> FileNames => entries.Keys;
+
     private TmodFile(
         Stream                    seekableStream,
         Stream                    readableStream,
@@ -243,7 +245,7 @@ public sealed class TmodFile : IDisposable
                 leaveOpen: false
             );
             r.Dispose();
-            r = new ByteReader(ds, ownsStream: false);
+            r = new ByteReader(ds, OwnsStream: false);
         }
 
         var name    = r.NetString();

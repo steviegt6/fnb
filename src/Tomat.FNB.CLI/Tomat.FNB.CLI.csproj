@@ -9,10 +9,12 @@
 
     <ItemGroup>
         <PackageReference Include="CliFx" Version="2.3.5"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2025.1.0-eap1"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Tomat.FNB.Common\Tomat.FNB.Common.csproj"/>
+        <ProjectReference Include="..\Tomat.FNB.TMOD\Tomat.FNB.TMOD.csproj"/>
     </ItemGroup>
 
 </Project>

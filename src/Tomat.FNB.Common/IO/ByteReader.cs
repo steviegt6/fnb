@@ -8,7 +8,7 @@ namespace Tomat.FNB.Common.IO;
 
 public readonly record struct ByteReader(
     Stream Stream,
-    bool   ownsStream
+    bool   OwnsStream = false
 ) : IDisposable
 {
     private readonly BinaryReader reader = new(
@@ -98,7 +98,7 @@ public readonly record struct ByteReader(
     {
         reader.Dispose();
 
-        if (ownsStream)
+        if (OwnsStream)
         {
             Stream.Dispose();
         }
