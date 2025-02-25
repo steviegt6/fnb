@@ -15,6 +15,7 @@ internal static class Program
                          "tmod & fnb file packer and unpacker"
                        + "\nCopyright (C) 2025  Tomat et al."
                      )
+                    .AddCommandsFromThisAssembly()
                     .Build()
                     .RunAsync(args);
     }
