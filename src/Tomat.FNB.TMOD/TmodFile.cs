@@ -271,54 +271,104 @@ public sealed class TmodFile : IDisposable
 
         var parallelOptions = new ParallelOptions
         {
-            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            // MaxDegreeOfParallelism = Environment.ProcessorCount,
+            MaxDegreeOfParallelism = 1,
         };
 
-        Parallel.ForEach(
-            FileNames,
-            parallelOptions,
-            (path, _) =>
+        foreach (var path in FileNames)
+        {
+            TheThing(path);
+        }
+
+        return;
+
+        void TheThing(string path)
+        {
+            var entry = entries[path];
+            if (readFileCache.TryGetValue(path, out var cachedBytes))
             {
-                var entry = entries[path];
-                if (readFileCache.TryGetValue(path, out var cachedBytes))
-                {
-                    ConvertFile(path, cachedBytes, converters, action);
-                    return;
-                }
-
-                var uncompressedBytes = entry.UncompressedLength <= stack_alloc_byte_threshold
-                    ? stackalloc byte[entry.UncompressedLength]
-                    : new byte[entry.UncompressedLength];
-
-                seekableStream.Position = entry.StreamOffset;
-
-                if (entry.IsCompressed)
-                {
-                    var compressedBytes = entry.CompressedLength <= stack_alloc_byte_threshold
-                        ? stackalloc byte[entry.CompressedLength]
-                        : new byte[entry.CompressedLength];
-
-                    if (readableStream.Read(compressedBytes) != entry.CompressedLength)
-                    {
-                        throw new IOException("todo");
-                    }
-
-                    if (!Decompress(compressedBytes, uncompressedBytes))
-                    {
-                        throw new IOException("todo2");
-                    }
-                }
-                else
-                {
-                    if (readableStream.Read(uncompressedBytes) != entry.UncompressedLength)
-                    {
-                        throw new IOException("todo");
-                    }
-                }
-
-                ConvertFile(path, uncompressedBytes, converters, action);
+                ConvertFile(path, cachedBytes, converters, action);
+                return;
             }
-        );
+
+            var uncompressedBytes = entry.UncompressedLength <= stack_alloc_byte_threshold
+                ? stackalloc byte[entry.UncompressedLength]
+                : new byte[entry.UncompressedLength];
+
+            seekableStream.Position = entry.StreamOffset;
+
+            if (entry.IsCompressed)
+            {
+                var compressedBytes = entry.CompressedLength <= stack_alloc_byte_threshold
+                    ? stackalloc byte[entry.CompressedLength]
+                    : new byte[entry.CompressedLength];
+
+                if (readableStream.Read(compressedBytes) != entry.CompressedLength)
+                {
+                    throw new IOException("todo");
+                }
+
+                if (!Decompress(compressedBytes, uncompressedBytes))
+                {
+                    throw new IOException("todo2");
+                }
+            }
+            else
+            {
+                if (readableStream.Read(uncompressedBytes) != entry.UncompressedLength)
+                {
+                    throw new IOException("todo");
+                }
+            }
+
+            ConvertFile(path, uncompressedBytes, converters, action);
+        }
+
+        //Parallel.ForEach(
+        //    FileNames,
+        //    parallelOptions,
+        //    (path, _) =>
+        //    {
+        //        var entry = entries[path];
+        //        if (readFileCache.TryGetValue(path, out var cachedBytes))
+        //        {
+        //            ConvertFile(path, cachedBytes, converters, action);
+        //            return;
+        //        }
+        //
+        //        var uncompressedBytes = entry.UncompressedLength <= stack_alloc_byte_threshold
+        //            ? stackalloc byte[entry.UncompressedLength]
+        //            : new byte[entry.UncompressedLength];
+        //
+        //        seekableStream.Position = entry.StreamOffset;
+        //
+        //        if (entry.IsCompressed)
+        //        {
+        //            var compressedBytes = entry.CompressedLength <= stack_alloc_byte_threshold
+        //                ? stackalloc byte[entry.CompressedLength]
+        //                : new byte[entry.CompressedLength];
+        //
+        //            if (readableStream.Read(compressedBytes) != entry.CompressedLength)
+        //            {
+        //                throw new IOException("todo");
+        //            }
+        //
+        //            if (!Decompress(compressedBytes, uncompressedBytes))
+        //            {
+        //                throw new IOException("todo2");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (readableStream.Read(uncompressedBytes) != entry.UncompressedLength)
+        //            {
+        //                throw new IOException("todo");
+        //            }
+        //        }
+        //
+        //        ConvertFile(path, uncompressedBytes, converters, action);
+        //    }
+        //);
     }
 
     private static void ConvertFile(string path, Span<byte> cachedBytes, IFileConverter[] converters, Action<string, Span<byte>> action)
