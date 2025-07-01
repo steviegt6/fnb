@@ -32,9 +32,9 @@ public sealed unsafe class RawimgExtractor : IFileConverter
         }
     }
 
-    public static IFileConverter GetRawimgExtractor()
+    public static IFileConverter GetRawimgExtractor(bool accelerate = true)
     {
-        if (OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
+        if (accelerate && OperatingSystem.IsWindows() && Environment.Is64BitProcess && RuntimeInformation.ProcessArchitecture == Architecture.X64)
         {
             return new FpngExtractor();
         }
