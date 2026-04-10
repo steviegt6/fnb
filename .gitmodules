@@ -1,3 +1,0 @@
-[submodule "src/LibDeflate.NET"]
-	path = src/LibDeflate.NET
-	url = https://github.com/steviegt6/LibDeflate.NET.git
