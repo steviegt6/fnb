@@ -1,5 +1,4 @@
 <Solution>
   <Project Path="Tomat.FNB.CLI/Tomat.FNB.CLI.csproj" />
-  <Project Path="Tomat.FNB.Common/Tomat.FNB.Common.csproj" />
   <Project Path="Tomat.FNB.TMOD/Tomat.FNB.TMOD.csproj" />
 </Solution>
