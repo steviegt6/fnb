@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\TmodReference\TmodReference.csproj"/>
+        <ProjectReference Include="..\Tomat.Files.Tmod.Manifest\Tomat.Files.Tmod.Manifest.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.8"/>
+    </ItemGroup>
+
+</Project>

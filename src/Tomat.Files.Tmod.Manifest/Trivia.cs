@@ -6,11 +6,8 @@ public enum TriviaKind : byte
     Comment,
 }
 
-public readonly struct Trivia(TriviaKind kind, int start, int length)
-{
-    public TriviaKind Kind { get; } = kind;
-
-    public int Start { get; } = start;
-
-    public int Length { get; } = length;
-}
+public readonly record struct Trivia(
+    TriviaKind Kind,
+    int Start,
+    int Length
+);
