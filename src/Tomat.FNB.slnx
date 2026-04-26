@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="Tomat.Files.Tmod.Manifest/Tomat.Files.Tmod.Manifest.csproj" />
+  <Project Path="Tomat.Files.Tmod/Tomat.Files.Tmod.csproj" />
   <Project Path="Tomat.FNB.CLI/Tomat.FNB.CLI.csproj" />
-  <Project Path="Tomat.FNB.TMOD/Tomat.FNB.TMOD.csproj" />
+  <Project Path="Tomat.FNB.Tests/Tomat.FNB.Tests.csproj" />
 </Solution>
