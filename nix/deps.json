@@ -1,0 +1,27 @@
+[
+  {
+    "pname": "CliFx",
+    "version": "2.3.5",
+    "hash": "sha256-NubKUlqqlRGwUDv89ch/xqhpgBM/bwv3RA1wrUfai2Y="
+  },
+  {
+    "pname": "JetBrains.Annotations",
+    "version": "2025.1.0-eap1",
+    "hash": "sha256-Ahi2hf9+sev267z178MbIJXMhFPc9pS929m172ow8v0="
+  },
+  {
+    "pname": "SixLabors.ImageSharp",
+    "version": "3.1.6",
+    "hash": "sha256-FQjLyC4158F1GyhlKjzjGo6TxAu698rYWTY9lkko/fA="
+  },
+  {
+    "pname": "System.Threading.Tasks.Dataflow",
+    "version": "9.0.2",
+    "hash": "sha256-JBrIcHOmGNXnfvILoy/9CUqT9pNdP3U7bT+41n2Podo="
+  },
+  {
+    "pname": "Tomat.LibDeflate.Native",
+    "version": "1.21.1",
+    "hash": "sha256-FV8kJVmehiIzg7SSqdQ6YyZNHL5rZWntAy6A2UGnErA="
+  }
+]

@@ -5,6 +5,7 @@
 bin/
 obj/
 target/
+result
 
 # Our local NuGet repository libfnb packages get written to.
 ./nuget/
